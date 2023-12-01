@@ -149,7 +149,7 @@ class NetworkSession{
 	private bool $disconnectGuard = false;
 	private bool $loggedIn = false;
 	private bool $authenticated = false;
-	private int $connectTime;
+	public int $connectTime;
 	private ?CompoundTag $cachedOfflinePlayerData = null;
 
 	private ?EncryptionContext $cipher = null;
@@ -214,7 +214,7 @@ class NetworkSession{
 	}
 
 	public function getConnectedTime(): int {
-		return time() - $this->connectTime;
+		return $this->connectTime;
 	}
 
 	private function onSessionStartSuccess() : void{
