@@ -95,6 +95,7 @@ use pocketmine\item\ConsumableItem;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\MeleeWeaponEnchantment;
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\ItemUseResult;
 use pocketmine\item\Releasable;
@@ -277,6 +278,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected bool $allowFlight = false;
 	protected bool $blockCollision = true;
 	protected bool $flying = false;
+
 
 	/** @phpstan-var positive-int|null  */
 	protected ?int $lineHeight = null;
@@ -510,6 +512,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->getNetworkSession()->syncAdventureSettings();
 		}
 	}
+
+
 
 	public function hasAutoJump() : bool{
 		return $this->autoJump;
@@ -1334,7 +1338,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if($delta > 0.0001 || $deltaAngle > 1.0){
 			if(PlayerMoveEvent::hasHandlers()){
 				$ev = new PlayerMoveEvent($this, $from, $to);
-
 				$ev->call();
 
 				if($ev->isCancelled()){
@@ -2444,6 +2447,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		);
 	}
 
+
+	public function getConnectedTime(): int {
+		return time() - $this->getNetworkSession()->getConnectedTime();
+	}
+
 	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{
 		parent::applyPostDamageEffects($source);
 
@@ -2461,6 +2469,19 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$source->cancel();
 		}elseif($this->allowFlight && $source->getCause() === EntityDamageEvent::CAUSE_FALL){
 			$source->cancel();
+		}
+
+		if ($source->getCause() === EntityDamageEvent::CAUSE_FALL) {
+			$protectionFall = 0;
+			foreach ($this->getArmorInventory()->getContents() as $slot => $item) {
+				if ($item->hasEnchantment(VanillaEnchantments::PROTECTION())) {
+					$lvl = $item->getEnchantment(VanillaEnchantments::PROTECTION())->getLevel();
+					$protectionFall += $lvl;
+				}
+			}
+
+			// real function as not leaked, under is a function approximate
+			$source->setModifier(-$source->getFinalDamage() * ($protectionFall * 0.03), EntityDamageEvent::MODIFIER_ARMOR);
 		}
 
 		parent::attack($source);
