@@ -809,6 +809,12 @@ class Server{
 				@file_put_contents($pocketmineYmlPath, $content);
 			}
 
+			$symplyYmlPath = Path::join($this->dataPath, "symply.yml");
+			if (!file_exists($symplyYmlPath)) {
+				$content = Filesystem::fileGetContents(Path::join(\pocketmine\RESOURCE_PATH, "symply.yml"));
+				@file_put_contents($symplyYmlPath, $content);
+			}
+
 			$this->configGroup = new ServerConfigGroup(
 				new Config($pocketmineYmlPath, Config::YAML, []),
 				new Config(Path::join($this->dataPath, "server.properties"), Config::PROPERTIES, [

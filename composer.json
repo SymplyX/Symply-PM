@@ -59,7 +59,8 @@
    },
    "autoload": {
       "psr-4": {
-         "pocketmine\\": "src/"
+         "pocketmine\\": "src/",
+	     "symply\\": "symply/"
       },
       "files": [
          "src/CoreConstants.php"
