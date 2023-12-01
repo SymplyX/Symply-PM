@@ -277,6 +277,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected bool $allowFlight = false;
 	protected bool $blockCollision = true;
 	protected bool $flying = false;
+	private bool $isImmobile = false;
 
 	/** @phpstan-var positive-int|null  */
 	protected ?int $lineHeight = null;
@@ -509,6 +510,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->autoJump = $value;
 			$this->getNetworkSession()->syncAdventureSettings();
 		}
+	}
+
+	public function setImmobile(bool $value): void {
+		$this->isImmobile = $value;
+	}
+
+	public function isImmobile(): bool {
+		return $this->isImmobile;
 	}
 
 	public function hasAutoJump() : bool{
@@ -1334,7 +1343,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if($delta > 0.0001 || $deltaAngle > 1.0){
 			if(PlayerMoveEvent::hasHandlers()){
 				$ev = new PlayerMoveEvent($this, $from, $to);
-
+				if($this->isImmobile()) $ev->cancel();
 				$ev->call();
 
 				if($ev->isCancelled()){
