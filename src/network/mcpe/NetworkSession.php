@@ -213,6 +213,10 @@ class NetworkSession{
 		return $this->logger;
 	}
 
+	public function getConnectedTime(): int {
+		return time() - $this->connectTime;
+	}
+
 	private function onSessionStartSuccess() : void{
 		$this->logger->debug("Session start handshake completed, awaiting login packet");
 		$this->flushSendBuffer(true);
