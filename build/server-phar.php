@@ -153,7 +153,8 @@ function main() : void{
 		[
 			'resources',
 			'src',
-			'vendor'
+			'vendor',
+			'symply'
 		],
 		[
 			'git' => $gitHash,

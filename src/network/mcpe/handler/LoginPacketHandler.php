@@ -23,7 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use InvalidArgumentException;
 use pocketmine\entity\InvalidSkinException;
+use pocketmine\entity\Skin;
 use pocketmine\event\player\PlayerPreLoginEvent;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
@@ -42,6 +44,9 @@ use pocketmine\player\PlayerInfo;
 use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
 use Ramsey\Uuid\Uuid;
+use symply\waterdogpe\WDPEClientData;
+use symply\waterdogpe\WDPEClientDataToSkinDataHelper;
+use symply\waterdogpe\WDPEPlayerInfo;
 use function is_array;
 
 /**
@@ -64,18 +69,16 @@ class LoginPacketHandler extends PacketHandler{
 
 		if(!Player::isValidUserName($extraData->displayName)){
 			$this->session->disconnectWithError(KnownTranslationFactory::disconnectionScreen_invalidName());
-
 			return true;
 		}
 
 		$clientData = $this->parseClientData($packet->clientDataJwt);
 
 		try{
-			$skin = $this->session->getTypeConverter()->getSkinAdapter()->fromSkinData(ClientDataToSkinDataHelper::fromClientData($clientData));
-		}catch(\InvalidArgumentException | InvalidSkinException $e){
+			$skin = $this->parseSkinInClientData($clientData);
+		}catch(InvalidArgumentException | InvalidSkinException $e){
 			$this->session->getLogger()->debug("Invalid skin: " . $e->getMessage());
 			$this->session->disconnectWithError(KnownTranslationFactory::disconnectionScreen_invalidSkin());
-
 			return true;
 		}
 
@@ -84,9 +87,18 @@ class LoginPacketHandler extends PacketHandler{
 		}
 		$uuid = Uuid::fromString($extraData->identity);
 		$arrClientData = (array) $clientData;
-		$arrClientData["TitleID"] = $extraData->titleId;
-
-		if($extraData->XUID !== ""){
+		$arrClientData["titleId"] = $extraData->titleId;
+		if ($clientData instanceof WDPEClientData){
+			$playerInfo = new WDPEPlayerInfo(
+				$clientData->Waterdog_XUID,
+				$extraData->displayName,
+				$clientData->Waterdog_IP,
+				$uuid,
+				$skin,
+				$clientData->LanguageCode,
+				$arrClientData
+			);
+		}else if($extraData->XUID !== ""){
 			$playerInfo = new XboxLivePlayerInfo(
 				$extraData->XUID,
 				$extraData->displayName,
@@ -184,7 +196,7 @@ class LoginPacketHandler extends PacketHandler{
 	/**
 	 * @throws PacketHandlingException
 	 */
-	protected function parseClientData(string $clientDataJwt) : ClientData{
+	protected function parseClientData(string $clientDataJwt) : ClientData|WDPEClientData{
 		try{
 			[, $clientDataClaims, ] = JwtUtils::parse($clientDataJwt);
 		}catch(JwtException $e){
@@ -196,7 +208,7 @@ class LoginPacketHandler extends PacketHandler{
 		$mapper->bExceptionOnMissingData = true;
 		$mapper->bExceptionOnUndefinedProperty = true;
 		try{
-			$clientData = $mapper->map($clientDataClaims, new ClientData());
+			$clientData = $mapper->map($clientDataClaims, $this->server->isWaterdogepeSupport() ? new WDPEClientData() : new ClientData());
 		}catch(\JsonMapper_Exception $e){
 			throw PacketHandlingException::wrap($e);
 		}
@@ -204,10 +216,22 @@ class LoginPacketHandler extends PacketHandler{
 	}
 
 	/**
+	 * @param ClientData|WDPEClientData $clientData
+	 * @return Skin
+	 * @throws InvalidArgumentException|InvalidSkinException
+	 */
+	protected function parseSkinInClientData(ClientData|WDPEClientData $clientData): Skin{
+		if ($clientData instanceof WDPEClientData){
+			return $this->session->getTypeConverter()->getSkinAdapter()->fromSkinData(WDPEClientDataToSkinDataHelper::fromClientData($clientData));
+		}
+		return $this->session->getTypeConverter()->getSkinAdapter()->fromSkinData(ClientDataToSkinDataHelper::fromClientData($clientData));
+	}
+
+	/**
 	 * TODO: This is separated for the purposes of allowing plugins (like Specter) to hack it and bypass authentication.
 	 * In the future this won't be necessary.
 	 *
-	 * @throws \InvalidArgumentException
+	 * @throws InvalidArgumentException
 	 */
 	protected function processLogin(LoginPacket $packet, bool $authRequired) : void{
 		$this->server->getAsyncPool()->submitTask(new ProcessLoginTask($packet->chainDataJwt->chain, $packet->clientDataJwt, $authRequired, $this->authCallback));
