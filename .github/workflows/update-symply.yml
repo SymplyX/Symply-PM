@@ -40,6 +40,8 @@ jobs:
 
       - name: Merge changes from upstream to local branch
         run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "github-actions"
           git merge upstream/major-next --allow-unrelated-histories
 
       - name: Resolve conflicts if any
