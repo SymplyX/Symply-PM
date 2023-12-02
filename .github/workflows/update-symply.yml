@@ -56,21 +56,28 @@ jobs:
 
       - name: Create Pull Request
         if: steps.check_pr.outcome != 'success'
-        uses: peter-evans/create-pull-request@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: update/pmmp
-          title: "Merge update/pmmp into stable"
-          body: |
-            This PR merges changes from update/pmmp branch into the stable branch.
-            ${{ if steps.conflicts.outputs.conflict_detected == 'true' }}
+        run: |
+          if [ "${{ steps.conflicts.outputs.conflict_detected }}" == 'true' ]; then
+            body_content="This PR merges changes from update/pmmp branch into the stable branch.
+          
             Conflicts detected. Manual intervention needed.
-            
+          
             Files with conflicts:
             $(cat conflict_files.txt)
-            
+          
             Content with conflicts:
-            $(cat conflict_content.txt)
-            ${{ endif }}
-          labels: "merge"
-          base: "stable"
+            $(cat conflict_content.txt)"
+          else
+            body_content="This PR merges changes from update/pmmp branch into the stable branch."
+          fi
+          echo "$body_content" > body_content.txt
+          cat body_content.txt
+          uses: peter-evans/create-pull-request@v3
+          with:
+            token: ${{ secrets.GITHUB_TOKEN }}
+            branch: update/pmmp
+            title: "Merge update/pmmp into stable"
+            body: |
+              $(cat body_content.txt)
+            labels: "merge"
+            base: "stable"
