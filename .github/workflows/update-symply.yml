@@ -1,0 +1,62 @@
+name: Sync to pmmp/Pocketmine-MP branch major-next
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 10 * * *'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Add remote for pmmp/Pocketmine-MP
+        run: git remote add upstream https://github.com/pmmp/Pocketmine-MP.git
+
+      - name: Fetch upstream changes
+        run: git fetch upstream
+
+      - name: Check for changes
+        run: |
+          if git diff --quiet remotes/upstream/major-next..origin/update/pmmp; then
+            echo "No updates"
+            exit 78 # Exit code for neutral status (no changes)
+          fi
+
+      - name: Check for existing pull request
+        id: check_pr
+        run: |
+          if hub pr list -h update/pmmp -b stable | grep "update/pmmp"; then
+            echo "A pull request already exists, stop the action."
+            exit 0
+          fi
+
+      - name: Merge changes from upstream to local branch
+        run: git merge upstream/major-next
+
+      - name: Resolve conflicts if any
+        run: |
+          if git diff --name-only --diff-filter=U | grep -q .; then
+            git diff --name-only --diff-filter=U | xargs git checkout --ours --
+          fi
+
+      - name: Commit changes
+        run: git commit -am "Merged changes from upstream"
+
+      - name: Push changes to your repository
+        run: git push origin update/pmmp
+
+      - name: Create Pull Request
+        if: steps.check_pr.outcome != 'success'
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: update/pmmp
+          title: "Merge update/pmmp into stable"
+          body: "This PR merges changes from update/pmmp branch into the stable branch."
+          labels: "merge"
+          base: "stable"
+
