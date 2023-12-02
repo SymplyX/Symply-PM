@@ -79,5 +79,5 @@ jobs:
             title: "Merge update/pmmp into stable"
             body: |
               $(cat body_content.txt)
-            labels: "merge"
+            labels: ""
             base: "stable"
