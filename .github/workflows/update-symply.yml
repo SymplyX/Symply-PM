@@ -13,6 +13,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Set up Git identity
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "github-actions"
+
       - name: Add remote for pmmp/Pocketmine-MP
         run: |
           git remote add upstream https://github.com/pmmp/Pocketmine-MP.git
