@@ -14,10 +14,9 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Add remote for pmmp/Pocketmine-MP
-        run: git remote add upstream https://github.com/pmmp/Pocketmine-MP.git
-
-      - name: Fetch upstream changes
-        run: git fetch upstream
+        run: |
+          git remote add upstream https://github.com/pmmp/Pocketmine-MP.git
+          git fetch upstream
 
       - name: Check for changes
         run: |
@@ -35,7 +34,8 @@ jobs:
           fi
 
       - name: Merge changes from upstream to local branch
-        run: git merge upstream/major-next
+        run: |
+          git merge upstream/major-next --allow-unrelated-histories
 
       - name: Resolve conflicts if any
         run: |
@@ -44,10 +44,9 @@ jobs:
           fi
 
       - name: Commit changes
-        run: git commit -am "Merged changes from upstream"
-
-      - name: Push changes to your repository
-        run: git push origin update/pmmp
+        run: |
+          git commit -am "Merged changes from upstream"
+          git push origin update/pmmp
 
       - name: Create Pull Request
         if: steps.check_pr.outcome != 'success'
@@ -59,4 +58,3 @@ jobs:
           body: "This PR merges changes from update/pmmp branch into the stable branch."
           labels: "merge"
           base: "stable"
-
