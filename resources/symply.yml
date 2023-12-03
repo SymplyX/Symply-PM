@@ -4,3 +4,5 @@
 
 # Allow the persona skin in your Symply server
 persona-skin: true
+# Allow the support WaterDogPE in your Symply server
+waterdogpe-support: false

@@ -109,6 +109,7 @@ use pocketmine\utils\ObjectSet;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\Position;
 use pocketmine\YmlServerProperties;
+use symply\waterdogpe\WDPEPlayerInfo;
 use function array_map;
 use function array_values;
 use function base64_encode;
@@ -742,7 +743,7 @@ class NetworkSession{
 		$this->logger->debug("Xbox Live authenticated: " . ($this->authenticated ? "YES" : "NO"));
 
 		$checkXUID = $this->server->getConfigGroup()->getPropertyBool(YmlServerProperties::PLAYER_VERIFY_XUID, true);
-		$myXUID = $this->info instanceof XboxLivePlayerInfo ? $this->info->getXuid() : "";
+		$myXUID = $this->info instanceof XboxLivePlayerInfo || $this->info instanceof WDPEPlayerInfo ? $this->info->getXuid() : "";
 		$kickForXUIDMismatch = function(string $xuid) use ($checkXUID, $myXUID) : bool{
 			if($checkXUID && $myXUID !== $xuid){
 				$this->logger->debug("XUID mismatch: expected '$xuid', but got '$myXUID'");
@@ -762,7 +763,7 @@ class NetworkSession{
 			}
 			$info = $existingSession->getPlayerInfo();
 			if($info !== null && (strcasecmp($info->getUsername(), $this->info->getUsername()) === 0 || $info->getUuid()->equals($this->info->getUuid()))){
-				if($kickForXUIDMismatch($info instanceof XboxLivePlayerInfo ? $info->getXuid() : "")){
+				if($kickForXUIDMismatch($info instanceof XboxLivePlayerInfo || $info instanceof WDPEPlayerInfo ? $info->getXuid() : "")){
 					return;
 				}
 				$ev = new PlayerDuplicateLoginEvent($this, $existingSession, KnownTranslationFactory::disconnectionScreen_loggedinOtherLocation(), null);
@@ -780,7 +781,7 @@ class NetworkSession{
 		//TODO: we shouldn't be loading player data here at all, but right now we don't have any choice :(
 		$this->cachedOfflinePlayerData = $this->server->getOfflinePlayerData($this->info->getUsername());
 		if($checkXUID){
-			$recordedXUID = $this->cachedOfflinePlayerData !== null ? $this->cachedOfflinePlayerData->getTag(Player::TAG_LAST_KNOWN_XUID) : null;
+			$recordedXUID = $this->cachedOfflinePlayerData?->getTag(Player::TAG_LAST_KNOWN_XUID);
 			if(!($recordedXUID instanceof StringTag)){
 				$this->logger->debug("No previous XUID recorded, no choice but to trust this player");
 			}elseif(!$kickForXUIDMismatch($recordedXUID->getValue())){
