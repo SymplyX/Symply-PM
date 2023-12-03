@@ -52,7 +52,7 @@ class ZippedResourcePack implements ResourcePack{
 	 * @param string $zipPath Path to the resource pack zip
 	 * @throws ResourcePackException
 	 */
-	public function __construct(string $zipPath){
+	public function __construct(string $zipPath, protected string $encryptionKey = ""){
 		$this->path = $zipPath;
 
 		if(!file_exists($zipPath)){
@@ -158,5 +158,22 @@ class ZippedResourcePack implements ResourcePack{
 			throw new \InvalidArgumentException("Requested a resource pack chunk with invalid start offset");
 		}
 		return Utils::assumeNotFalse(fread($this->fileResource, $length), "Already checked that we're not at EOF");
+	}
+
+	public function getEncryptionKey() : string{
+		return $this->encryptionKey;
+	}
+
+	public function setEncryptionKey(string $key) : void{
+		$this->encryptionKey = $key;
+	}
+
+	private function hasEncryptionKey() : bool{
+		return $this->encryptionKey != "";
+	}
+
+	public function getContentId() : string
+	{
+		return $this->hasEncryptionKey() ? $this->getPackId() : "";
 	}
 }
