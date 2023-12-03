@@ -2,7 +2,7 @@
 name: API change request
 about: Suggest a change, addition or removal to the plugin API
 title: ''
-labels: ''
+labels: 'Type: API'
 assignees: ''
 
 ---

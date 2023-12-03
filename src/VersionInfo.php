@@ -32,8 +32,9 @@ use function str_repeat;
 final class VersionInfo{
 	public const NAME = "Symply";
 	public const BASE_VERSION = "5.8.3";
+	public const SYMPLY_VERSION = "0.0.1";
 	public const IS_DEVELOPMENT_BUILD = true;
-	public const BUILD_CHANNEL = "0.1";
+	public const BUILD_CHANNEL = "beta";
 
 	/**
 	 * PocketMine-MP-specific version ID for world data. Used to determine what fixes need to be applied to old world
