@@ -2,11 +2,7 @@
 
 $finder = PhpCsFixer\Finder::create()
 	->in(__DIR__ . '/symply')
-	->in(__DIR__ . '/build/symply')
-	->exclude(__DIR__ . '/src')
-	->exclude(__DIR__ .'/tests')
-	->exclude(__DIR__ . '/build')
-	->exclude(__DIR__ . '/tools');
+	->in(__DIR__ . '/build/symply');
 
 return (new PhpCsFixer\Config)
 	->setRiskyAllowed(true)
