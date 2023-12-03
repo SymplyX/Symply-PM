@@ -62,6 +62,8 @@ final class CrashDumpData implements \JsonSerializable{
 
 	public string $pocketmineDotYml = "";
 
+	public string $symplyDotYml = "";
+
 	/**
 	 * @var string[]
 	 * @phpstan-var array<string, string>
@@ -81,7 +83,9 @@ final class CrashDumpData implements \JsonSerializable{
 		$result = (array) $this;
 		unset($result["serverDotProperties"]);
 		unset($result["pocketmineDotYml"]);
+		unset($result["symply.yml"]);
 		$result["pocketmine.yml"] = $this->pocketmineDotYml;
+		$result["symply.yml"] = $this->symplyDotYml;
 		$result["server.properties"] = $this->serverDotProperties;
 		return $result;
 	}

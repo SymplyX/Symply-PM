@@ -330,11 +330,19 @@ abstract class Entity{
 	 *
 	 * Setting this flag will also disable player movement inputs, but this should not be relied on, as cheat clients
 	 * will be able to bypass it.
+	 * @deprecated USE setImmobile($value)
 	 */
 	public function setNoClientPredictions(bool $value = true) : void{
 		$this->noClientPredictions = $value;
 		$this->networkPropertiesDirty = true;
 	}
+
+
+	public function setImmobile(bool $value): void {
+		$this->noClientPredictions = $value;
+		$this->networkPropertiesDirty = true;
+	}
+
 
 	public function isInvisible() : bool{
 		return $this->invisible;
