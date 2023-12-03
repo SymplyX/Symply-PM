@@ -53,10 +53,11 @@ jobs:
       - name: Get Symply release version
         id: get-symply-version
         run: |
-          echo SYMPLY_VERSION=$(php -r 'require "vendor/autoload.php"; echo \pocketmine\VersionInfo::BASE_VERSION;') >> $GITHUB_OUTPUT
+          echo SYMPLY_VERSION=$(php -r 'require "vendor/autoload.php"; echo \pocketmine\VersionInfo::SYMPLY_VERSION;') >> $GITHUB_OUTPUT
+          echo POCKETMINE_VERSION=$(php -r 'require "vendor/autoload.php"; echo \pocketmine\VersionInfo::BASE_VERSION;') >> $GITHUB_OUTPUT
           echo MCPE_VERSION=$(php -r 'require "vendor/autoload.php"; echo \pocketmine\network\mcpe\protocol\ProtocolInfo::MINECRAFT_VERSION_NETWORK;') >> $GITHUB_OUTPUT
-          echo SYMPLY_VERSION_SHORT=$(php -r 'require "vendor/autoload.php"; $v = explode(".", \pocketmine\VersionInfo::BASE_VERSION); array_pop($v); echo implode(".", $v);') >> $GITHUB_OUTPUT
-          echo SYMPLY_VERSION_MD=$(php -r 'require "vendor/autoload.php"; echo str_replace(".", "", \pocketmine\VersionInfo::BASE_VERSION);') >> $GITHUB_OUTPUT
+          echo SYMPLY_VERSION_SHORT=$(php -r 'require "vendor/autoload.php"; $v = explode(".", \pocketmine\VersionInfo::SYMPLY_VERSION); array_pop($v); echo implode(".", $v);') >> $GITHUB_OUTPUT
+          echo SYMPLY_VERSION_MD=$(php -r 'require "vendor/autoload.php"; echo str_replace(".", "", \pocketmine\VersionInfo::SYMPLY_VERSION);') >> $GITHUB_OUTPUT
           echo CHANGELOG_SUFFIX=$(php -r 'require "vendor/autoload.php"; echo \pocketmine\VersionInfo::BUILD_CHANNEL === "stable" ? "" : "-" . \pocketmine\VersionInfo::BUILD_CHANNEL;') >> $GITHUB_OUTPUT
           echo PRERELEASE=$(php -r 'require "vendor/autoload.php"; echo \pocketmine\VersionInfo::BUILD_CHANNEL === "stable" ? "false" : "true";') >> $GITHUB_OUTPUT
 
@@ -92,11 +93,11 @@ jobs:
           commit: ${{ github.sha }}
           draft: true
           prerelease: ${{ steps.get-symply-version.outputs.PRERELEASE }}
-          name: PocketMine-MP ${{ steps.get-symply-version.outputs.SYMPLY_VERSION }}
+          name: Symply ${{ steps.get-symply-version.outputs.SYMPLY_VERSION }}
           tag: ${{ steps.get-symply-version.outputs.SYMPLY_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
-            **This version supports Minecraft:BE ${{ steps.get-symply-version.outputs.MCPE_VERSION }}**
+            **This version supports Minecraft:BE ${{ steps.get-symply-version.outputs.MCPE_VERSION }} and use Pocketmine {{ steps.get-symply-version.outputs.POCKETMINE_VERSION }}**
 
             ADD CHANGELOG
 

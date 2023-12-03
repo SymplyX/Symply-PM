@@ -323,6 +323,10 @@ class Server{
 		return VersionInfo::BASE_VERSION;
 	}
 
+	public function getSymplyApiVersion() : string{
+		return VersionInfo::SYMPLY_VERSION;
+	}
+
 	public function getFilePath() : string{
 		return \pocketmine\PATH;
 	}
