@@ -36,8 +36,23 @@ use function str_repeat;
 use const JSON_THROW_ON_ERROR;
 
 class LegacySkinAdapter implements SkinAdapter{
+	private array $skinPersonaData = [];
 
 	public function toSkinData(Skin $skin) : SkinData{
+		return $this->skinPersonaData[spl_object_id($skin)] ?? $this->toDefaultSkinData($skin);
+	}
+
+	public function fromSkinData(SkinData $data) : Skin{
+		$skin = $this->fromDefaultSkinData($data);
+
+		if($data->isPersona()){
+			$this->skinPersonaData[spl_object_id($skin)] = $data;
+		}
+
+		return $skin;
+	}
+
+	public function toDefaultSkinData(Skin $skin) : SkinData{
 		$capeData = $skin->getCapeData();
 		$capeImage = $capeData === "" ? new SkinImage(0, 0, "") : new SkinImage(32, 64, $capeData);
 		$geometryName = $skin->getGeometryName();
@@ -46,28 +61,24 @@ class LegacySkinAdapter implements SkinAdapter{
 		}
 		return new SkinData(
 			$skin->getSkinId(),
-			"", //TODO: playfab ID
+			"",
 			json_encode(["geometry" => ["default" => $geometryName]], JSON_THROW_ON_ERROR),
 			SkinImage::fromLegacy($skin->getSkinData()), [],
 			$capeImage,
 			$skin->getGeometryData()
 		);
 	}
-
-	public function fromSkinData(SkinData $data) : Skin{
+	public function fromDefaultSkinData(SkinData $data) : Skin{
 		if($data->isPersona()){
 			return new Skin("Standard_Custom", str_repeat(random_bytes(3) . "\xff", 4096));
 		}
-
 		$capeData = $data->isPersonaCapeOnClassic() ? "" : $data->getCapeImage()->getData();
-
 		$resourcePatch = json_decode($data->getResourcePatch(), true);
 		if(is_array($resourcePatch) && isset($resourcePatch["geometry"]["default"]) && is_string($resourcePatch["geometry"]["default"])){
 			$geometryName = $resourcePatch["geometry"]["default"];
 		}else{
 			throw new InvalidSkinException("Missing geometry name field");
 		}
-
 		return new Skin($data->getSkinId(), $data->getSkinImage()->getData(), $capeData, $geometryName, $data->getGeometryData());
 	}
 }
