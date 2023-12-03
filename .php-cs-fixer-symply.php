@@ -1,17 +1,12 @@
 <?php
 
 $finder = PhpCsFixer\Finder::create()
-	->in(__DIR__ . '/src')
-	->in(__DIR__ . '/build')
-	->in(__DIR__ . '/tests')
-	->in(__DIR__ . '/tools')
-	->exclude( __DIR__ . '/symply')
-	->notPath('plugins/DevTools')
-	->notName('PocketMine.php')
-	->notName('generate-symply-yml-property-consts.php');
+	->in(__DIR__ . '/symply')
+	->in(__DIR__ . '/build/symply');
 
 return (new PhpCsFixer\Config)
 	->setRiskyAllowed(true)
+
 	->setRules([
 		'align_multiline_comment' => [
 			'comment_type' => 'phpdocs_only'
@@ -48,19 +43,22 @@ return (new PhpCsFixer\Config)
 			'comment_type' => 'comment',
 			'header' => <<<BODY
 
- ____            _        _   __  __ _                  __  __ ____
-|  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
-| |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
-|  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
-|_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ _____                       _       
+/  ___|                     | |      
+\ `--. _   _ _ __ ___  _ __ | |_   _ 
+ `--. \ | | | '_ ` _ \| '_ \| | | | |
+/\__/ / |_| | | | | | | |_) | | |_| |
+\____/ \__, |_| |_| |_| .__/|_|\__, |
+        __/ |         | |       __/ |
+       |___/          |_|      |___/ 
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-@author PocketMine Team
-@link http://www.pocketmine.net/
+@author Symply Team
+@link http://www.symplymc.com/
 
 
 BODY,

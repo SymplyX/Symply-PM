@@ -1,0 +1,34 @@
+changelog:
+  categories:
+    - title: ✨ Feature
+      labels:
+        - "Type: Feature"
+    - title: 🤖 API
+      labels:
+        - "Type: API"
+    - title: 🧨 Bugs
+      labels:
+        - "Type: Bug"
+    - title: 🧹 Cleanup
+      labels:
+        - "Type: Cleanup"
+    - title: 🦺 Client Bug
+      labels:
+        - "Type: Client Bug"
+    - title: 📖 Documentation
+      labels:
+        - "Type: Documentation"
+    - title: 🕸️ Enhancement
+      labels:
+        - "Type: Enhancement"
+    - title: 🗣️ Language
+      labels:
+        - "Type: Language"
+    - title: 🧶 Dependencies
+      labels:
+        - "dependencies"
+  exclude:
+    labels:
+      - "Type: Discussion"
+      - "Type: Question"
+      - "php"

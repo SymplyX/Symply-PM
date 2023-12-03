@@ -64,4 +64,19 @@ interface ResourcePack{
 	 * @throws \InvalidArgumentException if the chunk does not exist
 	 */
 	public function getPackChunk(int $start, int $length) : string;
+
+	/**
+	 * Returns the EncryptionKey of ResourcesPack
+	 */
+	public function getEncryptionKey() : string;
+
+	/**
+	 * Returns the ContentId of ResourcesPack
+	 */
+	public function getContentId() : string;
+
+	/**
+	 * can set the EncryptionKey without pass by new system symplu
+	 */
+	public function setEncryptionKey(string $key) : void;
 }

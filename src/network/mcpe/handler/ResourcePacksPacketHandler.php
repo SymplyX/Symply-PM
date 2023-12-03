@@ -38,6 +38,7 @@ use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackStackEntry;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackType;
 use pocketmine\resourcepacks\ResourcePack;
 use pocketmine\resourcepacks\ResourcePackManager;
+use symply\resourcepacks\URLResourcePack;
 use function array_map;
 use function ceil;
 use function count;
@@ -67,20 +68,19 @@ class ResourcePacksPacketHandler extends PacketHandler{
 	public function setUp() : void{
 		$resourcePackEntries = array_map(function(ResourcePack $pack) : ResourcePackInfoEntry{
 			//TODO: more stuff
-			$encryptionKey = $this->resourcePackManager->getPackEncryptionKey($pack->getPackId());
 
 			return new ResourcePackInfoEntry(
 				$pack->getPackId(),
 				$pack->getPackVersion(),
 				$pack->getPackSize(),
-				$encryptionKey ?? "",
+				$pack->getEncryptionKey(),
 				"",
-				$pack->getPackId(),
+				$pack->getContentId(),
 				false
 			);
 		}, $this->resourcePackManager->getResourceStack());
 		//TODO: support forcing server packs
-		$this->session->sendDataPacket(ResourcePacksInfoPacket::create($resourcePackEntries, [], $this->resourcePackManager->resourcePacksRequired(), false, false, []));
+		$this->session->sendDataPacket(ResourcePacksInfoPacket::create($resourcePackEntries, [], $this->resourcePackManager->resourcePacksRequired(), false, false, $this->resourcePackManager->getPackUrl()));
 		$this->session->getLogger()->debug("Waiting for client to accept resource packs");
 	}
 
@@ -107,6 +107,10 @@ class ResourcePacksPacketHandler extends PacketHandler{
 					if(!($pack instanceof ResourcePack)){
 						//Client requested a resource pack but we don't have it available on the server
 						$this->disconnectWithError("Unknown pack $uuid requested, available packs: " . implode(", ", $this->resourcePackManager->getPackIdList()));
+						return false;
+					}
+					if ($pack instanceof URLResourcePack){
+						$this->disconnectWithError("Invalid URL for pack chunk in $uuid. Unable to use the getPackChunk method.");
 						return false;
 					}
 
@@ -154,8 +158,11 @@ class ResourcePacksPacketHandler extends PacketHandler{
 			$this->disconnectWithError("Invalid request for chunk $packet->chunkIndex of unknown pack $packet->packId, available packs: " . implode(", ", $this->resourcePackManager->getPackIdList()));
 			return false;
 		}
-
 		$packId = $pack->getPackId(); //use this because case may be different
+		if ($pack instanceof URLResourcePack){
+			$this->disconnectWithError("Invalid URL for pack chunk in $packId. Unable to use the getPackChunk method.");
+			return false;
+		}
 
 		if(isset($this->downloadedChunks[$packId][$packet->chunkIndex])){
 			$this->disconnectWithError("Duplicate request for chunk $packet->chunkIndex of pack $packet->packId");
