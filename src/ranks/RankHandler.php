@@ -4,10 +4,13 @@ namespace pocketmine\ranks;
 
 use pocketmine\ranks\exception\RankAlreadyExistsException;
 use pocketmine\ranks\exception\RankDoesNotExistsException;
+use pocketmine\utils\SingletonTrait;
 
 class RankHandler{
 	/** @var Rank[] */
 	private array $ranks = array();
+
+	use SingletonTrait;
 
 	/**
 	 * @throws RankAlreadyExistsException
