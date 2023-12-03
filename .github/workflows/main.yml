@@ -180,5 +180,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Run PHP-CS-Fixer
-        run: php-cs-fixer fix --dry-run --diff --ansi
+      - name: Run PHP-CS-Fixer PMMP
+        run: php-cs-fixer fix --config=.php-cs-fixer.php --dry-run --diff --ansi
+
+      - name: Run PHP-CS-Fixer SYMPLY
+        run: php-cs-fixer fix --config=.php-cs-fixer-symply.php --dry-run --diff --ansi
