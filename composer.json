@@ -52,6 +52,7 @@
       "symfony/filesystem": "~6.3.0"
    },
    "require-dev": {
+      "friendsofphp/php-cs-fixer": "^3.40",
       "phpstan/phpstan": "1.10.46",
       "phpstan/phpstan-phpunit": "^1.1.0",
       "phpstan/phpstan-strict-rules": "^1.2.0",
@@ -59,7 +60,8 @@
    },
    "autoload": {
       "psr-4": {
-         "pocketmine\\": "src/"
+         "pocketmine\\": "src/",
+	     "symply\\": "symply/"
       },
       "files": [
          "src/CoreConstants.php"
@@ -73,7 +75,7 @@
    },
    "config": {
       "platform": {
-         "php": "8.1.0"
+         "php": "8.2.0"
       },
       "sort-packages": true
    },

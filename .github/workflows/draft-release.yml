@@ -3,11 +3,11 @@ name: Draft release
 on:
   push:
     tags: "*"
+  workflow_dispatch:  
 
 jobs:
   draft:
     name: Create GitHub draft release
-    if: "startsWith(github.event.head_commit.message, 'Release ')"
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
@@ -47,16 +47,17 @@ jobs:
       - name: Minify BedrockData JSON files
         run: php vendor/pocketmine/bedrock-data/.minify_json.php
 
-      - name: Build PocketMine-MP.phar
+      - name: Build Symply.phar
         run: php -dphar.readonly=0 build/server-phar.php --git ${{ github.sha }} --build ${{ steps.build-number.outputs.BUILD_NUMBER }}
 
-      - name: Get PocketMine-MP release version
-        id: get-pm-version
+      - name: Get Symply release version
+        id: get-symply-version
         run: |
-          echo PM_VERSION=$(php -r 'require "vendor/autoload.php"; echo \pocketmine\VersionInfo::BASE_VERSION;') >> $GITHUB_OUTPUT
+          echo SYMPLY_VERSION=$(php -r 'require "vendor/autoload.php"; echo \pocketmine\VersionInfo::SYMPLY_VERSION;') >> $GITHUB_OUTPUT
+          echo POCKETMINE_VERSION=$(php -r 'require "vendor/autoload.php"; echo \pocketmine\VersionInfo::BASE_VERSION;') >> $GITHUB_OUTPUT
           echo MCPE_VERSION=$(php -r 'require "vendor/autoload.php"; echo \pocketmine\network\mcpe\protocol\ProtocolInfo::MINECRAFT_VERSION_NETWORK;') >> $GITHUB_OUTPUT
-          echo PM_VERSION_SHORT=$(php -r 'require "vendor/autoload.php"; $v = explode(".", \pocketmine\VersionInfo::BASE_VERSION); array_pop($v); echo implode(".", $v);') >> $GITHUB_OUTPUT
-          echo PM_VERSION_MD=$(php -r 'require "vendor/autoload.php"; echo str_replace(".", "", \pocketmine\VersionInfo::BASE_VERSION);') >> $GITHUB_OUTPUT
+          echo SYMPLY_VERSION_SHORT=$(php -r 'require "vendor/autoload.php"; $v = explode(".", \pocketmine\VersionInfo::SYMPLY_VERSION); array_pop($v); echo implode(".", $v);') >> $GITHUB_OUTPUT
+          echo SYMPLY_VERSION_MD=$(php -r 'require "vendor/autoload.php"; echo str_replace(".", "", \pocketmine\VersionInfo::SYMPLY_VERSION);') >> $GITHUB_OUTPUT
           echo CHANGELOG_SUFFIX=$(php -r 'require "vendor/autoload.php"; echo \pocketmine\VersionInfo::BUILD_CHANNEL === "stable" ? "" : "-" . \pocketmine\VersionInfo::BUILD_CHANNEL;') >> $GITHUB_OUTPUT
           echo PRERELEASE=$(php -r 'require "vendor/autoload.php"; echo \pocketmine\VersionInfo::BUILD_CHANNEL === "stable" ? "false" : "true";') >> $GITHUB_OUTPUT
 
@@ -69,7 +70,7 @@ jobs:
         run: |
           php build/generate-build-info-json.php \
             ${{ github.sha }} \
-            ${{ steps.get-pm-version.outputs.PM_VERSION }} \
+            ${{ steps.get-symply-version.outputs.SYMPLY_VERSION }} \
             ${{ github.repository }} \
             ${{ steps.build-number.outputs.BUILD_NUMBER }} \
             ${{ github.run_id }} \
@@ -81,23 +82,23 @@ jobs:
         with:
           name: release_artifacts
           path: |
-            ${{ github.workspace }}/PocketMine-MP.phar
+            ${{ github.workspace }}/Symply.phar
             ${{ github.workspace }}/start.*
             ${{ github.workspace }}/build_info.json
 
       - name: Create draft release
         uses: ncipollo/release-action@v1.13.0
         with:
-          artifacts: ${{ github.workspace }}/PocketMine-MP.phar,${{ github.workspace }}/start.*,${{ github.workspace }}/build_info.json
+          artifacts: ${{ github.workspace }}/Symply.phar,${{ github.workspace }}/start.*,${{ github.workspace }}/build_info.json
           commit: ${{ github.sha }}
           draft: true
-          prerelease: ${{ steps.get-pm-version.outputs.PRERELEASE }}
-          name: PocketMine-MP ${{ steps.get-pm-version.outputs.PM_VERSION }}
-          tag: ${{ steps.get-pm-version.outputs.PM_VERSION }}
+          prerelease: ${{ steps.get-symply-version.outputs.PRERELEASE }}
+          name: Symply ${{ steps.get-symply-version.outputs.SYMPLY_VERSION }}
+          tag: ${{ steps.get-symply-version.outputs.SYMPLY_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
-            **For Minecraft: Bedrock Edition ${{ steps.get-pm-version.outputs.MCPE_VERSION }}**
+            **This version supports Minecraft:BE ${{ steps.get-symply-version.outputs.MCPE_VERSION }} and use Pocketmine {{ steps.get-symply-version.outputs.POCKETMINE_VERSION }}**
 
-            Please see the [changelogs](${{ github.server_url }}/${{ github.repository }}/blob/${{ steps.get-pm-version.outputs.PM_VERSION }}/changelogs/${{ steps.get-pm-version.outputs.PM_VERSION_SHORT }}${{ steps.get-pm-version.outputs.CHANGELOG_SUFFIX }}.md#${{ steps.get-pm-version.outputs.PM_VERSION_MD }}) for details.
+            ADD CHANGELOG
 
             :information_source: Download the recommended PHP binary [here](${{ steps.php-binary-url.outputs.PHP_BINARY_URL }}).
