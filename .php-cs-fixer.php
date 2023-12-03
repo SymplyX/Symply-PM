@@ -5,9 +5,9 @@ $finder = PhpCsFixer\Finder::create()
 	->in(__DIR__ . '/build')
 	->in(__DIR__ . '/tests')
 	->in(__DIR__ . '/tools')
-	->exclude(__DIR__ . '/symply')
-	->exclude(__DIR__ . '/build/symply')
-	->exclude(__DIR__ . '/tests/symply')
+	->exclude( __DIR__ . '/symply')
+	->notPath( 'build/symply')
+	->notPath('tests/symply')
 	->notPath('plugins/DevTools')
 	->notName('PocketMine.php');
 
