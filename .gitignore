@@ -12,6 +12,7 @@ crashdumps/*
 *.phar
 server.properties
 /pocketmine.yml
+/symply.yml
 /plugin_list.yml
 memory_dumps/*
 resource_packs/
@@ -53,3 +54,4 @@ Documentation/*
 # php-cs-fixer
 /.php_cs.cache
 /.php-cs-fixer.cache
+/server/

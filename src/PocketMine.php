@@ -337,7 +337,6 @@ JIT_WARNING
 			 */
 			$autoloader = new ThreadSafeClassLoader();
 			$autoloader->register(false);
-
 			new Server($autoloader, $logger, $dataPath, $pluginPath);
 
 			$logger->info("Stopping other threads");
