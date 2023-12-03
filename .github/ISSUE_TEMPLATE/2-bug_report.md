@@ -2,7 +2,7 @@
 name: Bug report
 about: Unexpected non-crash behaviour (except missing gameplay features)
 title: ''
-labels: ''
+labels: 'Type: Bug'
 assignees: ''
 
 ---
