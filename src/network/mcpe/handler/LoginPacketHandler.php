@@ -98,7 +98,7 @@ class LoginPacketHandler extends PacketHandler{
 				$clientData->LanguageCode,
 				$arrClientData
 			);
-		}else if($extraData->XUID !== ""){
+		}elseif($extraData->XUID !== ""){
 			$playerInfo = new XboxLivePlayerInfo(
 				$extraData->XUID,
 				$extraData->displayName,
@@ -216,11 +216,9 @@ class LoginPacketHandler extends PacketHandler{
 	}
 
 	/**
-	 * @param ClientData|WDPEClientData $clientData
-	 * @return Skin
 	 * @throws InvalidArgumentException|InvalidSkinException
 	 */
-	protected function parseSkinInClientData(ClientData|WDPEClientData $clientData): Skin{
+	protected function parseSkinInClientData(ClientData|WDPEClientData $clientData) : Skin{
 		if ($clientData instanceof WDPEClientData){
 			return $this->session->getTypeConverter()->getSkinAdapter()->fromSkinData(WDPEClientDataToSkinDataHelper::fromClientData($clientData));
 		}

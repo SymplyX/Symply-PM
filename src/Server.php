@@ -301,7 +301,7 @@ class Server{
 	 * @phpstan-var array<string, array<int, CommandSender>>
 	 */
 	private array $broadcastSubscribers = [];
-	private bool $waterdogeSupport= false;
+	private bool $waterdogeSupport = false;
 
 	public function getName() : string{
 		return VersionInfo::NAME;
@@ -414,7 +414,7 @@ class Server{
 		return $this->configGroup->getConfigBool(ServerProperties::HARDCORE, false);
 	}
 
-	public function isWaterdogepeSupport(): bool{
+	public function isWaterdogepeSupport() : bool{
 		return $this->waterdogeSupport;
 	}
 
