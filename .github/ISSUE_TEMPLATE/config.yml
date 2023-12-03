@@ -1,11 +1,5 @@
 blank_issues_enabled: false
 contact_links:
   - name: Help & support on Discord
-    url: https://discord.gg/bmSAZBG
-    about: We don't accept support requests on the issue tracker. Please try asking on Discord instead.
-  - name: Help & support on forums
-    url: https://forums.pmmp.io
-    about: We don't accept support requests on the issue tracker. Please try asking on forums instead.
-  - name: Documentation
-    url: https://pmmp.rtfd.io
-    about: PocketMine-MP documentation
+    url: https://discord.gg/V4mNumXyvd
+    about: Are you interested in the project or just looking for help ? Join the discord !
