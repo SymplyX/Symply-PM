@@ -122,6 +122,7 @@ use pocketmine\world\WorldManager;
 use pocketmine\YmlServerProperties as Yml;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Filesystem\Path;
+use symply\behavior\AsyncRegisterBlocksTask;
 use symply\YmlSymplyProperties;
 use function array_fill;
 use function array_sum;
@@ -1054,6 +1055,10 @@ class Server{
 				$this->forceShutdownExit();
 				return;
 			}
+
+			$this->asyncPool->addWorkerStartHook(function(int $worker) : void{
+				$this->asyncPool->submitTaskToWorker(new AsyncRegisterBlocksTask(), $worker);
+			});
 
 			if($this->configGroup->getPropertyBool(Yml::ANONYMOUS_STATISTICS_ENABLED, true)){
 				$this->sendUsageTicker = self::TICKS_PER_STATS_REPORT;
