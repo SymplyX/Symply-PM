@@ -251,6 +251,11 @@ class ResourcePackManager{
 		}
 	}
 
+	/**
+	 * @return array<string, string>
+	 * @phpstan-return array<string, string>
+	 */
+
 	public function getPackUrl() : array
 	{
 		return $this->packUrl;
