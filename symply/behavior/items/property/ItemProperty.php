@@ -24,15 +24,15 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior\block\property;
+namespace symply\behavior\items\property;
 
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\Tag;
 
-abstract class BlockProperty
+abstract class ItemProperty
 {
 
-	public function __construct(private readonly string $name, protected ListTag $values) { }
+	public function __construct(private readonly string $name, protected Tag $values) { }
 
 	/**
 	 * Returns the name of the block property provided in the constructor.
@@ -40,21 +40,17 @@ abstract class BlockProperty
 	public function getName() : string {
 		return $this->name;
 	}
-
-	public function getValues() : ListTag
-	{
+	/**
+	 * Returns the array of possible values of the block property provided in the constructor.
+	 */
+	public function getValues() : Tag {
 		return $this->values;
 	}
 
-	public function getValueInRaw() : array{
-		return $this->values->getValue();
-	}
-	/*
+	/**
 	 * Returns the block property in the correct NBT format supported by the client.
 	 */
 	public function toNBT() : CompoundTag {
-		return CompoundTag::create()
-			->setString("name", $this->name)
-			->setTag("enum", $this->getValues());
+		return CompoundTag::create()->setTag($this->getName(), $this->getValues());
 	}
 }

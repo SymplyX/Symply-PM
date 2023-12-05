@@ -24,23 +24,24 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior\block\property;
+namespace symply\behavior\common\enum;
 
-use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\ListTag;
-use function array_map;
-use function sort;
-use const SORT_NUMERIC;
-
-final class RotationProperty extends BlockProperty
+enum CategoryCreativeEnum : string
 {
-	/**
-	 * @param int[] $rotation
-	 */
-	public function __construct(array $rotation = [])
-	{
-		sort($rotation, SORT_NUMERIC);
-		parent::__construct("symply:rotation", new ListTag(array_map(fn(int $number) => new IntTag($number), $rotation), NBT::TAG_Int));
+	case CATEGORY_ALL = "all";
+	case CATEGORY_COMMANDS = "commands";
+	case CATEGORY_CONSTRUCTION = "construction";
+	case CATEGORY_EQUIPMENT = "equipment";
+	case CATEGORY_ITEMS = "items";
+	case CATEGORY_NATURE = "nature";
+
+	public function toItemCategory() : int{
+		return match ($this){
+			self::CATEGORY_CONSTRUCTION => 1,
+			self::CATEGORY_NATURE => 2,
+			self::CATEGORY_EQUIPMENT => 3,
+			self::CATEGORY_ITEMS => 4,
+			default => 0
+		};
 	}
 }

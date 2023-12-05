@@ -29,8 +29,9 @@ namespace symply\behavior\block\component;
 use pocketmine\nbt\tag\CompoundTag;
 use symply\behavior\block\component\sub\HitBoxSubComponent;
 use symply\behavior\block\component\sub\MaterialSubComponent;
+use symply\behavior\common\component\IComponent;
 
-class ModelComponent implements IComponent
+final class ModelComponent implements IComponent
 {
 	/**
 	 * @param MaterialSubComponent[] $materials
@@ -50,14 +51,16 @@ class ModelComponent implements IComponent
 	public function toNbt() : CompoundTag
 	{
 		$compoundTag = CompoundTag::create();
-		$materials = CompoundTag::create();
-		foreach ($this->materials as $material){
-			$materials->setTag($material->getTarget()->value, $material->toNBT());
+		if (!empty($this->materials)){
+			$materials = CompoundTag::create();
+			foreach ($this->materials as $material){
+				$materials->setTag($material->getTarget()->value, $material->toNBT());
+			}
+			$compoundTag->setTag("minecraft:material_instances",
+				CompoundTag::create()
+					->setTag("mappings", CompoundTag::create())
+					->setTag("materials", $materials));
 		}
-		$compoundTag->setTag("minecraft:material_instances",
-			CompoundTag::create()
-				->setTag("mappings", CompoundTag::create())
-				->setTag("materials", $materials));
 		if (empty($this->geometry)){
 			$compoundTag->setTag("minecraft:unit_cube", CompoundTag::create());
 			return $compoundTag;

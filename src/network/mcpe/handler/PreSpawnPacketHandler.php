@@ -28,6 +28,7 @@ use pocketmine\network\mcpe\cache\CraftingDataCache;
 use pocketmine\network\mcpe\cache\StaticPacketCache;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\ItemComponentPacket;
 use pocketmine\network\mcpe\protocol\PlayerAuthInputPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
@@ -46,6 +47,8 @@ use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\VersionInfo;
 use Ramsey\Uuid\Uuid;
+use symply\behavior\SymplyBlockFactory;
+use symply\behavior\SymplyItemFactory;
 use function sprintf;
 
 /**
@@ -83,7 +86,17 @@ class PreSpawnPacketHandler extends PacketHandler{
 			$levelSettings->gameRules = [
 				"naturalregeneration" => new BoolGameRule(false, false) //Hack for client side regeneration
 			];
-			$levelSettings->experiments = new Experiments([], false);
+			$levelSettings->experiments = new Experiments([
+
+				"wild_update" => true,
+				"vanilla_experiments" => true,
+				"data_driven_items" => true,
+				"data_driven_biomes" => true,
+				"scripting" => true,
+				"upcoming_creator_features" => true,
+				"gametest" => true,
+				"experimental_molang_features" => true,
+			], true);
 
 			$this->session->sendDataPacket(StartGamePacket::create(
 				$this->player->getId(),
@@ -108,7 +121,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 				false,
 				false,
 				new NetworkPermissions(disableClientSounds: true),
-				[],
+				SymplyBlockFactory::getInstance()->getBlockPaletteEntries(),
 				0,
 				$typeConverter->getItemTypeDictionary()->getEntries(),
 			));
@@ -116,6 +129,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 			$this->session->getLogger()->debug("Sending actor identifiers");
 			$this->session->sendDataPacket(StaticPacketCache::getInstance()->getAvailableActorIdentifiers());
 
+			$this->session->sendDataPacket(ItemComponentPacket::create(SymplyItemFactory::getInstance()->getItemsComponentPacketEntries()));
 			$this->session->getLogger()->debug("Sending biome definitions");
 			$this->session->sendDataPacket(StaticPacketCache::getInstance()->getBiomeDefs());
 

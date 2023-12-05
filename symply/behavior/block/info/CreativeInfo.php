@@ -24,11 +24,11 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior\commun\info;
+namespace symply\behavior\block\info;
 
 use pocketmine\nbt\tag\CompoundTag;
-use symply\behavior\commun\enum\CategoryCreativeEnum;
-use symply\behavior\commun\enum\GroupCreativeEnum;
+use symply\behavior\common\enum\CategoryCreativeEnum;
+use symply\behavior\common\enum\GroupCreativeEnum;
 
 class CreativeInfo
 {

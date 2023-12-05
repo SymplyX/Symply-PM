@@ -24,11 +24,14 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior\block\component;
+namespace symply\behavior\items\property;
 
 use pocketmine\nbt\tag\CompoundTag;
 
-interface IComponent
+class IconProperty extends ItemProperty
 {
-	public function toNbt() : CompoundTag;
+	public function __construct(string $texture)
+	{
+		parent::__construct("minecraft:icon", CompoundTag::create()->setString("texture", $texture));
+	}
 }

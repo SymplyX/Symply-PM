@@ -28,13 +28,14 @@ namespace symply\behavior\block\component;
 
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use symply\behavior\common\component\IComponent;
 use function intdiv;
 
-class TransformationComponent implements IComponent
+final class TransformationComponent implements IComponent
 {
 	public function __construct(
 		private readonly Vector3 $rotation = new Vector3(0,0,0),
-		private readonly Vector3 $scale = new Vector3(0,0,0),
+		private readonly Vector3 $scale = new Vector3(1,1,1),
 		private readonly Vector3 $translation = new Vector3(0,0,0)
 	)
 	{
@@ -85,12 +86,12 @@ class TransformationComponent implements IComponent
 			->setInt("RX", intdiv((int) $this->getRotation()->getX(), 90))
 			->setInt("RY",  intdiv((int) $this->getRotation()->getY(), 90))
 			->setInt("RZ", intdiv((int) $this->getRotation()->getZ(), 90))
-			->setFloat("SX", $this->getScale()->getX() / 90)
-			->setFloat("SY", $this->getScale()->getY() / 90)
-			->setFloat("SZ", $this->getScale()->getZ() / 90)
-			->setFloat("TX", $this->getTranslation()->getX() / 90)
-			->setFloat("TY", $this->getTranslation()->getY() / 90)
-			->setFloat("TZ", $this->getTranslation()->getZ() / 90)
+			->setFloat("SX", $this->getScale()->getX())
+			->setFloat("SY", $this->getScale()->getY())
+			->setFloat("SZ", $this->getScale()->getZ())
+			->setFloat("TX", $this->getTranslation()->getX())
+			->setFloat("TY", $this->getTranslation()->getY())
+			->setFloat("TZ", $this->getTranslation()->getZ())
 		);
 	}
 }

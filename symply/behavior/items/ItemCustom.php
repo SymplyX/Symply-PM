@@ -24,14 +24,22 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior\commun\enum;
+namespace symply\behavior\items;
 
-enum CategoryCreativeEnum : string
+use pocketmine\item\Item;
+use function assert;
+
+abstract class ItemCustom extends Item
 {
-	case CATEGORY_ALL = "all";
-	case CATEGORY_COMMANDS = "commands";
-	case CATEGORY_caseRUCTION = "caseruction";
-	case CATEGORY_EQUIPMENT = "equipment";
-	case CATEGORY_ITEMS = "items";
-	case CATEGORY_NATURE = "nature";
+	public function __construct(ItemCustomIdentifier $identifier,string $name = "Unknown", array $enchantmentTags = [])
+	{
+		parent::__construct($identifier, $name, $enchantmentTags);
+	}
+	public function getIdentifier() : ItemCustomIdentifier
+	{
+		$identifier = parent::getIdentifier();
+		assert($identifier instanceof  ItemCustomIdentifier);
+		return $identifier;
+	}
+	abstract public function getItemBuilder() : ItemBuilder;
 }

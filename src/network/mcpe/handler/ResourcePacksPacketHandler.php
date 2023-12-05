@@ -138,7 +138,16 @@ class ResourcePacksPacketHandler extends PacketHandler{
 				//we don't force here, because it doesn't have user-facing effects
 				//but it does have an annoying side-effect when true: it makes
 				//the client remove its own non-server-supplied resource packs.
-				$this->session->sendDataPacket(ResourcePackStackPacket::create($stack, [], false, ProtocolInfo::MINECRAFT_VERSION_NETWORK, new Experiments([], false)));
+				$this->session->sendDataPacket(ResourcePackStackPacket::create($stack, [], false, ProtocolInfo::MINECRAFT_VERSION_NETWORK, new Experiments([
+					"wild_update" => true,
+					"vanilla_experiments" => true,
+					"data_driven_items" => true,
+					"data_driven_biomes" => true,
+					"scripting" => true,
+					"upcoming_creator_features" => true,
+					"gametest" => true,
+					"experimental_molang_features" => true
+				], true)));
 				$this->session->getLogger()->debug("Applying resource pack stack");
 				break;
 			case ResourcePackClientResponsePacket::STATUS_COMPLETED:

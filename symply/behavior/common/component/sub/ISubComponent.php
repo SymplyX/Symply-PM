@@ -24,23 +24,11 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior\block\property;
+namespace symply\behavior\common\component\sub;
 
-use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\ListTag;
-use function array_map;
-use function sort;
-use const SORT_NUMERIC;
+use pocketmine\nbt\tag\CompoundTag;
 
-final class RotationProperty extends BlockProperty
+interface ISubComponent
 {
-	/**
-	 * @param int[] $rotation
-	 */
-	public function __construct(array $rotation = [])
-	{
-		sort($rotation, SORT_NUMERIC);
-		parent::__construct("symply:rotation", new ListTag(array_map(fn(int $number) => new IntTag($number), $rotation), NBT::TAG_Int));
-	}
+	public function toNbt() : CompoundTag;
 }

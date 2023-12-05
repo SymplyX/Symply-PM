@@ -24,33 +24,14 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior;
+namespace symply\behavior\items\property;
 
-use pmmp\thread\ThreadSafeArray;
-use pocketmine\scheduler\AsyncTask;
-use ReflectionException;
+use pocketmine\nbt\tag\ByteTag;
 
-class AsyncRegisterBlocksTask extends AsyncTask
+class FoilProperty extends ItemProperty
 {
-
-	private ThreadSafeArray $asyncTransmitter;
-	public function __construct()
+	public function __construct(bool $value = false)
 	{
-		$this->asyncTransmitter = new ThreadSafeArray();
-
-		foreach (SymplyBlockFactory::getInstance()->getAsyncTransmitter() as $closure){
-			$this->asyncTransmitter[] = $closure;
-		}
-	}
-
-	/**
-	 * @inheritDoc
-	 * @throws ReflectionException
-	 */
-	public function onRun() : void
-	{
-		foreach ($this->asyncTransmitter as $closure){
-			SymplyBlockFactory::getInstanceModeAsync()->register($closure);
-		}
+		parent::__construct("foil", new ByteTag($value));
 	}
 }

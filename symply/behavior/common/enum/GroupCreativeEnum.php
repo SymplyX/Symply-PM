@@ -24,7 +24,7 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior\commun\enum;
+namespace symply\behavior\common\enum;
 
 enum GroupCreativeEnum : string
 {

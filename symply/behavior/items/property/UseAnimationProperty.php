@@ -24,11 +24,15 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior\block\component\sub;
+namespace symply\behavior\items\property;
 
-use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntTag;
+use symply\behavior\items\enum\AnimationEnum;
 
-interface ISubComponent
+class UseAnimationProperty extends ItemProperty
 {
-	public function toNbt() : CompoundTag;
+	public function __construct(AnimationEnum $animation)
+	{
+		parent::__construct("use_animation", new IntTag($animation->value));
+	}
 }

@@ -33,9 +33,9 @@ class BlockCustomIdentifier extends BlockIdentifier
 
 	public function __construct(
 		private readonly string $namespaceId,
-		private readonly int $oldBlockId,
-		int $blockTypeId,
-		?string $tileClass = null)
+		private readonly int    $oldId,
+		int                     $blockTypeId,
+		?string                 $tileClass = null)
 	{
 		parent::__construct($blockTypeId, $tileClass);
 	}
@@ -45,8 +45,8 @@ class BlockCustomIdentifier extends BlockIdentifier
 		return $this->namespaceId;
 	}
 
-	public function getOldBlockId() : int
+	public function getOldId() : int
 	{
-		return $this->oldBlockId;
+		return $this->oldId;
 	}
 }

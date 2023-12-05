@@ -24,23 +24,14 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior\block\property;
+namespace symply\behavior\items\property;
 
-use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\ListTag;
-use function array_map;
-use function sort;
-use const SORT_NUMERIC;
+use pocketmine\nbt\tag\ByteTag;
 
-final class RotationProperty extends BlockProperty
+class AllowOffHandProperty extends ItemProperty
 {
-	/**
-	 * @param int[] $rotation
-	 */
-	public function __construct(array $rotation = [])
+	public function __construct(bool $value = true)
 	{
-		sort($rotation, SORT_NUMERIC);
-		parent::__construct("symply:rotation", new ListTag(array_map(fn(int $number) => new IntTag($number), $rotation), NBT::TAG_Int));
+		parent::__construct("allow_off_hand", new ByteTag($value ? 1 : 0));
 	}
 }

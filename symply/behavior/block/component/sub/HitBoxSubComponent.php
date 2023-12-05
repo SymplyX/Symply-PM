@@ -30,8 +30,9 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
+use symply\behavior\common\component\sub\ISubComponent;
 
-class HitBoxSubComponent implements ISubComponent
+final class HitBoxSubComponent implements ISubComponent
 {
 	public function __construct(
 		protected readonly bool	$enabled = true,

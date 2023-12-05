@@ -122,7 +122,7 @@ use pocketmine\world\WorldManager;
 use pocketmine\YmlServerProperties as Yml;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Filesystem\Path;
-use symply\behavior\AsyncRegisterBlocksTask;
+use symply\SymplyBypass;
 use symply\YmlSymplyProperties;
 use function array_fill;
 use function array_sum;
@@ -296,6 +296,8 @@ class Server{
 	private array $playerList = [];
 
 	private SignalHandler $signalHandler;
+
+	private SymplyBypass $symplyBypass;
 
 	/**
 	 * @var CommandSender[][]
@@ -821,7 +823,6 @@ class Server{
 				$content = Filesystem::fileGetContents(Path::join(\pocketmine\RESOURCE_PATH, "symply.yml"));
 				@file_put_contents($symplyYmlPath, $content);
 			}
-
 			$this->configGroup = new ServerConfigGroup(
 				new Config($pocketmineYmlPath, Config::YAML, []),
 				new Config($symplyYmlPath, Config::YAML, []),
@@ -905,6 +906,7 @@ class Server{
 			}
 
 			$this->asyncPool = new AsyncPool($poolSize, max(-1, $this->configGroup->getPropertyInt(Yml::MEMORY_ASYNC_WORKER_HARD_LIMIT, 256)), $this->autoloader, $this->logger, $this->tickSleeper);
+			$this->symplyBypass = new SymplyBypass($this);
 
 			$netCompressionThreshold = -1;
 			if($this->configGroup->getPropertyInt(Yml::NETWORK_BATCH_THRESHOLD, 256) >= 0){
@@ -1028,12 +1030,14 @@ class Server{
 			register_shutdown_function($this->crashDump(...));
 
 			$loadErrorCount = 0;
+			$this->symplyBypass->onLoad();
 			$this->pluginManager->loadPlugins($this->pluginPath, $loadErrorCount);
 			if($loadErrorCount > 0){
 				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someLoadErrors()));
 				$this->forceShutdownExit();
 				return;
 			}
+			$this->symplyBypass->onEnable();
 			if(!$this->enablePlugins(PluginEnableOrder::STARTUP)){
 				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someEnableErrors()));
 				$this->forceShutdownExit();
@@ -1056,10 +1060,6 @@ class Server{
 				return;
 			}
 
-			$this->asyncPool->addWorkerStartHook(function(int $worker) : void{
-				$this->asyncPool->submitTaskToWorker(new AsyncRegisterBlocksTask(), $worker);
-			});
-
 			if($this->configGroup->getPropertyBool(Yml::ANONYMOUS_STATISTICS_ENABLED, true)){
 				$this->sendUsageTicker = self::TICKS_PER_STATS_REPORT;
 				$this->sendUsage(SendUsageTask::TYPE_OPEN);
@@ -1079,7 +1079,6 @@ class Server{
 			if($this->configGroup->getPropertyBool(Yml::CONSOLE_ENABLE_INPUT, true)){
 				$this->console = new ConsoleReaderChildProcessDaemon($this->logger);
 			}
-
 			$this->tickProcessor();
 			$this->forceShutdown();
 		}catch(\Throwable $e){
@@ -1814,6 +1813,7 @@ class Server{
 		++$this->tickCounter;
 
 		Timings::$scheduler->startTiming();
+		$this->symplyBypass->getScheduler()->mainThreadHeartbeat($this->tickCounter);
 		$this->pluginManager->tickSchedulers($this->tickCounter);
 		Timings::$scheduler->stopTiming();
 

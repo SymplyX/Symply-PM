@@ -27,23 +27,59 @@ declare(strict_types=1);
 namespace symply\behavior\block\permutation;
 
 use pocketmine\nbt\tag\CompoundTag;
+use symply\behavior\common\component\IComponent;
+use function in_array;
 
-class BlockPermutation
+final class BlockPermutation
 {
-	public function __construct(private readonly string $condition, private CompoundTag $components) {
+	private string $condition;
+
+	private array $components = [];
+	public function __construct() {
 	}
 
-	public function getComponents() : CompoundTag
+	public static function create() : self{
+		return new self();
+	}
+
+	public function getCondition() : string
+	{
+		return $this->condition;
+	}
+
+	public function setCondition(string $condition) : self
+	{
+		$this->condition = $condition;
+		return $this;
+	}
+
+	/**
+	 * @return IComponent[]
+	 */
+	public function getComponents() : array
 	{
 		return $this->components;
+	}
+
+	public function addComponents(IComponent $component) : static{
+		if (in_array($component, $this->components, true)){
+			return $this;
+		}
+		$this->components[] = $component;
+		return $this;
 	}
 
 	/**
 	 * Returns the permutation in the correct NBT format supported by the client.
 	 */
 	public function toNBT() : CompoundTag {
+		$componentsTags = CompoundTag::create();
+
+		foreach ($this->getComponents() as $component){
+			$componentsTags = $componentsTags->merge($component->toNbt());
+		}
 		return CompoundTag::create()
-			->setString("condition", $this->condition)
-			->setTag("components", $this->getComponents());
+			->setString("condition", $this->getCondition())
+			->setTag("components", $componentsTags);
 	}
 }

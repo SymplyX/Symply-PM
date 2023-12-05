@@ -24,23 +24,24 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior\block\property;
+namespace symply\behavior\block;
 
-use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\ListTag;
-use function array_map;
-use function sort;
-use const SORT_NUMERIC;
+use pocketmine\data\bedrock\block\convert\BlockStateReader;
+use pocketmine\data\bedrock\block\convert\BlockStateWriter;
+use symply\behavior\block\permutation\BlockPermutation;
+use symply\behavior\block\property\BlockProperty;
 
-final class RotationProperty extends BlockProperty
+abstract class PermutationBlock extends BlockCustom
 {
-	/**
-	 * @param int[] $rotation
-	 */
-	public function __construct(array $rotation = [])
-	{
-		sort($rotation, SORT_NUMERIC);
-		parent::__construct("symply:rotation", new ListTag(array_map(fn(int $number) => new IntTag($number), $rotation), NBT::TAG_Int));
-	}
+	/** @var BlockProperty[] */
+	private array $properties = [];
+
+	/** @var BlockPermutation[] */
+	private array $permutations = [];
+
+	abstract public function deserializeState(BlockStateReader $reader) : void;
+	abstract public function serializeState(BlockStateWriter $writer) : void;
+
+	abstract public function getBlockBuilder() : BlockBuilderPermutation;
+
 }

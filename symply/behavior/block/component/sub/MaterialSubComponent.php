@@ -29,8 +29,9 @@ namespace symply\behavior\block\component\sub;
 use pocketmine\nbt\tag\CompoundTag;
 use symply\behavior\block\enum\RenderMethodEnum;
 use symply\behavior\block\enum\TargetMaterialEnum;
+use symply\behavior\common\component\sub\ISubComponent;
 
-class MaterialSubComponent implements ISubComponent
+final class MaterialSubComponent implements ISubComponent
 {
 
 	public function __construct(
