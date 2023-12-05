@@ -24,16 +24,17 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior\block\enum;
+namespace symply\behavior\items\enum;
 
-enum TargetMaterialEnum : string
+enum TextureTypeEnum : string
 {
-	case ALL = "*";
-	case SIDES = "sides";
-	case UP = "up";
-	case DOWN = "down";
-	case NORTH = "north";
-	case EAST = "east";
-	case SOUTH = "south";
-	case WEST = "west";
+	case NONE = "none";
+	case CHAIN = "chain";
+	case DIAMOND = "diamond";
+	case ELYTRA = "elytra";
+	case GOLD = "gold";
+	case IRON = "iron";
+	case LEATHER = "leather";
+	case NETHERITE = "netherite";
+	case TURTLE = "turtle";
 }

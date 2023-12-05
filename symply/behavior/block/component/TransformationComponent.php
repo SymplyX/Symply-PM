@@ -41,6 +41,11 @@ final class TransformationComponent implements IComponent
 	{
 	}
 
+	public function getName() : string
+	{
+		return "minecraft:transformation";
+	}
+
 	public function getRotation() : Vector3
 	{
 		return $this->rotation;
@@ -81,7 +86,7 @@ final class TransformationComponent implements IComponent
 
 	public function toNbt() : CompoundTag
 	{
-		return CompoundTag::create()->setTag("minecraft:transformation",
+		return CompoundTag::create()->setTag($this->getName(),
 		CompoundTag::create()
 			->setInt("RX", intdiv((int) $this->getRotation()->getX(), 90))
 			->setInt("RY",  intdiv((int) $this->getRotation()->getY(), 90))

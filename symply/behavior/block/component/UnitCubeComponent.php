@@ -24,16 +24,21 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior\block\enum;
+namespace symply\behavior\block\component;
 
-enum TargetMaterialEnum : string
+use pocketmine\nbt\tag\CompoundTag;
+use symply\behavior\common\component\IComponent;
+
+class UnitCubeComponent implements IComponent
 {
-	case ALL = "*";
-	case SIDES = "sides";
-	case UP = "up";
-	case DOWN = "down";
-	case NORTH = "north";
-	case EAST = "east";
-	case SOUTH = "south";
-	case WEST = "west";
+
+	public function getName() : string
+	{
+		return "minecraft:unit_cube";
+	}
+
+	public function toNbt() : CompoundTag
+	{
+		return CompoundTag::create()->setTag($this->getName(), CompoundTag::create());
+	}
 }

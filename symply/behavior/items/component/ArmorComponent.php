@@ -24,16 +24,38 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior\items\info;
+namespace symply\behavior\items\component;
 
 use pocketmine\nbt\tag\CompoundTag;
-use symply\behavior\block\info\CreativeInfo as BlockCreativeInfo;
-class CreativeInfo extends BlockCreativeInfo
+use symply\behavior\common\component\IComponent;
+use symply\behavior\items\enum\TextureTypeEnum;
+
+class ArmorComponent implements IComponent
 {
+
+	public function __construct(private readonly int $protection, private readonly TextureTypeEnum $textureType = TextureTypeEnum::NONE)
+	{
+	}
+
+	public function getProtection() : int
+	{
+		return $this->protection;
+	}
+
+	public function getTextureType() : TextureTypeEnum
+	{
+		return $this->textureType;
+	}
+
 	public function toNbt() : CompoundTag
 	{
-		return CompoundTag::create()
-			->setInt("creative_category", $this->getCategory()->toItemCategory() ?? "")
-			->setString("creative_group", $this->getGroup()->value ?? "");
+		return CompoundTag::create()->setTag("minecraft:armor", CompoundTag::create()
+			->setString("texture_type", $this->getTextureType()->value)
+		->setInt("protection", $this->getProtection()));
+	}
+
+	public function getName() : string
+	{
+		return "minecraft:armor";
 	}
 }

@@ -24,16 +24,37 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior\items\info;
+namespace symply\behavior\items\component;
 
 use pocketmine\nbt\tag\CompoundTag;
-use symply\behavior\block\info\CreativeInfo as BlockCreativeInfo;
-class CreativeInfo extends BlockCreativeInfo
+use symply\behavior\common\component\IComponent;
+
+class BlockPlacerComponent implements IComponent
 {
+
+	public function __construct(private readonly string $blockIdentifier, private readonly bool $useBlockDescription = false)
+	{
+	}
+
+	public function getBlockIdentifier() : string
+	{
+		return $this->blockIdentifier;
+	}
+
+	public function isUseBlockDescription() : bool
+	{
+		return $this->useBlockDescription;
+	}
+
 	public function toNbt() : CompoundTag
 	{
-		return CompoundTag::create()
-			->setInt("creative_category", $this->getCategory()->toItemCategory() ?? "")
-			->setString("creative_group", $this->getGroup()->value ?? "");
+	   return CompoundTag::create()->setTag("minecraft:block_placer", CompoundTag::create()
+	   ->setString("block", $this->getBlockIdentifier())
+	   ->setByte("use_block_description", $this->isUseBlockDescription() ? 1 : 0));
+	}
+
+	public function getName() : string
+	{
+		return "minecraft:block_placer";
 	}
 }

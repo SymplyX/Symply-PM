@@ -28,6 +28,7 @@ namespace symply\behavior\block;
 
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
+use symply\behavior\block\builder\BlockBuilderPermutation;
 use symply\behavior\block\permutation\BlockPermutation;
 use symply\behavior\block\property\BlockProperty;
 
@@ -42,6 +43,10 @@ abstract class PermutationBlock extends BlockCustom
 	abstract public function deserializeState(BlockStateReader $reader) : void;
 	abstract public function serializeState(BlockStateWriter $writer) : void;
 
-	abstract public function getBlockBuilder() : BlockBuilderPermutation;
+	public function getBlockBuilder() : BlockBuilderPermutation{
+		return BlockBuilderPermutation::create()
+			->setBlock($this)
+			->setUnitCube();
+	}
 
 }

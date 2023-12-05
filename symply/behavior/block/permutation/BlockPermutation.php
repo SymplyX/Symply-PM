@@ -26,9 +26,14 @@ declare(strict_types=1);
 
 namespace symply\behavior\block\permutation;
 
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use symply\behavior\block\component\GeometryComponent;
+use symply\behavior\block\component\MaterialInstancesComponent;
+use symply\behavior\block\component\sub\MaterialSubComponent;
+use symply\behavior\block\component\TransformationComponent;
+use symply\behavior\block\component\UnitCubeComponent;
 use symply\behavior\common\component\IComponent;
-use function in_array;
 
 final class BlockPermutation
 {
@@ -38,8 +43,9 @@ final class BlockPermutation
 	public function __construct() {
 	}
 
-	public static function create() : self{
-		return new self();
+	public static function create() : BlockPermutation
+	{
+		return new BlockPermutation();
 	}
 
 	public function getCondition() : string
@@ -47,7 +53,7 @@ final class BlockPermutation
 		return $this->condition;
 	}
 
-	public function setCondition(string $condition) : self
+	public function setCondition(string $condition) : BlockPermutation
 	{
 		$this->condition = $condition;
 		return $this;
@@ -61,12 +67,33 @@ final class BlockPermutation
 		return $this->components;
 	}
 
-	public function addComponents(IComponent $component) : static{
-		if (in_array($component, $this->components, true)){
-			return $this;
+	public function addComponent(IComponent $component) : BlockPermutation
+	{
+		if ($component instanceof GeometryComponent && isset($this->components['minecraft:unit_cube'])){
+			unset($this->components['minecraft:unit_cube']);
 		}
-		$this->components[] = $component;
+		$this->components[$component->getName()] = $component;
 		return $this;
+	}
+
+	public function setGeometry(string $identifier) : BlockPermutation
+	{
+		return $this->addComponent(new GeometryComponent($identifier));
+	}
+
+	public function setUnitCube() : BlockPermutation{
+		return $this->addComponent(new UnitCubeComponent());
+	}
+
+	/**
+	 * @param MaterialSubComponent[] $materials
+	 */
+	public function setMaterialInstance(array $materials = []) : BlockPermutation{
+		return $this->addComponent(new MaterialInstancesComponent($materials));
+	}
+
+	public function setTransformationComponent(?Vector3 $rotation = null, ?Vector3 $scale = null, ?Vector3 $translation = null) : BlockPermutation{
+		return $this->addComponent(new TransformationComponent($rotation ?? Vector3::zero(), $scale ?? Vector3::zero(), $translation ?? Vector3::zero()));
 	}
 
 	/**

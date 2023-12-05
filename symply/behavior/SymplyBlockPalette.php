@@ -39,7 +39,7 @@ use function hash;
 use function strcmp;
 use function usort;
 
-class SymplyBlockPalette
+final class SymplyBlockPalette
 {
 	use SingletonTrait;
 

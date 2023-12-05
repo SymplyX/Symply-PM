@@ -28,6 +28,7 @@ namespace symply\behavior\block;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockTypeInfo;
+use symply\behavior\block\builder\BlockBuilder;
 use function assert;
 
 abstract class BlockCustom extends Block
@@ -48,5 +49,9 @@ abstract class BlockCustom extends Block
 		assert($idInfo instanceof BlockCustomIdentifier);
 		return $idInfo;
 	}
-	abstract public function getBlockBuilder() : BlockBuilder;
+	public function getBlockBuilder() : BlockBuilder{
+		return BlockBuilder::create()
+			->setBlock($this)
+			->setUnitCube();
+	}
 }

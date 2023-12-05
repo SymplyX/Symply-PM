@@ -24,18 +24,23 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior\block;
+namespace symply\behavior\block\builder;
 
 use Generator;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\BlockStateDictionaryEntry;
-use symply\behavior\block\component\ModelComponent;
-use symply\behavior\block\component\sub\HitBoxSubComponent;
+use symply\behavior\block\BlockCustom;
+use symply\behavior\block\component\GeometryComponent;
+use symply\behavior\block\component\MaterialInstancesComponent;
 use symply\behavior\block\component\sub\MaterialSubComponent;
 use symply\behavior\block\component\TransformationComponent;
+use symply\behavior\block\component\UnitCubeComponent;
 use symply\behavior\block\info\CreativeInfo;
 use symply\behavior\common\component\IComponent;
+use function array_map;
 
 class BlockBuilder
 {
@@ -48,11 +53,11 @@ class BlockBuilder
 	{
 	}
 
-	public static function create() : self{
-		return new self();
+	public static function create() : static{
+		return new static();
 	}
 
-	public function setBlock(BlockCustom $blockCustom) : self{
+	public function setBlock(BlockCustom $blockCustom) : static{
 		$this->blockCustom = $blockCustom;
 		return $this;
 	}
@@ -73,7 +78,7 @@ class BlockBuilder
 		return $this->creativeInfo;
 	}
 
-	public function setCreativeInfo(CreativeInfo $creativeInfo) : self
+	public function setCreativeInfo(CreativeInfo $creativeInfo) : static
 	{
 		$this->creativeInfo = $creativeInfo;
 		return $this;
@@ -84,26 +89,36 @@ class BlockBuilder
 		return $this->components;
 	}
 
-	public function addComponent(IComponent $component) : self
+	public function addComponent(IComponent $component) : static
 	{
-		$this->components[] = $component;
+		if ($component instanceof GeometryComponent && isset($this->components['minecraft:unit_cube'])){
+			unset($this->components['minecraft:unit_cube']);
+		}
+		$this->components[$component->getName()] = $component;
 		return $this;
+	}
+
+	public function setGeometry(string $identifier) : static{
+		return $this->addComponent(new GeometryComponent($identifier));
+	}
+
+	public function setUnitCube() : static{
+		return $this->addComponent(new UnitCubeComponent());
 	}
 
 	/**
 	 * @param MaterialSubComponent[] $materials
-	 * @return $this
+	 * @return void
 	 */
-	public function setModalComponent(array $materials, ?string $geometry = null, ?HitBoxSubComponent $collisionBox = null, ?HitBoxSubComponent $selectionBox = null) : self
-	{
-		return $this->addComponent(new ModelComponent($materials, $geometry, $collisionBox, $selectionBox));
+	public function setMaterialInstance(array $materials = []) : static{
+		return $this->addComponent(new MaterialInstancesComponent($materials));
 	}
 
-	public function setTransformationComponent(?Vector3 $rotation = null, ?Vector3 $scale = null, ?Vector3 $translation = null) : self{
+	public function setTransformationComponent(?Vector3 $rotation = null, ?Vector3 $scale = null, ?Vector3 $translation = null) : static{
 		return $this->addComponent(new TransformationComponent($rotation ?? Vector3::zero(), $scale ?? Vector3::zero(), $translation ?? Vector3::zero()));
 	}
 
-	public function setComponents(array $components) : self
+	public function setComponents(array $components) : static
 	{
 		$this->components = $components;
 		return $this;
@@ -111,7 +126,7 @@ class BlockBuilder
 
 	public function toPacket() : CompoundTag
 	{
-		return $this->getPropertiesTag()->setTag('components', $this->getComponentsTag())->setInt("molangVersion", 1);
+		return $this->getPropertiesTag()->setTag('components', $this->getComponentsTag())->setInt("molangVersion", 6);
 	}
 
 	public function getPropertiesTag() : CompoundTag
@@ -134,9 +149,7 @@ class BlockBuilder
 		foreach ($this->components as $component) {
 			$componentsTags = $componentsTags->merge($component->toNbt());
 		}
-		foreach ($this->blockCustom->getTypeTags() as $tag){
-			$componentsTags->setTag("tag:$tag", CompoundTag::create());
-		}
+		$componentsTags->setTag("blockTags", new ListTag(array_map(fn(string $tag) => new StringTag($tag), $this->blockCustom->getTypeTags())));
 		return $componentsTags;
 	}
 

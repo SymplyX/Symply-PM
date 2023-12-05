@@ -28,19 +28,19 @@ namespace symply\behavior\common\enum;
 
 enum CategoryCreativeEnum : string
 {
-	case CATEGORY_ALL = "all";
-	case CATEGORY_COMMANDS = "commands";
-	case CATEGORY_CONSTRUCTION = "construction";
-	case CATEGORY_EQUIPMENT = "equipment";
-	case CATEGORY_ITEMS = "items";
-	case CATEGORY_NATURE = "nature";
+	case ALL = "all";
+	case COMMANDS = "commands";
+	case CONSTRUCTION = "construction";
+	case EQUIPMENT = "equipment";
+	case ITEMS = "items";
+	case NATURE = "nature";
 
 	public function toItemCategory() : int{
 		return match ($this){
-			self::CATEGORY_CONSTRUCTION => 1,
-			self::CATEGORY_NATURE => 2,
-			self::CATEGORY_EQUIPMENT => 3,
-			self::CATEGORY_ITEMS => 4,
+			self::CONSTRUCTION => 1,
+			self::NATURE => 2,
+			self::EQUIPMENT => 3,
+			self::ITEMS => 4,
 			default => 0
 		};
 	}

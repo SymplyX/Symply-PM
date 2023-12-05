@@ -33,6 +33,7 @@ use pocketmine\block\Block;
 use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
+use pocketmine\inventory\CreativeInventory;
 use pocketmine\network\mcpe\protocol\types\BlockPaletteEntry;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\world\format\io\GlobalBlockStateHandlers;
@@ -40,7 +41,7 @@ use ReflectionException;
 use symply\behavior\block\BlockCustom;
 use symply\behavior\block\PermutationBlock;
 
-class SymplyBlockFactory
+final class SymplyBlockFactory
 {
 	/** @var self|null */
 	private static $instance = null;
@@ -91,11 +92,16 @@ class SymplyBlockFactory
 			$serializer ??= static fn() => BlockStateWriter::create($blockCustom->getIdInfo()->getNamespaceId());
 			$deserializer ??= static fn(BlockStateReader $reader) => $blockCustom;
 		}
+		$oldId = $blockCustom->getIdInfo()->getOldId();
 		foreach ($blockBuilder->toBlockStateDictionaryEntry() as $blockStateDictionaryEntry){
 			SymplyBlockPalette::getInstance()->insertState($blockStateDictionaryEntry);
+			GlobalBlockStateHandlers::getUpgrader()->getBlockIdMetaUpgrader()->addIdMetaToStateMapping($identifier, $blockStateDictionaryEntry->getMeta(), $blockStateDictionaryEntry->generateStateData());
+			GlobalBlockStateHandlers::getUpgrader()->getBlockIdMetaUpgrader()->addIntIdToStringIdMapping($oldId, $identifier);
 		}
 		GlobalBlockStateHandlers::getSerializer()->map($blockCustom, $serializer);
 		GlobalBlockStateHandlers::getDeserializer()->map($identifier, $deserializer);
+		$item = $blockCustom->asItem();
+		CreativeInventory::getInstance()->add($item);
 		if (!$this->asyncMode) {
 			$this->asyncTransmitter[] = ThreadSafeArray::fromArray([$blockClosure, $serializer, $deserializer]);
 			$this->blockPaletteEntries[] = new BlockPaletteEntry($identifier, new CacheableNbt($blockBuilder->toPacket()));

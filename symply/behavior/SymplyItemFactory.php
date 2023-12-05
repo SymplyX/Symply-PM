@@ -27,9 +27,12 @@ declare(strict_types=1);
 namespace symply\behavior;
 
 use Closure;
+use pmmp\thread\ThreadSafeArray;
 use pocketmine\data\bedrock\item\BlockItemIdMap;
-use pocketmine\data\bedrock\item\SavedItemData as Data;
+use pocketmine\data\bedrock\item\SavedItemData;
+use pocketmine\inventory\CreativeInventory;
 use pocketmine\item\StringToItemParser;
+use pocketmine\network\mcpe\cache\CreativeInventoryCache;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\network\mcpe\protocol\types\ItemComponentPacketEntry;
@@ -42,13 +45,9 @@ use function array_merge;
 use function array_values;
 use function uasort;
 
-class SymplyItemFactory
+final class SymplyItemFactory
 {
 	use SingletonTrait;
-
-	public function __construct(private readonly bool $asyncMode = false)
-	{
-	}
 
 	/** @var array<string, ItemCustom> */
 	private array $items = [];
@@ -59,8 +58,14 @@ class SymplyItemFactory
 	/** @var ItemTypeEntry[] */
 	private array $itemsTypeEntries = [];
 
-	/** @var Closure[] */
-	private array $asyncTransmitter = [];
+	/** @var ThreadSafeArray<ThreadSafeArray<Closure>> */
+	private ThreadSafeArray $asyncTransmitter;
+
+	public function __construct(private readonly bool $asyncMode = false)
+	{
+		$this->asyncTransmitter = new ThreadSafeArray();
+		CreativeInventoryCache::reset();
+	}
 
 	/**
 	 * @param Closure(): ItemCustom $itemClosure
@@ -73,17 +78,18 @@ class SymplyItemFactory
 		$itemCustom = $itemClosure();
 		$identifier = $itemCustom->getIdentifier()->getNamespaceId();
 		if (isset($this->items[$identifier])){
-			throw new \InvalidArgumentException("Block ID {$itemCustom->getIdentifier()->getNamespaceId()} is already used by another block");
+			throw new \InvalidArgumentException("Item ID {$itemCustom->getIdentifier()->getNamespaceId()} is already used by another item");
 		}
-		$itemBuilder = $itemCustom->getItemBuilder();
+		$itemId = $itemCustom->getIdentifier()->getOldId();
 		$this->items[$identifier] = $itemCustom;
-		GlobalItemDataHandlers::getSerializer()->map($itemCustom,  $serializer ?? fn() => new Data($identifier));
-		GlobalItemDataHandlers::getDeserializer()->map($identifier, $deserializer ?? fn() => clone $itemCustom);
-		$itemId = $itemCustom->getTypeId();
 		$this->registerCustomItemMapping($identifier, $itemId, new ItemTypeEntry($identifier, $itemId , true));
+		GlobalItemDataHandlers::getDeserializer()->map($identifier, $deserializer ??= static fn() => clone $itemCustom);
+		GlobalItemDataHandlers::getSerializer()->map($itemCustom, $serializer ??= static fn() => new SavedItemData($identifier));
+		StringToItemParser::getInstance()->register($identifier, static fn() => clone $itemCustom);
+		CreativeInventory::getInstance()->add($itemCustom);
 		if (!$this->asyncMode) {
-			$this->itemsComponentPacketEntries[] = new ItemComponentPacketEntry($identifier, new CacheableNbt($itemBuilder->toPacket()));
-			$this->asyncTransmitter[] = $itemClosure;
+			$this->itemsComponentPacketEntries[] = new ItemComponentPacketEntry($identifier, new CacheableNbt($itemCustom->getItemBuilder()->toPacket()));
+			$this->asyncTransmitter[] = ThreadSafeArray::fromArray([$itemClosure, $serializer, $deserializer]);
 		}
 	}
 
@@ -118,7 +124,7 @@ class SymplyItemFactory
 	 * correlates to its block ID.
 	 */
 	public function registerBlockItem(string $identifier, BlockCustom $block) : void {
-		$itemId = $block->getIdInfo()->getBlockTypeId();
+		$itemId = 255 - $block->getIdInfo()->getOldId();
 		$this->registerCustomItemMapping($identifier, $itemId, new ItemTypeEntry($identifier, $itemId, true));
 		StringToItemParser::getInstance()->registerBlock($identifier, fn() => clone $block);
 
@@ -132,9 +138,9 @@ class SymplyItemFactory
 	}
 
 	/**
-	 * @return Closure[]
+	 * @return ThreadSafeArray<ThreadSafeArray<Closure>>
 	 */
-	public function getAsyncTransmitter() : array
+	public function getAsyncTransmitter() : ThreadSafeArray
 	{
 		return $this->asyncTransmitter;
 	}

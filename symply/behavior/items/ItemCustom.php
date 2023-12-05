@@ -27,6 +27,7 @@ declare(strict_types=1);
 namespace symply\behavior\items;
 
 use pocketmine\item\Item;
+use symply\behavior\items\builder\ItemBuilder;
 use function assert;
 
 abstract class ItemCustom extends Item
@@ -41,5 +42,10 @@ abstract class ItemCustom extends Item
 		assert($identifier instanceof  ItemCustomIdentifier);
 		return $identifier;
 	}
-	abstract public function getItemBuilder() : ItemBuilder;
+	public function getItemBuilder() : ItemBuilder{
+		return ItemBuilder::create()
+			->setItem($this)
+			->setDefaultMaxStack()
+			->setDefaultName();
+	}
 }

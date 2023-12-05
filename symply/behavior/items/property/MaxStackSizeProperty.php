@@ -24,16 +24,14 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior\block\enum;
+namespace symply\behavior\items\property;
 
-enum TargetMaterialEnum : string
+use pocketmine\nbt\tag\IntTag;
+
+class MaxStackSizeProperty extends ItemProperty
 {
-	case ALL = "*";
-	case SIDES = "sides";
-	case UP = "up";
-	case DOWN = "down";
-	case NORTH = "north";
-	case EAST = "east";
-	case SOUTH = "south";
-	case WEST = "west";
+	public function __construct(int $max)
+	{
+		parent::__construct("max_stack_size", new IntTag($max));
+	}
 }

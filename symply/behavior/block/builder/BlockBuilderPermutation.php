@@ -24,7 +24,7 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior\block;
+namespace symply\behavior\block\builder;
 
 use Generator;
 use pocketmine\nbt\tag\CompoundTag;
@@ -51,10 +51,6 @@ final class BlockBuilderPermutation extends BlockBuilder{
 	public function getProperties() : array
 	{
 		return $this->properties;
-	}
-
-	public static function create() : self{
-		return new self();
 	}
 
 	public function addProperty(BlockProperty $property) : self

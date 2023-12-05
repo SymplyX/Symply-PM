@@ -24,16 +24,17 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior\block\enum;
+namespace symply\behavior\items\builder;
 
-enum TargetMaterialEnum : string
+use symply\behavior\items\ItemCustom;
+
+class ItemCustomTools extends ItemCustom
 {
-	case ALL = "*";
-	case SIDES = "sides";
-	case UP = "up";
-	case DOWN = "down";
-	case NORTH = "north";
-	case EAST = "east";
-	case SOUTH = "south";
-	case WEST = "west";
+
+	public function getItemBuilder() : ItemBuilder
+	{
+		return  ItemBuilder::create()
+			->setItem($this)
+			->setIcon("apple");
+	}
 }

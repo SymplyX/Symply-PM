@@ -24,16 +24,31 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior\block\enum;
+namespace symply\behavior\items\component;
 
-enum TargetMaterialEnum : string
+use pocketmine\nbt\tag\CompoundTag;
+use symply\behavior\common\component\IComponent;
+
+class DisplayNameComponent implements IComponent
 {
-	case ALL = "*";
-	case SIDES = "sides";
-	case UP = "up";
-	case DOWN = "down";
-	case NORTH = "north";
-	case EAST = "east";
-	case SOUTH = "south";
-	case WEST = "west";
+
+	public function __construct(private readonly string $value)
+	{
+	}
+
+	public function getName() : string
+	{
+		return "minecraft:display_name";
+	}
+
+	public function getValue() : string
+	{
+		return $this->value;
+	}
+
+	public function toNbt() : CompoundTag
+	{
+		return CompoundTag::create()->setTag($this->getName(), CompoundTag::create()
+			->setString("value", $this->getValue()));
+	}
 }

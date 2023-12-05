@@ -24,13 +24,35 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior\common\component;
+namespace symply\behavior\items\component;
 
 use pocketmine\nbt\tag\CompoundTag;
+use symply\behavior\common\component\IComponent;
 
-interface IComponent
+class CooldownComponent implements IComponent
 {
+	public function __construct(private readonly string $category, private readonly float $duration) {
+	}
 
-	public function getName() : string;
-	public function toNbt() : CompoundTag;
+	public function getName() : string
+	{
+		return "minecraft:cooldown";
+	}
+
+	public function getCategory() : string
+	{
+		return $this->category;
+	}
+
+	public function getDuration() : float
+	{
+		return $this->duration;
+	}
+
+	public function toNbt() : CompoundTag
+	{
+		return CompoundTag::create()->setTag("minecraft:cooldown", CompoundTag::create()
+			->setString("category", $this->getCategory())
+			->setFloat("duration", $this->getDuration()));
+	}
 }

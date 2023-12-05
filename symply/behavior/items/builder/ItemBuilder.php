@@ -24,22 +24,24 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior\items;
+namespace symply\behavior\items\builder;
 
 use pocketmine\nbt\tag\CompoundTag;
 use symply\behavior\common\component\IComponent;
+use symply\behavior\items\component\DisplayNameComponent;
 use symply\behavior\items\enum\AnimationEnum;
 use symply\behavior\items\info\CreativeInfo;
+use symply\behavior\items\ItemCustom;
 use symply\behavior\items\property\AllowOffHandProperty;
 use symply\behavior\items\property\FoilProperty;
 use symply\behavior\items\property\HandEquippedProperty;
 use symply\behavior\items\property\IconProperty;
 use symply\behavior\items\property\ItemProperty;
+use symply\behavior\items\property\MaxStackSizeProperty;
 use symply\behavior\items\property\UseAnimationProperty;
 use symply\behavior\items\property\UseDurationProperty;
-use function in_array;
 
-class ItemBuilder
+final class ItemBuilder
 {
 
 	private ItemCustom $item;
@@ -91,6 +93,11 @@ class ItemBuilder
 		return $this;
 	}
 
+	public function addComponents(IComponent $component) : self{
+		$this->components[$component->getName()] = $component;
+		return $this;
+	}
+
 	/**
 	 * @return ItemProperty[]
 	 */
@@ -101,10 +108,12 @@ class ItemBuilder
 
 	public function addProperties(ItemProperty $properties) : self
 	{
-		if (in_array($properties, $this->properties, true))
-			return $this;
-		$this->properties[] = $properties;
+		$this->properties[$properties->getName()] = $properties;
 		return $this;
+	}
+
+	public function setDefaultName() : self{
+		return $this->addComponents(new DisplayNameComponent("item.{$this->item->getIdentifier()->getNamespaceId()}.name"));
 	}
 
 	/**
@@ -119,6 +128,14 @@ class ItemBuilder
 	public function setAllowOffHand(bool $value = false) : self
 	{
 		return $this->addProperties(new AllowOffHandProperty($value));
+	}
+
+	public function setDefaultMaxStack() : self{
+		return $this->setMaxStackSize($this->item->getMaxStackSize());
+	}
+
+	public function setMaxStackSize(int $max) : self{
+		return $this->addProperties(new MaxStackSizeProperty($max));
 	}
 
 	public function setHandEquipped(bool $value = false) : self

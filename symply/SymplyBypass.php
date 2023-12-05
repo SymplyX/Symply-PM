@@ -29,15 +29,16 @@ namespace symply;
 use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
 use symply\behavior\AsyncRegisterBehaviorsTask;
+use symply\behavior\SymplyBlockFactory;
+use symply\behavior\SymplyItemFactory;
+use symply\test\ItemPP;
+use symply\test\PP;
 
 class SymplyBypass
 {
 	private TaskScheduler $scheduler;
-	private static SymplyBypass $instance;
 	public function __construct(private Server $server)
 	{
-		if (isset(self::$instance)) return ;
-		self::$instance = $this;
 		$this->scheduler = new TaskScheduler("symply");
 	}
 
@@ -46,10 +47,10 @@ class SymplyBypass
 	}
 
 	public function onEnable() : void{
-			$asyncPool = $this->getServer()->getAsyncPool();
-			$asyncPool->addWorkerStartHook(static function(int $worker) use($asyncPool) : void{
-				$asyncPool->submitTaskToWorker(new AsyncRegisterBehaviorsTask(), $worker);
-			});
+		$asyncPool = $this->getServer()->getAsyncPool();
+		$asyncPool->addWorkerStartHook(static function(int $worker) use($asyncPool) : void{
+			$asyncPool->submitTaskToWorker(new AsyncRegisterBehaviorsTask(), $worker);
+		});
 	}
 
 	public function getServer() : Server
@@ -61,10 +62,4 @@ class SymplyBypass
 	{
 		return $this->scheduler;
 	}
-
-	public static function getInstance() : SymplyBypass
-	{
-		return self::$instance;
-	}
-
 }

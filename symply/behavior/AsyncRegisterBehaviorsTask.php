@@ -34,10 +34,11 @@ class AsyncRegisterBehaviorsTask extends AsyncTask
 {
 
 	private ThreadSafeArray $asyncBlockTransmitter;
-/*	private ThreadSafeArray $asyncItemTransmitter;*/
+	private ThreadSafeArray $asyncItemTransmitter;
 	public function __construct()
 	{
 		$this->asyncBlockTransmitter = SymplyBlockFactory::getInstance()->getAsyncTransmitter();
+		$this->asyncItemTransmitter = SymplyItemFactory::getInstance()->getAsyncTransmitter();
 	}
 
 	/**
@@ -48,6 +49,9 @@ class AsyncRegisterBehaviorsTask extends AsyncTask
 	{
 		foreach ($this->asyncBlockTransmitter as $closure) {
 			SymplyBlockFactory::getInstanceModeAsync()->register($closure[0], $closure[1], $closure[2]);
+		}
+		foreach ($this->asyncItemTransmitter as $closure){
+			SymplyItemFactory::getInstanceModeAsync()->register($closure[0], $closure[1], $closure[2]);
 		}
 	}
 }

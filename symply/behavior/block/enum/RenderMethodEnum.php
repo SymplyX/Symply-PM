@@ -28,7 +28,7 @@ namespace symply\behavior\block\enum;
 
 enum RenderMethodEnum : string
 {
-	case RENDER_METHOD_ALPHA_TEST = "alpha_test";
-	case RENDER_METHOD_BLEND = "blend";
-	case RENDER_METHOD_OPAQUE = "opaque";
+	case ALPHA_TEST = "alpha_test";
+	case BLEND = "blend";
+	case OPAQUE = "opaque";
 }

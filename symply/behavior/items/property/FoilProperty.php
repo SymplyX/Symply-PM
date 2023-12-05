@@ -32,6 +32,6 @@ class FoilProperty extends ItemProperty
 {
 	public function __construct(bool $value = false)
 	{
-		parent::__construct("foil", new ByteTag($value));
+		parent::__construct("foil", new ByteTag($value ? 1 : 0));
 	}
 }
