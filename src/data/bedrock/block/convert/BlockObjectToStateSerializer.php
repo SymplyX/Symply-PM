@@ -43,6 +43,7 @@ use pocketmine\block\Cactus;
 use pocketmine\block\Cake;
 use pocketmine\block\CakeWithCandle;
 use pocketmine\block\CakeWithDyedCandle;
+use pocketmine\block\Campfire;
 use pocketmine\block\Candle;
 use pocketmine\block\Carpet;
 use pocketmine\block\Carrot;
@@ -1096,6 +1097,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 			return Writer::create(Ids::CAKE)
 				->writeInt(StateNames::BITE_COUNTER, $block->getBites());
 		});
+		$this->map(Blocks::CAMPFIRE(), fn(Campfire $block) => Helper::encodeCampfire($block, new Writer(Ids::CAMPFIRE)));
 		$this->map(Blocks::CARROTS(), fn(Carrot $block) => Helper::encodeCrops($block, new Writer(Ids::CARROTS)));
 		$this->map(Blocks::CARVED_PUMPKIN(), function(CarvedPumpkin $block) : Writer{
 			return Writer::create(Ids::CARVED_PUMPKIN)
@@ -1605,6 +1607,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeBool(StateNames::COVERED_BIT, false)
 				->writeInt(StateNames::HEIGHT, $block->getLayers() - 1);
 		});
+		$this->map(Blocks::SOUL_CAMPFIRE(), fn(Campfire $block) => Helper::encodeCampfire($block, new Writer(Ids::SOUL_CAMPFIRE)));
 		$this->map(Blocks::SOUL_FIRE(), function() : Writer{
 			return Writer::create(Ids::SOUL_FIRE)
 				->writeInt(StateNames::AGE, 0); //useless for soul fire, we don't track it

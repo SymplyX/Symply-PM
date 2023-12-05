@@ -21,12 +21,19 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\tile;
+namespace pocketmine\block;
 
-use pocketmine\crafting\FurnaceType;
+use pocketmine\item\Item;
 
-class SoulCampfire extends Furnace{
-	public function getFurnaceType() : FurnaceType{
-		return FurnaceType::SOUL_CAMPFIRE;
-	}
+class SoulCampfire extends Campfire{
+
+    public function isSoul() : bool{
+        return true;
+    }
+
+    public function getDropsForCompatibleTool(Item $item) : array{
+        return [
+            VanillaBlocks::SOUL_CAMPFIRE()->asItem()
+        ];
+    }
 }

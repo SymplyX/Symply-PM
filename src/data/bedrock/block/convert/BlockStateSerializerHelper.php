@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\Button;
+use pocketmine\block\Campfire;
 use pocketmine\block\Candle;
 use pocketmine\block\ChemistryTable;
 use pocketmine\block\Crops;
@@ -68,6 +69,12 @@ final class BlockStateSerializerHelper{
 		return $out
 			->writeFacingDirection($block->getFacing())
 			->writeBool(BlockStateNames::BUTTON_PRESSED_BIT, $block->isPressed());
+	}
+
+	public static function encodeCampfire(Campfire $block, BlockStateWriter $out) : BlockStateWriter{
+		return $out
+			->writeCardinalHorizontalFacing($block->getFacing())
+			->writeBool(BlockStateNames::EXTINGUISHED, $block->isExtinguished());
 	}
 
 	public static function encodeCandle(Candle $block, BlockStateWriter $out) : BlockStateWriter{

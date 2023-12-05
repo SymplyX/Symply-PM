@@ -39,7 +39,6 @@ use function spl_object_id;
  * @method static FurnaceType CAMPFIRE()
  * @method static FurnaceType FURNACE()
  * @method static FurnaceType SMOKER()
- * @method static FurnaceType SOUL_CAMPFIRE()
  *
  * @phpstan-type TMetadata array{0: int, 1: Sound}
  */
@@ -50,7 +49,6 @@ enum FurnaceType{
 	case BLAST_FURNACE;
 	case SMOKER;
 	case CAMPFIRE;
-	case SOUL_CAMPFIRE;
 
 	/**
 	 * @phpstan-return TMetadata
@@ -63,8 +61,7 @@ enum FurnaceType{
 			self::FURNACE => [200, new FurnaceSound()],
 			self::BLAST_FURNACE => [100, new BlastFurnaceSound()],
 			self::SMOKER => [100, new SmokerSound()],
-			self::CAMPFIRE => [200, new CampfireSound()],
-			self::SOUL_CAMPFIRE => [200, new CampfireSound()],
+			self::CAMPFIRE => [600, new CampfireSound()],
 		};
 	}
 
