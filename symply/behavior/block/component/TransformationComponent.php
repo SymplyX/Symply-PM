@@ -61,29 +61,6 @@ final class TransformationComponent implements IComponent
 		return $this->translation;
 	}
 
-	public static function northRotation() : self{
-		return new self(new Vector3(0, 0, 0));
-	}
-
-	public static function southRotation() : self{
-		return new self(new Vector3(0, 180, 0));
-	}
-	public static function eastRotation() : self{
-		return new self(new Vector3(0, -90, 0));
-	}
-
-	public static function westRotation() : self{
-		return new self(new Vector3(0, 90, 0));
-	}
-
-	public static function upRotation() : self{
-		return new self(new Vector3(90,0,0));
-	}
-
-	public static function downRotation() : self{
-		return new self(new Vector3(-90,0,0));
-	}
-
 	public function toNbt() : CompoundTag
 	{
 		return CompoundTag::create()->setTag($this->getName(),

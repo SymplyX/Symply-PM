@@ -34,11 +34,6 @@ use symply\behavior\block\property\BlockProperty;
 
 abstract class PermutationBlock extends BlockCustom
 {
-	/** @var BlockProperty[] */
-	private array $properties = [];
-
-	/** @var BlockPermutation[] */
-	private array $permutations = [];
 
 	abstract public function deserializeState(BlockStateReader $reader) : void;
 	abstract public function serializeState(BlockStateWriter $writer) : void;

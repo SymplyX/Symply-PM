@@ -28,8 +28,12 @@ namespace symply\behavior\block\permutation;
 
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use symply\behavior\block\builder\BlockBuilder;
+use symply\behavior\block\component\CollisionBoxComponent;
 use symply\behavior\block\component\GeometryComponent;
 use symply\behavior\block\component\MaterialInstancesComponent;
+use symply\behavior\block\component\SelectionBoxComponent;
+use symply\behavior\block\component\sub\HitBoxSubComponent;
 use symply\behavior\block\component\sub\MaterialSubComponent;
 use symply\behavior\block\component\TransformationComponent;
 use symply\behavior\block\component\UnitCubeComponent;
@@ -76,24 +80,34 @@ final class BlockPermutation
 		return $this;
 	}
 
-	public function setGeometry(string $identifier) : BlockPermutation
-	{
+	public function setGeometry(string $identifier) : static{
 		return $this->addComponent(new GeometryComponent($identifier));
 	}
 
-	public function setUnitCube() : BlockPermutation{
+	public function setUnitCube() : static{
 		return $this->addComponent(new UnitCubeComponent());
 	}
 
 	/**
 	 * @param MaterialSubComponent[] $materials
+	 * @return BlockBuilder
 	 */
-	public function setMaterialInstance(array $materials = []) : BlockPermutation{
+	public function setMaterialInstance(array $materials = []) : static{
 		return $this->addComponent(new MaterialInstancesComponent($materials));
 	}
 
-	public function setTransformationComponent(?Vector3 $rotation = null, ?Vector3 $scale = null, ?Vector3 $translation = null) : BlockPermutation{
+	public function setTransformationComponent(?Vector3 $rotation = null, ?Vector3 $scale = null, ?Vector3 $translation = null) : static{
 		return $this->addComponent(new TransformationComponent($rotation ?? Vector3::zero(), $scale ?? Vector3::zero(), $translation ?? Vector3::zero()));
+	}
+
+	public function setCollisionBox(Vector3 $origin, Vector3 $size, bool $enable = true): static
+	{
+		return $this->addComponent(new CollisionBoxComponent(new HitBoxSubComponent($enable, $origin, $size)));
+	}
+
+	public function setSelectionBox(Vector3 $origin, Vector3 $size, bool $enable = true): static
+	{
+		return $this->addComponent(new SelectionBoxComponent(new HitBoxSubComponent($enable, $origin, $size)));
 	}
 
 	/**
