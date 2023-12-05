@@ -155,6 +155,7 @@ use function strtolower;
  * @method static CakeWithCandle CAKE_WITH_CANDLE()
  * @method static CakeWithDyedCandle CAKE_WITH_DYED_CANDLE()
  * @method static Opaque CALCITE()
+ * @method static Campfire CAMPFIRE()
  * @method static Candle CANDLE()
  * @method static Carpet CARPET()
  * @method static Carrot CARROTS()
@@ -686,6 +687,7 @@ use function strtolower;
  * @method static Slab SMOOTH_STONE_SLAB()
  * @method static Snow SNOW()
  * @method static SnowLayer SNOW_LAYER()
+ * @method static Campfire SOUL_CAMPFIRE()
  * @method static SoulFire SOUL_FIRE()
  * @method static Lantern SOUL_LANTERN()
  * @method static SoulSand SOUL_SAND()
@@ -896,7 +898,7 @@ final class VanillaBlocks{
 		self::register("blast_furnace", new Furnace(new BID(Ids::BLAST_FURNACE, TileBlastFurnace::class), "Blast Furnace", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD)), FurnaceType::BLAST_FURNACE));
 		self::register("smoker", new Furnace(new BID(Ids::SMOKER, TileSmoker::class), "Smoker", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD)), FurnaceType::SMOKER));
 		self::register("campfire", new Campfire(new BID(Ids::CAMPFIRE, TileCampfire::class), "Campfire", new Info(BreakInfo::axe(3.5, ToolTier::WOOD)), FurnaceType::CAMPFIRE));
-		self::register("soul_campfire", new SoulCampfire(new BID(Ids::SOUL_CAMPFIRE, TileCampfire::class), "Soul Campfire", new Info(BreakInfo::axe(3.5, ToolTier::WOOD)), FurnaceType::CAMPFIRE));
+		self::register("soul_campfire", new Campfire(new BID(Ids::SOUL_CAMPFIRE, TileCampfire::class), "Soul Campfire", new Info(BreakInfo::axe(3.5, ToolTier::WOOD)), FurnaceType::CAMPFIRE));
 
 		$glassBreakInfo = new Info(new BreakInfo(0.3));
 		self::register("glass", new Glass(new BID(Ids::GLASS), "Glass", $glassBreakInfo));

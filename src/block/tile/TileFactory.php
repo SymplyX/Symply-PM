@@ -79,7 +79,6 @@ final class TileFactory{
 		$this->register(MobHead::class, ["Skull", "minecraft:skull"]);
 		$this->register(GlowingItemFrame::class, ["GlowItemFrame"]);
 		$this->register(Campfire::class, ["Campfire", "minecraft:campfire"]);
-		$this->register(SoulCampfire::class, ["SoulCampfire", "minecraft:soul_campfire"]);
 
 		//TODO: ChalkboardBlock
 		//TODO: ChemistryTable

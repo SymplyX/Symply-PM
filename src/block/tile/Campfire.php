@@ -74,7 +74,7 @@ class Campfire extends Spawnable{
 			$slot = count($this->items) + 1;
 		}
 		if($slot < 1 || $slot > self::MAX_ITEMS){
-			throw new Exception("Slot must be range 0-4, got" . $slot);
+			throw new Exception("Slot must be range 0-4, got " . $slot);
 		}
 		if($item->isNull()){
 			if(isset($this->items[$slot])) unset($this->items[$slot]);

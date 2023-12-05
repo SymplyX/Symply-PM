@@ -972,7 +972,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::CAMPFIRE, function(Reader $in) : Block{
 			return Blocks::CAMPFIRE()
 					->setFacing($in->readCardinalHorizontalFacing())
-					->setLit();
+					->setExtinguished($in->readBool(StateNames::EXTINGUISHED));
 		});
 		$this->map(Ids::CARROTS, fn(Reader $in) => Helper::decodeCrops(Blocks::CARROTS(), $in));
 		$this->map(Ids::CARVED_PUMPKIN, function(Reader $in) : Block{
@@ -1513,7 +1513,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::SOUL_CAMPFIRE, function(Reader $in) : Block{
 			return Blocks::SOUL_CAMPFIRE()
 					->setFacing($in->readCardinalHorizontalFacing())
-					->setLit();
+					->setExtinguished($in->readBool(StateNames::EXTINGUISHED));
 		});
 		$this->map(Ids::SOUL_FIRE, function(Reader $in) : Block{
 			$in->ignored(StateNames::AGE); //this is useless for soul fire, since it doesn't have the logic associated

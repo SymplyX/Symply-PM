@@ -43,7 +43,7 @@ use pocketmine\world\sound\FireExtinguishSound;
 use pocketmine\world\sound\FlintSteelSound;
 use pocketmine\world\sound\ItemFrameAddItemSound;
 
-class Campfire extends Block{
+class Campfire extends Transparent{
     use HorizontalFacingTrait;
 
     protected FurnaceType $furnaceType;
@@ -53,23 +53,6 @@ class Campfire extends Block{
     public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, FurnaceType $furnaceType){
         $this->furnaceType = $furnaceType;
         parent::__construct($idInfo, $name, $typeInfo);
-    }
-
-    public function writeStateToWorld() : void{
-        parent::writeStateToWorld();
-
-        $tile = $this->position->getWorld()->getTile($this->position);
-        if($tile instanceof TileCampfire){
-            for($i = 0; $i < TileCampfire::MAX_ITEMS; $i++){
-                $tile->setSlotTime($i, 0);
-                $tile->setItem(VanillaItems::AIR(), $i);
-            }
-        }
-    }
-
-    public function readStateFromWorld() : Block{
-        parent::readStateFromWorld();
-        return $this;
     }
 
     public function isSoul() : bool{
@@ -121,13 +104,7 @@ class Campfire extends Block{
         }
 
         if($player !== null){
-            $facing = [
-                4 => 3,
-                3 => 2,
-                2 => 0,
-                5 => 1,
-            ];
-            $this->facing = $facing[$player->getHorizontalFacing()];
+            $this->facing = Facing::opposite($player->getHorizontalFacing());
         }
         return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
     }
