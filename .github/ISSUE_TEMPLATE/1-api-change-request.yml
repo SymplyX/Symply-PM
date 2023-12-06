@@ -17,24 +17,24 @@ body:
       label: Description
       description: |
         Provide a clear, concise description of the addition or modification you are proposing.
-      validations:
-        required: true
+    validations:
+      required: true
 
   - type: textarea
     attributes:
       label: Justification
       description: |
         Describe the solution you'd like. Provide a clear and concise description of what you want to happen.
-      validations:
-        required: true
+    validations:
+      required: true
 
   - type: textarea
     attributes:
       label: Change List
       description: |
         List all changes in a clear format.
-      validations:
-        required: false
+    validations:
+      required: false
 
   - type: checkboxes
     attributes:
