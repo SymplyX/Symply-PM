@@ -35,6 +35,7 @@ use pocketmine\item\Item;
 use pocketmine\item\StringToItemParser;
 use pocketmine\network\mcpe\cache\CreativeInventoryCache;
 use pocketmine\network\mcpe\convert\TypeConverter;
+use pocketmine\network\mcpe\protocol\ItemComponentPacket;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\network\mcpe\protocol\types\ItemComponentPacketEntry;
 use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
@@ -61,6 +62,8 @@ final class SymplyItemFactory
 
 	/** @var ThreadSafeArray<ThreadSafeArray<Closure>> */
 	private ThreadSafeArray $asyncTransmitter;
+
+	private ?ItemComponentPacket $cache = null;
 
 	public function __construct(private readonly bool $asyncMode = false)
 	{
@@ -154,6 +157,10 @@ final class SymplyItemFactory
 	public function getItemsComponentPacketEntries() : array
 	{
 		return $this->itemsComponentPacketEntries;
+	}
+
+	public function getItemsComponentPacket(): ItemComponentPacket{
+		return $this->cache ??= ItemComponentPacket::create($this->getItemsComponentPacketEntries());
 	}
 
 	/**

@@ -28,6 +28,7 @@ declare(strict_types=1);
  * @name SymplyPlugin
  * @main \symply\plugin\SymplyPlugin
  * @version 0.0.1
+ * @load STARTUP
  * @api 5.0.0
  */
 
@@ -37,6 +38,8 @@ use pocketmine\plugin\PluginBase;
 use symply\behavior\AsyncRegisterBehaviorsTask;
 use symply\behavior\SymplyBlockFactory;
 use symply\behavior\SymplyItemFactory;
+use symply\plugin\listener\BehaviorListener;
+use symply\plugin\listener\BreakListener;
 use symply\test\ItemPP;
 use symply\test\ItemPP2;
 use symply\test\PP;
@@ -52,6 +55,8 @@ class SymplyPlugin extends PluginBase
 
 	protected function onEnable() : void
 	{
+		$this->getServer()->getPluginManager()->registerEvents(new BehaviorListener(), $this);
+		$this->getServer()->getPluginManager()->registerEvents(new BreakListener(), $this);
 		$asyncPool = $this->getServer()->getAsyncPool();
 		$asyncPool->addWorkerStartHook(static function(int $worker) use($asyncPool) : void{
 			$asyncPool->submitTaskToWorker(new AsyncRegisterBehaviorsTask(), $worker);

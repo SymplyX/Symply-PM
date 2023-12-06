@@ -26,6 +26,9 @@ declare(strict_types=1);
 
 namespace symply\behavior\items;
 
+use symply\behavior\items\builder\ItemBuilder;
+use symply\behavior\items\property\DamageProperty;
+
 abstract class TieredTool extends Tool{
 	protected ToolTier $tier;
 
