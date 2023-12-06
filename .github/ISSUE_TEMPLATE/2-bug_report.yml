@@ -53,8 +53,8 @@ body:
       attributes:
           label: "Do you use Symply modules?"
           options:
-              - Yes
-              - No
+              - "Yes"
+              - "No"
 
     - type: textarea
       attributes:
