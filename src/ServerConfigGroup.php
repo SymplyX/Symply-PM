@@ -40,6 +40,7 @@ final class ServerConfigGroup{
 
 	public function __construct(
 		private Config $pocketmineYml,
+		private Config $symplyYml,
 		private Config $serverProperties
 	){}
 
@@ -50,6 +51,19 @@ final class ServerConfigGroup{
 				$this->propertyCache[$variable] = $v[$variable];
 			}else{
 				$this->propertyCache[$variable] = $this->pocketmineYml->getNested($variable);
+			}
+		}
+
+		return $this->propertyCache[$variable] ?? $defaultValue;
+	}
+
+	public function getSymplyProperty(string $variable, mixed $defaultValue = null) : mixed{
+		if(!array_key_exists($variable, $this->propertyCache)){
+			$v = getopt("", ["$variable::"]);
+			if(isset($v[$variable])){
+				$this->propertyCache[$variable] = $v[$variable];
+			}else{
+				$this->propertyCache[$variable] = $this->symplyYml->getNested($variable);
 			}
 		}
 
@@ -130,6 +144,9 @@ final class ServerConfigGroup{
 		}
 		if($this->pocketmineYml->hasChanged()){
 			$this->pocketmineYml->save();
+		}
+		if ($this->symplyYml->hasChanged()) {
+			$this->symplyYml->save();
 		}
 	}
 }

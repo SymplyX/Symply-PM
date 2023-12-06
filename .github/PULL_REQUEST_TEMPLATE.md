@@ -1,40 +1,34 @@
-## Introduction
-<!-- Explain existing problems or why this pull request is necessary -->
+### Description
 
-### Relevant issues
-<!-- List relevant issues here -->
+<!-- [Provide a detailed description of the changes you've made in this Pull Request] -->
+
+### Issue Resolved (if applicable)
+
+<!-- [If this PR resolves a particular issue, please describe it here with relevant details] -->
+
+### Proposed Changes
 <!--
-
-* Fixes #1
-* Fixes #2
-
+- [List the main modifications or added features]
+- [Example: Added feature X to enhance Y]
 -->
 
-## Changes
-### API changes
-<!-- Any additions to the API that should be documented in release notes? -->
+### Screenshots / Videos (if applicable, obligatory)
 
-### Behavioural changes
-<!-- Any change in how the server behaves, or its performance? -->
+<!-- [If possible, provide screenshots or videos to illustrate the changes made] -->
 
-## Backwards compatibility
-<!-- Any possible backwards incompatible changes? How are they solved, or how can they be solved? -->
+### Verification
 
-## Follow-up
-<!-- Suggest any actions to be done before/after merging this pull request -->
-<!--
+- [ ] I have tested these changes locally
+- [ ] Changes work as intended
+- [ ] I have checked that these changes do not cause regression in other parts of the codebase
 
-Requires translations:
+### Checklist
 
-| Name | Value in eng.ini |
-| :--: | :---: |
-| `foo.bar` | `Foo bar` |
+- [ ] I have added comments/documentation to explain the changes (if necessary)
+- [ ] I have updated existing documentation if changes were required
+- [ ] I have ensured my code adheres to project style conventions and best practices
 
--->
+### Known Issues
 
-## Tests
-<!--
-Details should be provided of tests done. Simply saying "tested" or equivalent is not acceptable.
+<!-- [List any known issues or limitations you've identified with these changes] -->
 
-Attach scripts or actions to test this pull request, as well as the result
--->

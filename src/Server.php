@@ -122,6 +122,7 @@ use pocketmine\world\WorldManager;
 use pocketmine\YmlServerProperties as Yml;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Filesystem\Path;
+use symply\YmlSymplyProperties;
 use function array_fill;
 use function array_sum;
 use function base64_encode;
@@ -300,6 +301,7 @@ class Server{
 	 * @phpstan-var array<string, array<int, CommandSender>>
 	 */
 	private array $broadcastSubscribers = [];
+	private bool $waterdogeSupport = false;
 
 	public function getName() : string{
 		return VersionInfo::NAME;
@@ -319,6 +321,10 @@ class Server{
 
 	public function getApiVersion() : string{
 		return VersionInfo::BASE_VERSION;
+	}
+
+	public function getSymplyApiVersion() : string{
+		return VersionInfo::SYMPLY_VERSION;
 	}
 
 	public function getFilePath() : string{
@@ -346,7 +352,7 @@ class Server{
 	 * are not logged into Xbox Live will be disconnected.
 	 */
 	public function getOnlineMode() : bool{
-		return $this->onlineMode;
+		return !$this->waterdogeSupport && $this->onlineMode;
 	}
 
 	/**
@@ -410,6 +416,10 @@ class Server{
 
 	public function isHardcore() : bool{
 		return $this->configGroup->getConfigBool(ServerProperties::HARDCORE, false);
+	}
+
+	public function isWaterdogepeSupport() : bool{
+		return $this->waterdogeSupport;
 	}
 
 	public function getMotd() : string{
@@ -809,8 +819,15 @@ class Server{
 				@file_put_contents($pocketmineYmlPath, $content);
 			}
 
+			$symplyYmlPath = Path::join($this->dataPath, "symply.yml");
+			if (!file_exists($symplyYmlPath)) {
+				$content = Filesystem::fileGetContents(Path::join(\pocketmine\RESOURCE_PATH, "symply.yml"));
+				@file_put_contents($symplyYmlPath, $content);
+			}
+
 			$this->configGroup = new ServerConfigGroup(
 				new Config($pocketmineYmlPath, Config::YAML, []),
+				new Config($symplyYmlPath, Config::YAML, []),
 				new Config(Path::join($this->dataPath, "server.properties"), Config::PROPERTIES, [
 					ServerProperties::MOTD => self::DEFAULT_SERVER_NAME,
 					ServerProperties::SERVER_PORT_IPV4 => self::DEFAULT_PORT_IPV4,
@@ -934,9 +951,9 @@ class Server{
 			$this->banByIP->load();
 
 			$this->maxPlayers = $this->configGroup->getConfigInt(ServerProperties::MAX_PLAYERS, self::DEFAULT_MAX_PLAYERS);
-
+			$this->waterdogeSupport = $this->configGroup->getSymplyProperty(YmlSymplyProperties::WATERDOGPE_SUPPORT, false);
 			$this->onlineMode = $this->configGroup->getConfigBool(ServerProperties::XBOX_AUTH, true);
-			if($this->onlineMode){
+			if($this->getOnlineMode()){
 				$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_auth_enabled()));
 			}else{
 				$this->logger->warning($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_auth_disabled()));

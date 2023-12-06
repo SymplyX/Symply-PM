@@ -5,8 +5,10 @@ $finder = PhpCsFixer\Finder::create()
 	->in(__DIR__ . '/build')
 	->in(__DIR__ . '/tests')
 	->in(__DIR__ . '/tools')
+	->exclude( __DIR__ . '/symply')
 	->notPath('plugins/DevTools')
-	->notName('PocketMine.php');
+	->notName('PocketMine.php')
+	->notName('generate-symply-yml-property-consts.php');
 
 return (new PhpCsFixer\Config)
 	->setRiskyAllowed(true)

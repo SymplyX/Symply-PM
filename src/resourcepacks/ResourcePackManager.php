@@ -26,6 +26,8 @@ namespace pocketmine\resourcepacks;
 use pocketmine\utils\Config;
 use pocketmine\utils\Filesystem;
 use Symfony\Component\Filesystem\Path;
+use symply\resourcepacks\URLResourcePack;
+use symply\utils\Utils as UtilsSymply;
 use function array_keys;
 use function copy;
 use function count;
@@ -56,7 +58,7 @@ class ResourcePackManager{
 	 * @var string[]
 	 * @phpstan-var array<string, string>
 	 */
-	private array $encryptionKeys = [];
+	private array $packUrl = [];
 
 	/**
 	 * @param string $path Path to resource-packs directory.
@@ -88,17 +90,23 @@ class ResourcePackManager{
 		}
 
 		foreach($resourceStack as $pos => $pack){
-			if(!is_string($pack) && !is_int($pack) && !is_float($pack)){
+			if(!(is_string($pack) || is_array($pack)) && !is_int($pack) && !is_float($pack)){
 				$logger->critical("Found invalid entry in resource pack list at offset $pos of type " . gettype($pack));
 				continue;
 			}
-			$pack = (string) $pack;
 			try{
-				$newPack = $this->loadPackFromPath(Path::join($this->path, $pack));
-
+				if (is_string($pack)) {
+					$newPack = $this->loadPackFromPath(Path::join($this->path, (string) $pack));
+				}else {
+					$newPack = $this->loadPackFromArray((array) $pack);
+				}
 				$this->resourcePacks[] = $newPack;
 				$index = strtolower($newPack->getPackId());
 				$this->uuidList[$index] = $newPack;
+				if ($newPack instanceof URLResourcePack){
+					$this->addPackUrl($newPack);
+					return;
+				}
 
 				$keyPath = Path::join($this->path, $pack . ".key");
 				if(file_exists($keyPath)){
@@ -111,7 +119,7 @@ class ResourcePackManager{
 					if(strlen($key) !== 32){
 						throw new ResourcePackException("Invalid encryption key length, must be exactly 32 bytes");
 					}
-					$this->encryptionKeys[$index] = $key;
+					$this->setPackEncryptionKey($index, $key);
 				}
 			}catch(ResourcePackException $e){
 				$logger->critical("Could not load resource pack \"$pack\": " . $e->getMessage());
@@ -138,6 +146,21 @@ class ResourcePackManager{
 		}
 
 		throw new ResourcePackException("Format not recognized");
+	}
+
+	private function loadPackFromArray(array $info) : ResourcePack{
+		$packPath = $info['path'];
+		if (UtilsSymply::isUrl($packPath)){
+			return new URLResourcePack($info['name'], $info['uuid'], $info['version'], $packPath, UtilsSymply::getSizeOfResourcesPack($packPath), $info['encryptionKey'] ?? "");
+		}
+		$packPath = Path::join($this->path, $packPath);
+		if(!file_exists($packPath)){
+			throw new ResourcePackException("File or directory not found");
+		}
+		if(is_dir($packPath)){
+			throw new ResourcePackException("Directory resource packs are unsupported");
+		}
+		return new ZippedResourcePack($packPath, $info['encryptionKey'] ?? "");
 	}
 
 	/**
@@ -208,28 +231,33 @@ class ResourcePackManager{
 	}
 
 	/**
-	 * Returns the key with which the pack was encrypted, or null if the pack has no key.
-	 */
-	public function getPackEncryptionKey(string $id) : ?string{
-		return $this->encryptionKeys[strtolower($id)] ?? null;
-	}
-
-	/**
 	 * Sets the encryption key to use for decrypting the specified resource pack. The pack will **NOT** be decrypted by
 	 * PocketMine-MP; the key is simply passed to the client to allow it to decrypt the pack after downloading it.
 	 */
 	public function setPackEncryptionKey(string $id, ?string $key) : void{
 		$id = strtolower($id);
+		if (!isset($this->uuidList[$id])){
+			throw new ResourcePackException("Resource pack with ID $id not found.");
+		}
 		if($key === null){
-			//allow deprovisioning keys for resource packs that have been removed
-			unset($this->encryptionKeys[$id]);
+			$this->uuidList[$id]->setEncryptionKey("");
 		}elseif(isset($this->uuidList[$id])){
 			if(strlen($key) !== 32){
 				throw new \InvalidArgumentException("Encryption key must be exactly 32 bytes long");
 			}
-			$this->encryptionKeys[$id] = $key;
+			$this->uuidList[$id]->setEncryptionKey($key);
 		}else{
 			throw new \InvalidArgumentException("Unknown pack ID $id");
 		}
+	}
+
+	public function getPackUrl() : array
+	{
+		return $this->packUrl;
+	}
+
+	public function addPackUrl(URLResourcePack $packUrl) : void
+	{
+		$this->packUrl[$packUrl->getRealName()] = $packUrl->getUrl();
 	}
 }
