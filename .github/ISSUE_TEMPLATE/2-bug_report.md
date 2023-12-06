@@ -1,37 +1,95 @@
 ---
-name: Bug report
-about: Unexpected non-crash behaviour (except missing gameplay features)
+name: "🧰 Bug Report"
+about: "Have you found a bug ? Then report it to us!"
 title: ''
-labels: 'Type: Bug'
-assignees: ''
+labels:
+    - 'Type: Bug'
+    - 'Status: Unconfirmed'
 
+body:
+    - type: markdown
+      attributes:
+          value: |
+              **Thank you :heart: for taking the time to fill in this bug report!**
+              Please check if there is a problem [already exists](https://github.com/SymplyX/Symply/pulls) for your change.
+
+              We are also happy to accept contributions from our users. For more details, see [here](https://github.com/SymplyX/Symply/blob/stable/CONTRIBUTING.md).
+
+    - type: textarea
+      attributes:
+          label: "What actually happened?"
+          description: |
+              We're trying to find out how this happened, so please give us as much information as possible.
+              Tip: The more information we have, the faster your request will be processed!
+          validations:
+              required: true
+
+    - type: textarea
+      attributes:
+          label: "Steps to reproduce"
+          description: "How can we reproduce your problem simply?"
+          placeholder: |
+              1. Start server...
+              2. Break block...
+          validations:
+              required: true
+
+    - type: textarea
+      attributes:
+          label: "Environment"
+          description: |
+              Examples:
+              - **OS**: Ubuntu 20.04
+              - **Symply**: latest/dev
+              - **Pocketmine-MP**: latest/dev
+              - **Game version**: Android/iOS/Win10/Xbox/PS4/Switch
+          value: |
+              - OS:
+              - Symply:
+              - Pocketmine-MP:
+              - Game version:
+          render: markdown
+          validations:
+              required: true
+
+    - type: dropdown
+      attributes:
+          label: "Do you use Symply modules?"
+          multiple: false
+          options:
+              - Yes
+              - No
+          default: 0
+
+    - type: textarea
+      attributes:
+          label: "List of active Symply modules"
+          description: "A list is required. You can find the active modules in the symply.yml config file."
+          placeholder: |
+              1. Rank
+              2. WaterdogPe Support
+          validations:
+              required: false
+
+    - type: textarea
+      attributes:
+          label: "Do you have the crashdump file to send us?"
+          description: "If you have nothing, leave the box empty."
+          validations:
+              required: false
+
+    - type: textarea
+      attributes:
+          label: "Proof Image?"
+          description: "If you have any images to share with us, simply enter them in the image box."
+          validations:
+              required: false
+
+    - type: checkboxes
+      attributes:
+          label: "Is there an existing issue for this?"
+          description: "Please search to see if an issue already exists for the bug you encountered."
+          options:
+              - label: "I have searched the existing issues"
+                required: true
 ---
-
-### Issue description
-
-- Expected result: What were you expecting to happen?
-- Actual result: What actually happened?
-
-### Steps to reproduce the issue
-1. ...
-2. ...
-
-### OS and versions
-<!-- try the `version` command | LATEST IS NOT A VALID VERSION -->
-* PocketMine-MP:
-* PHP:
-* Using JIT: yes/no (delete as appropriate) <!-- look for the giant yellow warning in the log that says you're using JIT -->
-* Server OS:
-* Game version: Android/iOS/Win10/Xbox/PS4/Switch (delete as appropriate)
-
-### Plugins
-<!--- use the `plugins` command and paste the output below -->
-
-- If you remove all plugins, does the issue still occur?
-- If the issue is **not** reproducible without plugins:
-  - Have you asked for help on our forums before creating an issue?
-  - Can you provide sample, *minimal* reproducing code for the issue? If so, paste it in the bottom section
-
-### Crashdump, backtrace or other files
-<!--- Submit crashdumps at https://crash.pmmp.io and paste a link -->
-<!--- Use gist or anything else to add other files and add links here -->
