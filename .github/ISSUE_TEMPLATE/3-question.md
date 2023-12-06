@@ -1,5 +1,5 @@
 ---
-name: Question
+name: 🗣️ Question
 about: Ask your question
 title: ""
 labels:

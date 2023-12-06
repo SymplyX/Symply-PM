@@ -1,5 +1,5 @@
 ---
-name: Crash
+name: 🧨 Crash
 about: Report a crash in PocketMine-MP (not plugins)
 title: Server crashed
 labels:
