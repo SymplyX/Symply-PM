@@ -1,8 +1,31 @@
 ---
 name: Question
 about: Ask your question
-title: Question
-labels: 'Type: Question'
+title: ""
+labels:
+    - 'Type: Question'
 assignees: ''
 
+body:
+    - type: markdown
+      attributes:
+          value: |
+              <!-- Welcome! Please ask your question below. -->
+              <!-- Kindly provide as many details as possible for an accurate response. -->
+              <!-- You can also check previous questions to avoid duplicates. -->
+
+    - type: textarea
+      attributes:
+          label: "Your Question"
+          description: "Please provide as many details as possible."
+          validations:
+              required: true
+
+    - type: checkboxes
+      attributes:
+          label: "Prior Research"
+          description: "Have you performed prior research to avoid duplicates?"
+          options:
+              - label: "I have performed prior research"
+                required: true
 ---
