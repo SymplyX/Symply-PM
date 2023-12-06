@@ -1,6 +1,6 @@
 name: 🗣️ Question
 description: Ask your question
-title: ""
+title: "[Question]: "
 labels: ["Type: Question"]
 
 body:
@@ -15,8 +15,8 @@ body:
       attributes:
           label: "Your Question"
           description: "Please provide as many details as possible."
-          validations:
-              required: true
+      validations:
+        required: true
 
     - type: checkboxes
       attributes:

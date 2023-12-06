@@ -1,6 +1,6 @@
 name: "🧰 Bug Report"
 description: "Have you found a bug ? Then report it to us!"
-title: ''
+title: '[Bug]: '
 labels: ["Type: Bug", "Status: Unconfirmed"]
 
 body:
@@ -18,8 +18,8 @@ body:
           description: |
               We're trying to find out how this happened, so please give us as much information as possible.
               Tip: The more information we have, the faster your request will be processed!
-          validations:
-              required: true
+      validations:
+        required: true
 
     - type: textarea
       attributes:
@@ -28,8 +28,8 @@ body:
           placeholder: |
               1. Start server...
               2. Break block...
-          validations:
-              required: true
+      validations:
+        required: true
 
     - type: textarea
       attributes:
@@ -46,8 +46,8 @@ body:
               - Pocketmine-MP:
               - Game version:
           render: markdown
-          validations:
-              required: true
+      validations:
+        required: true
 
     - type: dropdown
       attributes:
@@ -65,22 +65,22 @@ body:
           placeholder: |
               1. Rank
               2. WaterdogPe Support
-          validations:
-              required: false
+      validations:
+        required: false
 
     - type: textarea
       attributes:
           label: "Do you have the crashdump file to send us?"
           description: "If you have nothing, leave the box empty."
-          validations:
-              required: false
+      validations:
+        required: false
 
     - type: textarea
       attributes:
           label: "Proof Image?"
           description: "If you have any images to share with us, simply enter them in the image box."
-          validations:
-              required: false
+      validations:
+        required: false
 
     - type: checkboxes
       attributes:
