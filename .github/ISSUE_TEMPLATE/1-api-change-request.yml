@@ -1,9 +1,7 @@
 name: "📦 API change request"
-about: "Suggest a change, addition, or removal to the plugin API"
+description: "Suggest a change, addition, or removal to the plugin API"
 title: ""
-labels:
-  - 'Type: API'
-  - 'Status: Unconfirmed'
+labels: ["Type: API", "Status: Unconfirmed"]
 
 body:
   - type: markdown

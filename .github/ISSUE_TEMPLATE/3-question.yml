@@ -1,9 +1,7 @@
 name: 🗣️ Question
-about: Ask your question
+description: Ask your question
 title: ""
-labels:
-    - 'Type: Question'
-assignees: ''
+labels: ["Type: Question"]
 
 body:
     - type: markdown

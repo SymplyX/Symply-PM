@@ -1,10 +1,7 @@
----
 name: "🧰 Bug Report"
-about: "Have you found a bug ? Then report it to us!"
+description: "Have you found a bug ? Then report it to us!"
 title: ''
-labels:
-    - 'Type: Bug'
-    - 'Status: Unconfirmed'
+labels: ["Type: Bug", "Status: Unconfirmed"]
 
 body:
     - type: markdown
@@ -92,4 +89,3 @@ body:
           options:
               - label: "I have searched the existing issues"
                 required: true
----

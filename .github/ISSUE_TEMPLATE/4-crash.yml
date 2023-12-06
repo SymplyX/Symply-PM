@@ -1,8 +1,7 @@
 name: 🧨 Crash
-about: Report a crash in PocketMine-MP (not plugins)
+description: Report a crash in PocketMine-MP (not plugins)
 title: Server crashed
-labels:
-    - 'Status: Unconfirmed'
+labels: ["Status: Unconfirmed"]
 
 body:
     - type: markdown
