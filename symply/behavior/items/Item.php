@@ -24,16 +24,27 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior\items\info;
+namespace symply\behavior\items;
 
-use pocketmine\nbt\tag\CompoundTag;
-use symply\behavior\block\info\CreativeInfo as BlockCreativeInfo;
-class CreativeInfo extends BlockCreativeInfo
+use pocketmine\item\Item as PMItem;
+use symply\behavior\items\builder\ItemBuilder;
+use function assert;
+
+class Item extends PMItem implements ICustomItem
 {
-	public function toNbt() : CompoundTag
+	public function __construct(ItemIdentifier $identifier, string $name = "Unknown", array $enchantmentTags = [])
 	{
-		return CompoundTag::create()
-			->setInt("creative_category", $this->getCategory()->toItemCategory() ?? "")
-			->setString("creative_group", $this->getGroup()->value ?? "");
+		parent::__construct($identifier, $name, $enchantmentTags);
+	}
+	public function getIdentifier() : ItemIdentifier
+	{
+		$identifier = parent::getIdentifier();
+		assert($identifier instanceof  ItemIdentifier);
+		return $identifier;
+	}
+	public function getItemBuilder() : ItemBuilder{
+		return ItemBuilder::create()->setItem($this)
+			->setDefaultMaxStack()
+			->setDefaultName();
 	}
 }

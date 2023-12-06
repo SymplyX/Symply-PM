@@ -24,17 +24,17 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior\items\builder;
+namespace symply\behavior\block;
 
-use symply\behavior\items\ItemCustom;
+use pocketmine\data\bedrock\block\convert\BlockStateReader;
+use pocketmine\data\bedrock\block\convert\BlockStateWriter;
+use symply\behavior\block\builder\BlockPermutationBuilder;
 
-class ItemCustomTools extends ItemCustom
+interface IPermutationBlock extends IBlockCustom
 {
 
-	public function getItemBuilder() : ItemBuilder
-	{
-		return  ItemBuilder::create()
-			->setItem($this)
-			->setIcon("apple");
-	}
+	public function deserializeState(BlockStateReader $reader) : void;
+	public function serializeState(BlockStateWriter $writer) : void;
+
+	public function getBlockBuilder() : BlockPermutationBuilder;
 }

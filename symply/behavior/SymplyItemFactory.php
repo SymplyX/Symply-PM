@@ -31,6 +31,7 @@ use pmmp\thread\ThreadSafeArray;
 use pocketmine\data\bedrock\item\BlockItemIdMap;
 use pocketmine\data\bedrock\item\SavedItemData;
 use pocketmine\inventory\CreativeInventory;
+use pocketmine\item\Item;
 use pocketmine\item\StringToItemParser;
 use pocketmine\network\mcpe\cache\CreativeInventoryCache;
 use pocketmine\network\mcpe\convert\TypeConverter;
@@ -39,8 +40,8 @@ use pocketmine\network\mcpe\protocol\types\ItemComponentPacketEntry;
 use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
-use symply\behavior\block\BlockCustom;
-use symply\behavior\items\ItemCustom;
+use symply\behavior\block\Block;
+use symply\behavior\items\ICustomItem;
 use function array_merge;
 use function array_values;
 use function uasort;
@@ -49,7 +50,7 @@ final class SymplyItemFactory
 {
 	use SingletonTrait;
 
-	/** @var array<string, ItemCustom> */
+	/** @var array<string, Item> */
 	private array $items = [];
 
 	/** @var ItemComponentPacketEntry[] */
@@ -68,12 +69,12 @@ final class SymplyItemFactory
 	}
 
 	/**
-	 * @param Closure(): ItemCustom $itemClosure
+	 * @param Closure(): Item&ICustomItem $itemClosure
 	 */
 	public function register(Closure $itemClosure, ?Closure $serializer = null, ?Closure $deserializer = null) : void
 	{
 		/**
-		 * @var ItemCustom $itemCustom
+		 * @var Item&ICustomItem $itemCustom
 		 */
 		$itemCustom = $itemClosure();
 		$identifier = $itemCustom->getIdentifier()->getNamespaceId();
@@ -123,7 +124,7 @@ final class SymplyItemFactory
 	 * Registers the required mappings for the block to become an item that can be placed etc. It is assigned an ID that
 	 * correlates to its block ID.
 	 */
-	public function registerBlockItem(string $identifier, BlockCustom $block) : void {
+	public function registerBlockItem(string $identifier, Block $block) : void {
 		$itemId = 255 - $block->getIdInfo()->getOldId();
 		$this->registerCustomItemMapping($identifier, $itemId, new ItemTypeEntry($identifier, $itemId, true));
 		StringToItemParser::getInstance()->registerBlock($identifier, fn() => clone $block);
@@ -156,14 +157,14 @@ final class SymplyItemFactory
 	}
 
 	/**
-	 * @return ItemCustom[]
+	 * @return Item[]
 	 */
 	public function getItems() : array
 	{
 		return $this->items;
 	}
 
-	public function getItem(string $identifier) : ?ItemCustom{
+	public function getItem(string $identifier) : ?Item{
 		return $this->items[$identifier] ?? null;
 	}
 

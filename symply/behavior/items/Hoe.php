@@ -26,26 +26,25 @@ declare(strict_types=1);
 
 namespace symply\behavior\items;
 
-use pocketmine\item\ItemIdentifier;
+use pocketmine\block\Block;
+use pocketmine\block\BlockToolType;
+use pocketmine\entity\Entity;
 
-class ItemCustomIdentifier extends ItemIdentifier
+abstract class Hoe extends TieredTool
 {
-	public function __construct(
-		private readonly string $namespaceId,
-		private readonly int    $oldId,
-		int $typeId
-	)
-	{
-		parent::__construct($typeId);
+
+	public function getBlockToolType() : int{
+		return BlockToolType::HOE;
 	}
 
-	public function getNamespaceId() : string
-	{
-		return $this->namespaceId;
+	public function onAttackEntity(Entity $victim, array &$returnedItems) : bool{
+		return $this->applyDamage(1);
 	}
 
-	public function getOldId() : int
-	{
-		return $this->oldId;
+	public function onDestroyBlock(Block $block, array &$returnedItems) : bool{
+		if(!$block->getBreakInfo()->breaksInstantly()){
+			return $this->applyDamage(1);
+		}
+		return false;
 	}
 }

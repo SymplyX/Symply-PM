@@ -35,6 +35,8 @@ use pocketmine\player\Player;
 use pocketmine\utils\Random;
 use pocketmine\world\generator\object\TallGrass as TallGrassObject;
 use pocketmine\world\sound\ItemUseOnBlockSound;
+use symply\behavior\items\Hoe as SymplyHoe;
+use symply\behavior\items\Shovel as SymplyShovel;
 use function mt_rand;
 
 class Grass extends Opaque{
@@ -93,14 +95,14 @@ class Grass extends Opaque{
 			return true;
 		}
 		if($face !== Facing::DOWN){
-			if($item instanceof Hoe){
+			if($item instanceof Hoe || $item instanceof SymplyHoe){
 				$item->applyDamage(1);
 				$newBlock = VanillaBlocks::FARMLAND();
 				$world->addSound($this->position->add(0.5, 0.5, 0.5), new ItemUseOnBlockSound($newBlock));
 				$world->setBlock($this->position, $newBlock);
 
 				return true;
-			}elseif($item instanceof Shovel){
+			}elseif($item instanceof Shovel || $item instanceof SymplyShovel){
 				$item->applyDamage(1);
 				$newBlock = VanillaBlocks::GRASS_PATH();
 				$world->addSound($this->position->add(0.5, 0.5, 0.5), new ItemUseOnBlockSound($newBlock));

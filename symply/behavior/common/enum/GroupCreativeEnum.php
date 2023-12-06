@@ -26,6 +26,9 @@ declare(strict_types=1);
 
 namespace symply\behavior\common\enum;
 
+use pocketmine\inventory\ArmorInventory;
+use symply\behavior\items\ArmorTypeInfo;
+
 enum GroupCreativeEnum : string
 {
 
@@ -104,5 +107,15 @@ enum GroupCreativeEnum : string
 	case WOOL_CARPET = "itemGroup.name.woolCarpet";
 	case CANDLES = "itemGroup.name.candles";
 	case GOAT_HORN = "itemGroup.name.goatHorn";
+
+	public static function fromArmorTypeInfo(ArmorTypeInfo $info) : GroupCreativeEnum{
+		return match ($info->getArmorSlot()){
+			ArmorInventory::SLOT_HEAD => self::HELMET,
+			ArmorInventory::SLOT_CHEST => self::CHESTPLATE,
+			ArmorInventory::SLOT_LEGS => self::LEGGINGS,
+			ArmorInventory::SLOT_FEET => self::BOOTS,
+			default => self::NONE
+		};
+	}
 
 }

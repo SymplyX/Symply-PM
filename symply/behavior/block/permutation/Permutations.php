@@ -39,7 +39,7 @@ use symply\behavior\block\component\TransformationComponent;
 use symply\behavior\block\component\UnitCubeComponent;
 use symply\behavior\common\component\IComponent;
 
-final class BlockPermutation
+final class Permutations
 {
 	private string $condition;
 
@@ -47,9 +47,9 @@ final class BlockPermutation
 	public function __construct() {
 	}
 
-	public static function create() : BlockPermutation
+	public static function create() : Permutations
 	{
-		return new BlockPermutation();
+		return new Permutations();
 	}
 
 	public function getCondition() : string
@@ -57,7 +57,7 @@ final class BlockPermutation
 		return $this->condition;
 	}
 
-	public function setCondition(string $condition) : BlockPermutation
+	public function setCondition(string $condition) : Permutations
 	{
 		$this->condition = $condition;
 		return $this;
@@ -71,7 +71,7 @@ final class BlockPermutation
 		return $this->components;
 	}
 
-	public function addComponent(IComponent $component) : BlockPermutation
+	public function addComponent(IComponent $component) : Permutations
 	{
 		if ($component instanceof GeometryComponent && isset($this->components['minecraft:unit_cube'])){
 			unset($this->components['minecraft:unit_cube']);
@@ -100,12 +100,12 @@ final class BlockPermutation
 		return $this->addComponent(new TransformationComponent($rotation ?? Vector3::zero(), $scale ?? Vector3::zero(), $translation ?? Vector3::zero()));
 	}
 
-	public function setCollisionBox(Vector3 $origin, Vector3 $size, bool $enable = true): static
+	public function setCollisionBox(Vector3 $origin, Vector3 $size, bool $enable = true) : static
 	{
 		return $this->addComponent(new CollisionBoxComponent(new HitBoxSubComponent($enable, $origin, $size)));
 	}
 
-	public function setSelectionBox(Vector3 $origin, Vector3 $size, bool $enable = true): static
+	public function setSelectionBox(Vector3 $origin, Vector3 $size, bool $enable = true) : static
 	{
 		return $this->addComponent(new SelectionBoxComponent(new HitBoxSubComponent($enable, $origin, $size)));
 	}

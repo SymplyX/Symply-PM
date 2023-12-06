@@ -38,15 +38,16 @@ use pocketmine\network\mcpe\protocol\types\BlockPaletteEntry;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use ReflectionException;
-use symply\behavior\block\BlockCustom;
-use symply\behavior\block\PermutationBlock;
+use symply\behavior\block\IBlockCustom;
+use symply\behavior\block\IPermutationBlock;
+use function assert;
 
 final class SymplyBlockFactory
 {
-	/** @var self|null */
-	private static $instance = null;
 
-	/** @var array<string, BlockCustom> */
+	private static ?SymplyBlockFactory $instance = null;
+
+	/** @var array<string, IBlockCustom> */
 	private array $blocks = [];
 
 	/** @var BlockPaletteEntry[] */
@@ -55,19 +56,16 @@ final class SymplyBlockFactory
 	/** @var ThreadSafeArray<ThreadSafeArray<Closure>> */
 	private ThreadSafeArray $asyncTransmitter;
 
-	/**
-	 * @throws ReflectionException
-	 */
 	public function __construct(private readonly bool $asyncMode = false)
 	{
 		$this->asyncTransmitter = new ThreadSafeArray();
 	}
 	/**
-	 * @param Closure(): BlockCustom $blockClosure
+	 * @param Closure(): Block&IBlockCustom $blockClosure
 	 */
 	public function register(Closure $blockClosure, ?Closure $serializer = null, ?Closure $deserializer = null) : void
 	{
-		/** @var BlockCustom $blockCustom */
+		/** @var Block&IBlockCustom $blockCustom */
 		$blockCustom = $blockClosure();
 		$identifier = $blockCustom->getIdInfo()->getNamespaceId();
 		if (isset($this->blocks[$identifier])) {
@@ -77,14 +75,15 @@ final class SymplyBlockFactory
 		RuntimeBlockStateRegistry::getInstance()->register($blockCustom);
 		SymplyItemFactory::getInstance()->registerBlockItem($identifier, $blockCustom);
 		$this->blocks[$identifier] = $blockCustom;
-		if ($blockCustom instanceof PermutationBlock) {
-			$serializer ??= static function (PermutationBlock $block) : BlockStateWriter {
+		if ($blockCustom instanceof IPermutationBlock) {
+			$serializer ??= static function (Block&IPermutationBlock $block) : BlockStateWriter {
 				$writer = BlockStateWriter::create($block->getIdInfo()->getNamespaceId());
 				$block->serializeState($writer);
 				return $writer;
 			};
 			$deserializer ??= static function (BlockStateReader $reader) use ($identifier) : Block {
 				$block = SymplyBlockFactory::getInstance()->getBlock($identifier);
+				assert($block instanceof IPermutationBlock);
 				$block->deserializeState($reader);
 				return $block;
 			};
@@ -122,14 +121,17 @@ final class SymplyBlockFactory
 	}
 
 	/**
-	 * @return BlockCustom[]
+	 * @return Block&IBlockCustom[]
 	 */
 	public function getBlocks() : array
 	{
 		return $this->blocks;
 	}
 
-	public function getBlock(string $identifier) : ?BlockCustom
+	/**
+	 * @return null|Block&IBlockCustom
+	 */
+	public function getBlock(string $identifier) : IBlockCustom|null
 	{
 		return $this->blocks[$identifier] ?? null;
 	}
@@ -142,9 +144,6 @@ final class SymplyBlockFactory
 		return self::getInstance(true);
 	}
 
-	/**
-	 * @throws ReflectionException
-	 */
 	public static function getInstance(bool $asyncMode = false) : self
 	{
 		if (self::$instance === null) {

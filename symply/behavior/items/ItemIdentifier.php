@@ -24,20 +24,19 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior\block;
+namespace symply\behavior\items;
 
-use pocketmine\block\BlockIdentifier;
+use pocketmine\item\ItemIdentifier as PMItemIdentifier;
 
-class BlockCustomIdentifier extends BlockIdentifier
+class ItemIdentifier extends PMItemIdentifier
 {
-
 	public function __construct(
 		private readonly string $namespaceId,
 		private readonly int    $oldId,
-		int                     $blockTypeId,
-		?string                 $tileClass = null)
+		int $typeId
+	)
 	{
-		parent::__construct($blockTypeId, $tileClass);
+		parent::__construct($typeId);
 	}
 
 	public function getNamespaceId() : string

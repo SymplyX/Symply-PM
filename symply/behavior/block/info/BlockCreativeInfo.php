@@ -30,7 +30,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use symply\behavior\common\enum\CategoryCreativeEnum;
 use symply\behavior\common\enum\GroupCreativeEnum;
 
-class CreativeInfo
+class BlockCreativeInfo
 {
 
 	public function __construct(private readonly CategoryCreativeEnum $category, private readonly GroupCreativeEnum $group)

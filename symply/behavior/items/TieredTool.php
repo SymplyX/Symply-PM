@@ -26,26 +26,38 @@ declare(strict_types=1);
 
 namespace symply\behavior\items;
 
-use pocketmine\item\Item;
-use symply\behavior\items\builder\ItemBuilder;
-use function assert;
+abstract class TieredTool extends Tool{
+	protected ToolTier $tier;
 
-abstract class ItemCustom extends Item
-{
-	public function __construct(ItemCustomIdentifier $identifier,string $name = "Unknown", array $enchantmentTags = [])
-	{
+	/**
+	 * @param string[] $enchantmentTags
+	 */
+	public function __construct(ItemIdentifier $identifier, string $name, ToolTier $tier, array $enchantmentTags = []){
 		parent::__construct($identifier, $name, $enchantmentTags);
+		$this->tier = $tier;
 	}
-	public function getIdentifier() : ItemCustomIdentifier
-	{
-		$identifier = parent::getIdentifier();
-		assert($identifier instanceof  ItemCustomIdentifier);
-		return $identifier;
+
+	public function getMaxDurability() : int{
+		return $this->tier->getMaxDurability();
 	}
-	public function getItemBuilder() : ItemBuilder{
-		return ItemBuilder::create()
-			->setItem($this)
-			->setDefaultMaxStack()
-			->setDefaultName();
+
+	public function getTier() : ToolTier{
+		return $this->tier;
+	}
+
+	protected function getBaseMiningEfficiency() : float{
+		return $this->tier->getBaseEfficiency();
+	}
+
+	public function getEnchantability() : int{
+		return $this->tier->getEnchantability();
+	}
+
+	public function getFuelTime() : int{
+		return $this->tier->getFuelTime();
+	}
+
+	public function isFireProof() : bool{
+		return $this->tier->isFireProof();
 	}
 }

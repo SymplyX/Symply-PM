@@ -1,16 +1,39 @@
 <?php
 
+/*
+ *
+ *  _____                       _
+ * /  ___|                     | |
+ * \ `--. _   _ _ __ ___  _ __ | |_   _
+ *  `--. \ | | | '_ ` _ \| '_ \| | | | |
+ * /\__/ / |_| | | | | | | |_) | | |_| |
+ * \____/ \__, |_| |_| |_| .__/|_|\__, |
+ *         __/ |         | |       __/ |
+ *        |___/          |_|      |___/
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author Symply Team
+ * @link http://www.symplymc.com/
+ *
+ *
+ */
+
+declare(strict_types=1);
+
 namespace symply\behavior;
 
 use Closure;
-use pocketmine\block\tile\TileFactory;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityDataHelper;
+use pocketmine\entity\EntityFactory as PMEntityFactory;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\cache\StaticPacketCache;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\World;
-use pocketmine\entity\EntityFactory as PMEntityFactory;
 
 class SymplyEntityFactory
 {
@@ -20,14 +43,11 @@ class SymplyEntityFactory
 
 	/**
 	 * @param class-string<Entity> $entityClass
-	 * @param Closure|null $customClosure
-	 * @param bool $registerAvailableActorIdentifiers
-	 * @return void
 	 */
-	public function registerEntity(string $entityClass, ?Closure $customClosure = null, bool $isCustomEntity = true): void
+	public function registerEntity(string $entityClass, ?Closure $customClosure = null, bool $isCustomEntity = true) : void
 	{
 		$identifier = $entityClass::getNetworkTypeId();
-		$customClosure ??= function (World $world, CompoundTag $nbt) use ($entityClass): Entity {
+		$customClosure ??= function (World $world, CompoundTag $nbt) use ($entityClass) : Entity {
 			return new $entityClass(EntityDataHelper::parseLocation($nbt, $world), $nbt);
 		};
 		PMEntityFactory::getInstance()->register($entityClass, $customClosure, [$identifier]);
@@ -36,7 +56,7 @@ class SymplyEntityFactory
 		}
 	}
 
-	public function registerAvailableActorIdentifiers(string $networkId) :void{
+	public function registerAvailableActorIdentifiers(string $networkId) : void{
 		StaticPacketCache::getInstance()->getAvailableActorIdentifiers()->identifiers->getRoot()->getListTag("idlist")->push(CompoundTag::create()
 			->setByte("hasspawnegg", 1)
 			->setString("id", $networkId)

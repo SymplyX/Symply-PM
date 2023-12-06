@@ -24,42 +24,37 @@
 
 declare(strict_types=1);
 
-namespace symply;
+/**
+ * @name SymplyPlugin
+ * @main \symply\plugin\SymplyPlugin
+ * @version 0.0.1
+ * @api 5.0.0
+ */
 
-use pocketmine\scheduler\TaskScheduler;
-use pocketmine\Server;
+namespace symply\plugin;
+
+use pocketmine\plugin\PluginBase;
 use symply\behavior\AsyncRegisterBehaviorsTask;
 use symply\behavior\SymplyBlockFactory;
 use symply\behavior\SymplyItemFactory;
 use symply\test\ItemPP;
+use symply\test\ItemPP2;
 use symply\test\PP;
 
-class SymplyBypass
+class SymplyPlugin extends PluginBase
 {
-	private TaskScheduler $scheduler;
-	public function __construct(private Server $server)
+	public function onLoad() : void
 	{
-		$this->scheduler = new TaskScheduler("symply");
+		SymplyBlockFactory::getInstance()->register(static fn () => new PP());
+		SymplyItemFactory::getInstance()->register(static fn() => new ItemPP());
+		SymplyItemFactory::getInstance()->register(static fn() => new ItemPP2());
 	}
 
-	public function onLoad() : void{
-
-	}
-
-	public function onEnable() : void{
+	protected function onEnable() : void
+	{
 		$asyncPool = $this->getServer()->getAsyncPool();
 		$asyncPool->addWorkerStartHook(static function(int $worker) use($asyncPool) : void{
 			$asyncPool->submitTaskToWorker(new AsyncRegisterBehaviorsTask(), $worker);
 		});
-	}
-
-	public function getServer() : Server
-	{
-		return $this->server;
-	}
-
-	public function getScheduler() : TaskScheduler
-	{
-		return $this->scheduler;
 	}
 }

@@ -24,24 +24,13 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior\block;
+namespace symply\behavior\items;
 
-use pocketmine\data\bedrock\block\convert\BlockStateReader;
-use pocketmine\data\bedrock\block\convert\BlockStateWriter;
-use symply\behavior\block\builder\BlockBuilderPermutation;
-use symply\behavior\block\permutation\BlockPermutation;
-use symply\behavior\block\property\BlockProperty;
+use symply\behavior\items\builder\ItemBuilder;
 
-abstract class PermutationBlock extends BlockCustom
+interface ICustomItem
 {
 
-	abstract public function deserializeState(BlockStateReader $reader) : void;
-	abstract public function serializeState(BlockStateWriter $writer) : void;
-
-	public function getBlockBuilder() : BlockBuilderPermutation{
-		return BlockBuilderPermutation::create()
-			->setBlock($this)
-			->setUnitCube();
-	}
-
+	public function getIdentifier() : ItemIdentifier;
+	public function getItemBuilder() : ItemBuilder;
 }

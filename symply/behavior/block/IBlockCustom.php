@@ -26,32 +26,10 @@ declare(strict_types=1);
 
 namespace symply\behavior\block;
 
-use pocketmine\block\Block;
-use pocketmine\block\BlockTypeInfo;
 use symply\behavior\block\builder\BlockBuilder;
-use function assert;
 
-abstract class BlockCustom extends Block
-{
+interface IBlockCustom {
 
-	public function __construct(
-		BlockCustomIdentifier $idInfo,
-		string                $name,
-		BlockTypeInfo         $typeInfo
-	)
-	{
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
-
-	public function getIdInfo() : BlockCustomIdentifier
-	{
-		$idInfo = parent::getIdInfo();
-		assert($idInfo instanceof BlockCustomIdentifier);
-		return $idInfo;
-	}
-	public function getBlockBuilder() : BlockBuilder{
-		return BlockBuilder::create()
-			->setBlock($this)
-			->setUnitCube();
-	}
+	public function getIdInfo() : BlockIdentifier;
+	public function getBlockBuilder() : BlockBuilder;
 }
