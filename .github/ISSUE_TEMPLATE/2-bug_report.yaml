@@ -1,4 +1,3 @@
----
 name: "🧰 Bug Report"
 about: "Have you found a bug ? Then report it to us!"
 title: ''
@@ -92,4 +91,3 @@ body:
           options:
               - label: "I have searched the existing issues"
                 required: true
----

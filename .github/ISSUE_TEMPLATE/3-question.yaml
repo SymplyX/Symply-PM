@@ -1,5 +1,4 @@
----
-name: Question
+name: 🗣️ Question
 about: Ask your question
 title: ""
 labels:
@@ -28,4 +27,3 @@ body:
           options:
               - label: "I have performed prior research"
                 required: true
----

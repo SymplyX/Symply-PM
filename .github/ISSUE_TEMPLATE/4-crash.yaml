@@ -1,5 +1,4 @@
----
-name: Crash
+name: 🧨 Crash
 about: Report a crash in PocketMine-MP (not plugins)
 title: Server crashed
 labels:
@@ -55,4 +54,3 @@ body:
               Add any additional information that might be relevant.
           validations:
               required: false
----
