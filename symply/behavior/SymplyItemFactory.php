@@ -84,7 +84,7 @@ final class SymplyItemFactory
 		if (isset($this->items[$identifier])){
 			throw new \InvalidArgumentException("Item ID {$itemCustom->getIdentifier()->getNamespaceId()} is already used by another item");
 		}
-		$itemId = $itemCustom->getIdentifier()->getOldId();
+		$itemId = $itemCustom->getIdentifier()->getTypeId();
 		$this->items[$identifier] = $itemCustom;
 		$this->registerCustomItemMapping($identifier, $itemId, new ItemTypeEntry($identifier, $itemId , true));
 		GlobalItemDataHandlers::getDeserializer()->map($identifier, $deserializer ??= static fn() => clone $itemCustom);
@@ -128,7 +128,7 @@ final class SymplyItemFactory
 	 * correlates to its block ID.
 	 */
 	public function registerBlockItem(string $identifier, Block $block) : void {
-		$itemId = 255 - $block->getIdInfo()->getOldId();
+		$itemId = $block->getIdInfo()->getBlockTypeId();
 		$this->registerCustomItemMapping($identifier, $itemId, new ItemTypeEntry($identifier, $itemId, true));
 		StringToItemParser::getInstance()->registerBlock($identifier, fn() => clone $block);
 

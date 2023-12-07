@@ -2,14 +2,14 @@
 
 /*
  *
- *  _____                       _
- * /  ___|                     | |
- * \ `--. _   _ _ __ ___  _ __ | |_   _
+ *  _____                       _       
+ * /  ___|                     | |      
+ * \ `--. _   _ _ __ ___  _ __ | |_   _ 
  *  `--. \ | | | '_ ` _ \| '_ \| | | | |
  * /\__/ / |_| | | | | | | |_) | | |_| |
  * \____/ \__, |_| |_| |_| .__/|_|\__, |
  *         __/ |         | |       __/ |
- *        |___/          |_|      |___/
+ *        |___/          |_|      |___/ 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -39,5 +39,6 @@ final class YmlSymplyProperties{
 	}
 
 	public const PERSONA_SKIN = 'persona-skin';
+	public const SERVER_BREAK_SIDE = 'server-break-side';
 	public const WATERDOGPE_SUPPORT = 'waterdogpe-support';
 }

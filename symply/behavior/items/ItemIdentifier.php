@@ -32,7 +32,6 @@ class ItemIdentifier extends PMItemIdentifier
 {
 	public function __construct(
 		private readonly string $namespaceId,
-		private readonly int    $oldId,
 		int $typeId
 	)
 	{
@@ -42,10 +41,5 @@ class ItemIdentifier extends PMItemIdentifier
 	public function getNamespaceId() : string
 	{
 		return $this->namespaceId;
-	}
-
-	public function getOldId() : int
-	{
-		return $this->oldId;
 	}
 }

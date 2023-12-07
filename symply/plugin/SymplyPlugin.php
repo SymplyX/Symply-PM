@@ -34,32 +34,49 @@ declare(strict_types=1);
 
 namespace symply\plugin;
 
+use Exception;
 use pocketmine\plugin\PluginBase;
 use symply\behavior\AsyncRegisterBehaviorsTask;
 use symply\behavior\SymplyBlockFactory;
 use symply\behavior\SymplyItemFactory;
 use symply\plugin\listener\BehaviorListener;
-use symply\plugin\listener\BreakListener;
+use symply\plugin\listener\ClientBreakListener;
+use symply\plugin\listener\ServerBreakListener;
 use symply\test\ItemPP;
 use symply\test\ItemPP2;
 use symply\test\PP;
+use symply\YmlSymplyProperties;
 
 class SymplyPlugin extends PluginBase
 {
+
 	public function onLoad() : void
 	{
-		SymplyBlockFactory::getInstance()->register(static fn () => new PP());
-		SymplyItemFactory::getInstance()->register(static fn() => new ItemPP());
-		SymplyItemFactory::getInstance()->register(static fn() => new ItemPP2());
 	}
 
 	protected function onEnable() : void
 	{
-		$this->getServer()->getPluginManager()->registerEvents(new BehaviorListener(), $this);
-		$this->getServer()->getPluginManager()->registerEvents(new BreakListener(), $this);
+		$serverBreakSide = $this->getServer()->getConfigGroup()->getSymplyProperty(YmlSymplyProperties::SERVER_BREAK_SIDE, false);
+		$this->getServer()->getPluginManager()->registerEvents(new BehaviorListener($serverBreakSide), $this);
+		if ($serverBreakSide) {
+			$this->getServer()->getPluginManager()->registerEvents(new ServerBreakListener(), $this);
+			$this->getLogger()->alert("You have activated the breaking mode managed by the server attention the system and experimental");
+		}else{
+			$this->getServer()->getPluginManager()->registerEvents(new ClientBreakListener(), $this);
+		}
 		$asyncPool = $this->getServer()->getAsyncPool();
 		$asyncPool->addWorkerStartHook(static function(int $worker) use($asyncPool) : void{
 			$asyncPool->submitTaskToWorker(new AsyncRegisterBehaviorsTask(), $worker);
 		});
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	protected function onDisable(): void
+	{
+		if ($this->getServer()->isRunning()){
+			throw new Exception("you dont can disable this plugin because your break intergrity of Symply");
+		}
 	}
 }

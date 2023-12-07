@@ -71,10 +71,6 @@ class BlockBuilder
 		return $this->blockCustom->getIdInfo()->getNamespaceId();
 	}
 
-	public function getOldId() : int
-	{
-		return $this->blockCustom->getIdInfo()->getOldId();
-	}
 	private BlockCreativeInfo $creativeInfo;
 
 	public function getCreativeInfo() : BlockCreativeInfo

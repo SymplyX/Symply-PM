@@ -8,11 +8,16 @@ use pocketmine\network\mcpe\protocol\BiomeDefinitionListPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackStackPacket;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
 use pocketmine\network\mcpe\protocol\types\Experiments;
+use pocketmine\network\mcpe\protocol\types\PlayerMovementSettings;
 use symply\behavior\SymplyBlockFactory;
 use symply\behavior\SymplyItemFactory;
 
 class BehaviorListener implements Listener
 {
+
+	public function __construct(private bool $serverBreakSide)
+	{
+	}
 
 	/**
 	 * @priority LOWEST
@@ -25,6 +30,7 @@ class BehaviorListener implements Listener
 		$targets = $event->getTargets();
 		foreach ($packets as $packet) {
 			if ($packet instanceof StartGamePacket) {
+				$packet->playerMovementSettings = new PlayerMovementSettings($packet->playerMovementSettings->getMovementType(), $packet->playerMovementSettings->getRewindHistorySize() , $this->serverBreakSide);
 				$packet->levelSettings->experiments = new Experiments([
 					"wild_update" => true,
 					"vanilla_experiments" => true,

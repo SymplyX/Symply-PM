@@ -91,11 +91,9 @@ final class SymplyBlockFactory
 			$serializer ??= static fn() => BlockStateWriter::create($blockCustom->getIdInfo()->getNamespaceId());
 			$deserializer ??= static fn(BlockStateReader $reader) => $blockCustom;
 		}
-		$oldId = $blockCustom->getIdInfo()->getOldId();
 		foreach ($blockBuilder->toBlockStateDictionaryEntry() as $blockStateDictionaryEntry){
 			SymplyBlockPalette::getInstance()->insertState($blockStateDictionaryEntry);
 			GlobalBlockStateHandlers::getUpgrader()->getBlockIdMetaUpgrader()->addIdMetaToStateMapping($identifier, $blockStateDictionaryEntry->getMeta(), $blockStateDictionaryEntry->generateStateData());
-			GlobalBlockStateHandlers::getUpgrader()->getBlockIdMetaUpgrader()->addIntIdToStringIdMapping($oldId, $identifier);
 		}
 		GlobalBlockStateHandlers::getSerializer()->map($blockCustom, $serializer);
 		GlobalBlockStateHandlers::getDeserializer()->map($identifier, $deserializer);

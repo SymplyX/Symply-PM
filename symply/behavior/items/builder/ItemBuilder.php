@@ -168,7 +168,7 @@ final class ItemBuilder
 		return CompoundTag::create()
 			->setTag("components", $this->getComponentsTag()
 				->setTag("item_properties", $this->getPropertiesTag()))
-			->setInt("id", $this->item->getIdentifier()->getOldId())
+			->setInt("id", $this->item->getIdentifier()->getTypeId())
 			->setString("name", $this->item->getIdentifier()->getNamespaceId());
 	}
 
