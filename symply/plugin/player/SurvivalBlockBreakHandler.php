@@ -63,17 +63,17 @@ class SurvivalBlockBreakHandler
 		}
 
 		$this->breakProgress += $this->breakSpeed;
-		if($this->player->getWorld()->isInLoadedTerrain($this->blockPos)){
-			$this->player->getWorld()->broadcastPacketToViewers(
-				$this->blockPos,
-				LevelEventPacket::create(LevelEvent::BLOCK_BREAK_SPEED,  (int)(65535 * $newBreakSpeed), $this->blockPos)
-			);
-		}
 		if ($this->breakProgress >= 1){
 			if (!$this->player->breakBlock($this->getBlockPos())){
 				$this->player->onFailedBlockAction($this->getBlockPos(), $this->getTargetedFace());
 			}
 			return false;
+		}
+		if($this->player->getWorld()->isInLoadedTerrain($this->blockPos)){
+			$this->player->getWorld()->broadcastPacketToViewers(
+				$this->blockPos,
+				LevelEventPacket::create(LevelEvent::BLOCK_BREAK_SPEED,  (int)(65535 * $newBreakSpeed), $this->blockPos)
+			);
 		}
 		return true;
 	}

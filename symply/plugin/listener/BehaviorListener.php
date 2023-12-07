@@ -15,7 +15,7 @@ use symply\behavior\SymplyItemFactory;
 class BehaviorListener implements Listener
 {
 
-	public function __construct(private bool $serverBreakSide)
+	public function __construct(private readonly bool $serverBreakSide)
 	{
 	}
 

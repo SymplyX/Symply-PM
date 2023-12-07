@@ -37,14 +37,9 @@ namespace symply\plugin;
 use Exception;
 use pocketmine\plugin\PluginBase;
 use symply\behavior\AsyncRegisterBehaviorsTask;
-use symply\behavior\SymplyBlockFactory;
-use symply\behavior\SymplyItemFactory;
 use symply\plugin\listener\BehaviorListener;
 use symply\plugin\listener\ClientBreakListener;
 use symply\plugin\listener\ServerBreakListener;
-use symply\test\ItemPP;
-use symply\test\ItemPP2;
-use symply\test\PP;
 use symply\YmlSymplyProperties;
 
 class SymplyPlugin extends PluginBase

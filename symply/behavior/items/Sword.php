@@ -30,7 +30,7 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockToolType;
 use pocketmine\entity\Entity;
 
-abstract class Sword extends TieredTool
+class Sword extends TieredTool
 {
 
 	public function getBlockToolType(): int
