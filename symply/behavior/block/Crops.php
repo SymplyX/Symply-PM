@@ -122,7 +122,7 @@ class Crops extends PMCrops implements IPermutationBlock
 			])
 			->setCreativeInfo(new BlockCreativeInfo(CategoryCreativeEnum::NATURE, GroupCreativeEnum::SEED))
 			->addProperty(new CropsProperty($ages))
-		->setCollisionBox(new Vector3(8,8,8), new Vector3(16,16,16), false);
+		->setCollisionBox(new Vector3(8,0,8), new Vector3(16,16,16), false);
 		foreach ($ages as $age){
 			$builder->addPermutation(Permutations::create()
 				->setCondition("query.block_property('symply:crops') == $age")
