@@ -1,5 +1,29 @@
 <?php
 
+/*
+ *
+ *  _____                       _
+ * /  ___|                     | |
+ * \ `--. _   _ _ __ ___  _ __ | |_   _
+ *  `--. \ | | | '_ ` _ \| '_ \| | | | |
+ * /\__/ / |_| | | | | | | |_) | | |_| |
+ * \____/ \__, |_| |_| |_| .__/|_|\__, |
+ *         __/ |         | |       __/ |
+ *        |___/          |_|      |___/
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author Symply Team
+ * @link http://www.symplymc.com/
+ *
+ *
+ */
+
+declare(strict_types=1);
+
 namespace symply\plugin\listener;
 
 use pocketmine\block\Block;
@@ -9,7 +33,6 @@ use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
-use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\PlayerAuthInputPacket;
 use pocketmine\network\mcpe\protocol\types\LevelEvent;
 use pocketmine\network\mcpe\protocol\types\PlayerAction;
@@ -19,18 +42,20 @@ use pocketmine\network\mcpe\protocol\types\PlayerBlockActionWithBlockInfo;
 use symply\plugin\player\BlockBreakRequest;
 use symply\utils\BlockUtils;
 use WeakMap;
+use function array_filter;
+use function array_key_first;
+use function count;
+use function floor;
 
 class ClientBreakListener implements Listener
 {
 
 	/**
-	 * @var WeakMap
 	 * @phpstan-var WeakMap<NetworkSession, BlockBreakRequest>
 	 */
 	private WeakMap $breaks;
 
 	/**
-	 * @var WeakMap
 	 * @phpstan-var WeakMap<Block, float>
 	 */
 	private WeakMap $blockSpeed;
@@ -43,7 +68,7 @@ class ClientBreakListener implements Listener
 		$this->blockSpeed = new WeakMap();
 	}
 
-	public function onSend(DataPacketSendEvent $event): void
+	public function onSend(DataPacketSendEvent $event) : void
 	{
 		$packets = $event->getPackets();
 		$targets = $event->getTargets();
@@ -52,15 +77,14 @@ class ClientBreakListener implements Listener
 				if ($packet->eventId === LevelEvent::BLOCK_START_BREAK && $packet->position !== null) {
 					$block = $targets[array_key_first($targets)]->getPlayer()->getWorld()->getBlock($packet->position);
 					if (!isset($this->blockSpeed[$block])) break;
-					$packet->eventData = (int)(floor(65535 * $this->blockSpeed[$block]));
+					$packet->eventData = (int) (floor(65535 * $this->blockSpeed[$block]));
 					$this->blockSpeed->offsetUnset($block);
 				}
 			}
 		}
 	}
 
-
-	public function onDataReceive(DataPacketReceiveEvent $event): void
+	public function onDataReceive(DataPacketReceiveEvent $event) : void
 	{
 		$player = ($session = $event->getOrigin())->getPlayer();
 		if ($player === null) return;
@@ -106,7 +130,7 @@ class ClientBreakListener implements Listener
 								$this->breaks->offsetUnset($session);
 							}
 						}
-					} else if ($blockAction->getActionType() === PlayerAction::ABORT_BREAK){
+					} elseif ($blockAction->getActionType() === PlayerAction::ABORT_BREAK){
 						$vector3 = new Vector3($blockAction->getBlockPosition()->getX(), $blockAction->getBlockPosition()->getY(), $blockAction->getBlockPosition()->getZ());
 						if ($this->breaks->offsetExists($session)) {
 							$player->stopBreakBlock($vector3);
@@ -122,4 +146,3 @@ class ClientBreakListener implements Listener
 		}
 	}
 }
-

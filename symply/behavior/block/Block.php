@@ -29,6 +29,9 @@ namespace symply\behavior\block;
 use pocketmine\block\Block as PMBlock;
 use pocketmine\block\BlockTypeInfo;
 use symply\behavior\block\builder\BlockBuilder;
+use symply\behavior\block\info\BlockCreativeInfo;
+use symply\behavior\common\enum\CategoryCreativeEnum;
+use symply\behavior\common\enum\GroupCreativeEnum;
 use function assert;
 
 abstract class Block extends PMBlock implements IBlockCustom
@@ -52,6 +55,7 @@ abstract class Block extends PMBlock implements IBlockCustom
 	public function getBlockBuilder() : BlockBuilder{
 		return BlockBuilder::create()
 			->setBlock($this)
-			->setUnitCube();
+			->setUnitCube()
+			->setCreativeInfo(new BlockCreativeInfo(CategoryCreativeEnum::CONSTRUCTION, GroupCreativeEnum::NONE));
 	}
 }

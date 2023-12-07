@@ -1,17 +1,39 @@
 <?php
 
+/*
+ *
+ *  _____                       _
+ * /  ___|                     | |
+ * \ `--. _   _ _ __ ___  _ __ | |_   _
+ *  `--. \ | | | '_ ` _ \| '_ \| | | | |
+ * /\__/ / |_| | | | | | | |_) | | |_| |
+ * \____/ \__, |_| |_| |_| .__/|_|\__, |
+ *         __/ |         | |       __/ |
+ *        |___/          |_|      |___/
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author Symply Team
+ * @link http://www.symplymc.com/
+ *
+ *
+ */
+
+declare(strict_types=1);
+
 namespace symply\plugin\player;
 
 use pocketmine\block\Block;
-use pocketmine\entity\animation\ArmSwingAnimation;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\LevelEvent;
 use pocketmine\player\Player;
-use pocketmine\world\particle\BlockPunchParticle;
-use pocketmine\world\sound\BlockPunchSound;
 use symply\utils\BlockUtils;
+use function abs;
 
 class SurvivalBlockBreakHandler
 {
@@ -72,7 +94,7 @@ class SurvivalBlockBreakHandler
 		if($this->player->getWorld()->isInLoadedTerrain($this->blockPos)){
 			$this->player->getWorld()->broadcastPacketToViewers(
 				$this->blockPos,
-				LevelEventPacket::create(LevelEvent::BLOCK_BREAK_SPEED,  (int)(65535 * $newBreakSpeed), $this->blockPos)
+				LevelEventPacket::create(LevelEvent::BLOCK_BREAK_SPEED,  (int) (65535 * $newBreakSpeed), $this->blockPos)
 			);
 		}
 		return true;
@@ -95,10 +117,7 @@ class SurvivalBlockBreakHandler
 		return $this->breakSpeed;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isForced(): bool
+	public function isForced() : bool
 	{
 		return $this->forced;
 	}

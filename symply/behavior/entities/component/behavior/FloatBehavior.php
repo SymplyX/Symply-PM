@@ -1,10 +1,33 @@
 <?php
 
+/*
+ *
+ *  _____                       _
+ * /  ___|                     | |
+ * \ `--. _   _ _ __ ___  _ __ | |_   _
+ *  `--. \ | | | '_ ` _ \| '_ \| | | | |
+ * /\__/ / |_| | | | | | | |_) | | |_| |
+ * \____/ \__, |_| |_| |_| .__/|_|\__, |
+ *         __/ |         | |       __/ |
+ *        |___/          |_|      |___/
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author Symply Team
+ * @link http://www.symplymc.com/
+ *
+ *
+ */
+
+declare(strict_types=1);
+
 namespace symply\behavior\entities\component\behavior;
 
 use pocketmine\nbt\tag\CompoundTag;
 use symply\behavior\entities\BehaviorMob;
-use symply\behavior\entities\IComponentMob;
 use symply\entity\Mob;
 
 /**
@@ -14,8 +37,6 @@ use symply\entity\Mob;
 class FloatBehavior extends BehaviorMob
 {
 	/**
-	 * @param int $priority
-	 * @param Mob $mob
 	 * @param bool $sinkWithPassengers If true, the mob will keep sinking as long as it has passengers.
 	 */
 	public function __construct(
@@ -25,7 +46,7 @@ class FloatBehavior extends BehaviorMob
 	) {
 		parent::__construct($priority, $mob);
 	}
-	public function getName(): string
+	public function getName() : string
 	{
 		return "minecraft:behavior.float";
 	}
@@ -34,7 +55,7 @@ class FloatBehavior extends BehaviorMob
 		return false;
 	}
 
-	public function toNbt(): CompoundTag
+	public function toNbt() : CompoundTag
 	{
 		return CompoundTag::create()->setTag("minecraft:behavior.float", CompoundTag::create()
 			->setInt("priority", $this->getPriority())

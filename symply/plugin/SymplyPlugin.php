@@ -68,7 +68,7 @@ class SymplyPlugin extends PluginBase
 	/**
 	 * @throws Exception
 	 */
-	protected function onDisable(): void
+	protected function onDisable() : void
 	{
 		if ($this->getServer()->isRunning()){
 			throw new Exception("you dont can disable this plugin because your break intergrity of Symply");

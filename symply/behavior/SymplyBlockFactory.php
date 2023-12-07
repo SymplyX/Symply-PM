@@ -40,7 +40,6 @@ use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use ReflectionException;
 use symply\behavior\block\IBlockCustom;
 use symply\behavior\block\IPermutationBlock;
-use function assert;
 
 final class SymplyBlockFactory
 {
@@ -76,19 +75,21 @@ final class SymplyBlockFactory
 		SymplyItemFactory::getInstance()->registerBlockItem($identifier, $blockCustom);
 		$this->blocks[$identifier] = $blockCustom;
 		if ($blockCustom instanceof IPermutationBlock) {
-			$serializer ??= static function (Block&IPermutationBlock $block) : BlockStateWriter {
-				$writer = BlockStateWriter::create($block->getIdInfo()->getNamespaceId());
+			$serializer ??= static function (Block&IPermutationBlock $block) use ($identifier) : BlockStateWriter {
+				$writer = BlockStateWriter::create($identifier);
 				$block->serializeState($writer);
 				return $writer;
 			};
 			$deserializer ??= static function (BlockStateReader $reader) use ($identifier) : Block {
+				/**
+				 * @var Block&IPermutationBlock $block
+				 */
 				$block = SymplyBlockFactory::getInstance()->getBlock($identifier);
-				assert($block instanceof IPermutationBlock);
 				$block->deserializeState($reader);
 				return $block;
 			};
 		} else {
-			$serializer ??= static fn() => BlockStateWriter::create($blockCustom->getIdInfo()->getNamespaceId());
+			$serializer ??= static fn() => BlockStateWriter::create($identifier);
 			$deserializer ??= static fn(BlockStateReader $reader) => $blockCustom;
 		}
 		foreach ($blockBuilder->toBlockStateDictionaryEntry() as $blockStateDictionaryEntry){

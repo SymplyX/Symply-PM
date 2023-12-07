@@ -1,5 +1,29 @@
 <?php
 
+/*
+ *
+ *  _____                       _
+ * /  ___|                     | |
+ * \ `--. _   _ _ __ ___  _ __ | |_   _
+ *  `--. \ | | | '_ ` _ \| '_ \| | | | |
+ * /\__/ / |_| | | | | | | |_) | | |_| |
+ * \____/ \__, |_| |_| |_| .__/|_|\__, |
+ *         __/ |         | |       __/ |
+ *        |___/          |_|      |___/
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author Symply Team
+ * @link http://www.symplymc.com/
+ *
+ *
+ */
+
+declare(strict_types=1);
+
 namespace symply\plugin\listener;
 
 use pocketmine\event\Listener;
@@ -21,10 +45,8 @@ class BehaviorListener implements Listener
 
 	/**
 	 * @priority LOWEST
-	 * @param DataPacketSendEvent $event
-	 * @return void
 	 */
-	public function onSend(DataPacketSendEvent $event): void
+	public function onSend(DataPacketSendEvent $event) : void
 	{
 		$packets = $event->getPackets();
 		$targets = $event->getTargets();
@@ -42,7 +64,7 @@ class BehaviorListener implements Listener
 					"experimental_molang_features" => true,
 				], true);
 				$packet->blockPalette = SymplyBlockFactory::getInstance()->getBlockPaletteEntries();
-			} else if ($packet instanceof ResourcePackStackPacket) {
+			} elseif ($packet instanceof ResourcePackStackPacket) {
 				$packet->experiments = new Experiments([
 					"wild_update" => true,
 					"vanilla_experiments" => true,
@@ -53,7 +75,7 @@ class BehaviorListener implements Listener
 					"gametest" => true,
 					"experimental_molang_features" => true,
 				], true);
-			} else if ($packet instanceof BiomeDefinitionListPacket) {
+			} elseif ($packet instanceof BiomeDefinitionListPacket) {
 				foreach ($targets as $target) {
 					$target->sendDataPacket(SymplyItemFactory::getInstance()->getItemsComponentPacket());
 				}

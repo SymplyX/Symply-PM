@@ -1,5 +1,29 @@
 <?php
 
+/*
+ *
+ *  _____                       _
+ * /  ___|                     | |
+ * \ `--. _   _ _ __ ___  _ __ | |_   _
+ *  `--. \ | | | '_ ` _ \| '_ \| | | | |
+ * /\__/ / |_| | | | | | | |_) | | |_| |
+ * \____/ \__, |_| |_| |_| .__/|_|\__, |
+ *         __/ |         | |       __/ |
+ *        |___/          |_|      |___/
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author Symply Team
+ * @link http://www.symplymc.com/
+ *
+ *
+ */
+
+declare(strict_types=1);
+
 namespace symply\entity\passive;
 
 use pocketmine\entity\EntitySizeInfo;
@@ -14,25 +38,26 @@ use symply\behavior\entities\component\behavior\RandomLookAroundBehavior;
 use symply\behavior\entities\component\behavior\RandomStrollBehavior;
 use symply\behavior\entities\component\behavior\TemptBehavior;
 use symply\entity\PassiveMob;
+use function rand;
 
 class Cow extends PassiveMob
 {
-	protected function getInitialSizeInfo(): EntitySizeInfo
+	protected function getInitialSizeInfo() : EntitySizeInfo
 	{
 		return new EntitySizeInfo(0.9, 1.3); // change to CollisionBoxGeneric
 	}
 
-	public static function getNetworkTypeId(): string
+	public static function getNetworkTypeId() : string
 	{
 		return "minecraft:cow";
 	}
 
-	public function getName(): string
+	public function getName() : string
 	{
 		return "Cow";
 	}
 
-	public function initEntity(CompoundTag $nbt): void
+	public function initEntity(CompoundTag $nbt) : void
 	{
 		parent::initEntity($nbt);
 		$this->getBehaviorManager()->setBehavior(new FloatBehavior(0, $this));
@@ -53,7 +78,7 @@ class Cow extends PassiveMob
 		];
 	}
 
-	public function isBaby(): bool
+	public function isBaby() : bool
 	{
 		return false;
 	}

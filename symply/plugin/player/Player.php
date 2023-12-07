@@ -1,5 +1,29 @@
 <?php
 
+/*
+ *
+ *  _____                       _
+ * /  ___|                     | |
+ * \ `--. _   _ _ __ ___  _ __ | |_   _
+ *  `--. \ | | | '_ ` _ \| '_ \| | | | |
+ * /\__/ / |_| | | | | | | |_) | | |_| |
+ * \____/ \__, |_| |_| |_| .__/|_|\__, |
+ *         __/ |         | |       __/ |
+ *        |___/          |_|      |___/
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author Symply Team
+ * @link http://www.symplymc.com/
+ *
+ *
+ */
+
+declare(strict_types=1);
+
 namespace symply\plugin\player;
 
 use pocketmine\block\BlockTypeTags;
@@ -11,11 +35,13 @@ use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\player\Player as PMPlayer;
 use pocketmine\timings\Timings;
 use pocketmine\world\sound\FireExtinguishSound;
 use pocketmine\world\sound\ItemBreakSound;
+use function array_push;
+use function array_shift;
+use function count;
 
 class Player extends PMPlayer
 {
@@ -24,7 +50,7 @@ class Player extends PMPlayer
 
 	public ?SurvivalBlockBreakHandler $blockBreakHandlerModded = null;
 
-	public function attackBlock(Vector3 $pos, int $face): bool
+	public function attackBlock(Vector3 $pos, int $face) : bool
 	{
 		if($pos->distanceSquared($this->location) > 10000){
 			return false; //TODO: maybe this should throw an exception instead?
@@ -60,8 +86,6 @@ class Player extends PMPlayer
 
 		return true;
 	}
-
-
 
 	public function onUpdate(int $currentTick) : bool{
 		$tickDiff = $currentTick - $this->lastUpdate;
@@ -150,7 +174,6 @@ class Player extends PMPlayer
 		}
 	}
 
-
 	public function stopBreakBlock(Vector3 $pos) : void{
 		if($this->blockBreakHandlerModded !== null && $this->blockBreakHandlerModded->getBlockPos()->distanceSquared($pos) < 0.0001){
 			$this->blockBreakHandlerModded = null;
@@ -201,7 +224,6 @@ class Player extends PMPlayer
 			}
 		}
 	}
-
 
 	/**
 	 * Internal function used to execute rollbacks when an action fails on a block.

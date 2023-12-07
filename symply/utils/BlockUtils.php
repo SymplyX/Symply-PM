@@ -1,31 +1,43 @@
 <?php
 
+/*
+ *
+ *  _____                       _
+ * /  ___|                     | |
+ * \ `--. _   _ _ __ ___  _ __ | |_   _
+ *  `--. \ | | | '_ ` _ \| '_ \| | | | |
+ * /\__/ / |_| | | | | | | |_) | | |_| |
+ * \____/ \__, |_| |_| |_| .__/|_|\__, |
+ *         __/ |         | |       __/ |
+ *        |___/          |_|      |___/
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author Symply Team
+ * @link http://www.symplymc.com/
+ *
+ *
+ */
+
+declare(strict_types=1);
+
 namespace symply\utils;
 
-use pmmp\thread\ThreadSafeArray;
 use pocketmine\block\Block;
-use pocketmine\block\BlockBreakInfo;
-use pocketmine\block\BlockTypeIds;
-use pocketmine\block\BlockTypeTags;
-use pocketmine\block\VanillaBlocks;
-use pocketmine\entity\animation\ArmSwingAnimation;
 use pocketmine\entity\effect\VanillaEffects;
-use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
-use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\player\Player;
-use pocketmine\player\SurvivalBlockBreakHandler;
-use pocketmine\utils\SingletonTrait;
-use pocketmine\world\sound\FireExtinguishSound;
-use WeakMap;
+use function pow;
 
 class BlockUtils
 {
 
-	private static function getDestroySpeed(Player $player, Block $block, Item $item): float
+	private static function getDestroySpeed(Player $player, Block $block, Item $item) : float
 	{
 		$destroySpeed = $item->getMiningEfficiency(($block->getBreakInfo()->getToolType() & $item->getBlockToolType()) !== 0);
 		$speedBreak = $destroySpeed;
@@ -66,8 +78,8 @@ class BlockUtils
 							return $speedBreak * 0.2;
 						}*/
 			/*
-			     if ( !v21 || !*v21 || ItemStackBase::isNull(v20) || !*((_BYTE *)v20 + 34) )
-      			return speedbreak * 0.2; ???????????
+				 if ( !v21 || !*v21 || ItemStackBase::isNull(v20) || !*((_BYTE *)v20 + 34) )
+				  return speedbreak * 0.2; ???????????
 			*/
 			if ($item->isNull()) {
 				return $speedBreak * 0.2;
@@ -76,7 +88,7 @@ class BlockUtils
 		return $speedBreak;
 	}
 
-	public static function getDestroyRate(Player $player, Block $block): float
+	public static function getDestroyRate(Player $player, Block $block) : float
 	{
 		$speadcalcul = self::getDestroyProgress($player, $block);
 		$speedBreaker = $speadcalcul;
@@ -95,7 +107,7 @@ class BlockUtils
 			}
 		}
 		if ($hasteLevel > 0) {
-			$speedBreaker = pow(1.200000047683716, (double)$hasteLevel) * $speadcalcul;
+			$speedBreaker = pow(1.200000047683716, (double) $hasteLevel) * $speadcalcul;
 		}
 		if (!$miningFatigue) {
 			return $speedBreaker;
@@ -103,7 +115,7 @@ class BlockUtils
 		return pow(0.699999988079071, $miningFatigue->getEffectLevel()) * $speedBreaker;
 	}
 
-	private static function getDestroyProgress(Player $player, Block $block): float
+	private static function getDestroyProgress(Player $player, Block $block) : float
 	{
 		$destroySpeed = $block->getBreakInfo()->getHardness();
 		$item = $player->getInventory()->getItemInHand();

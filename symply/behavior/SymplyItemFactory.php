@@ -28,6 +28,7 @@ namespace symply\behavior;
 
 use Closure;
 use pmmp\thread\ThreadSafeArray;
+use pocketmine\block\Block;
 use pocketmine\data\bedrock\item\BlockItemIdMap;
 use pocketmine\data\bedrock\item\SavedItemData;
 use pocketmine\inventory\CreativeInventory;
@@ -41,7 +42,7 @@ use pocketmine\network\mcpe\protocol\types\ItemComponentPacketEntry;
 use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
-use symply\behavior\block\Block;
+use symply\behavior\block\IBlockCustom;
 use symply\behavior\items\ICustomItem;
 use function array_merge;
 use function array_values;
@@ -127,7 +128,7 @@ final class SymplyItemFactory
 	 * Registers the required mappings for the block to become an item that can be placed etc. It is assigned an ID that
 	 * correlates to its block ID.
 	 */
-	public function registerBlockItem(string $identifier, Block $block) : void {
+	public function registerBlockItem(string $identifier, Block&IBlockCustom $block) : void {
 		$itemId = $block->getIdInfo()->getBlockTypeId();
 		$this->registerCustomItemMapping($identifier, $itemId, new ItemTypeEntry($identifier, $itemId, true));
 		StringToItemParser::getInstance()->registerBlock($identifier, fn() => clone $block);
@@ -159,7 +160,7 @@ final class SymplyItemFactory
 		return $this->itemsComponentPacketEntries;
 	}
 
-	public function getItemsComponentPacket(): ItemComponentPacket{
+	public function getItemsComponentPacket() : ItemComponentPacket{
 		return $this->cache ??= ItemComponentPacket::create($this->getItemsComponentPacketEntries());
 	}
 

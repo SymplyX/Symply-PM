@@ -1,5 +1,29 @@
 <?php
 
+/*
+ *
+ *  _____                       _
+ * /  ___|                     | |
+ * \ `--. _   _ _ __ ___  _ __ | |_   _
+ *  `--. \ | | | '_ ` _ \| '_ \| | | | |
+ * /\__/ / |_| | | | | | | |_) | | |_| |
+ * \____/ \__, |_| |_| |_| .__/|_|\__, |
+ *         __/ |         | |       __/ |
+ *        |___/          |_|      |___/
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author Symply Team
+ * @link http://www.symplymc.com/
+ *
+ *
+ */
+
+declare(strict_types=1);
+
 namespace symply\plugin\listener;
 
 use Exception;
@@ -12,6 +36,7 @@ use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\PlayerAction;
 use pocketmine\network\mcpe\protocol\types\PlayerBlockActionWithBlockInfo;
 use symply\plugin\player\Player;
+use function count;
 
 class ServerBreakListener implements Listener
 {
@@ -23,7 +48,7 @@ class ServerBreakListener implements Listener
 		$this->playerString = Player::class;
 	}
 
-	public function onDataReceive(DataPacketReceiveEvent $event): void{
+	public function onDataReceive(DataPacketReceiveEvent $event) : void{
 		$packet = $event->getPacket();
 		$origin = $event->getOrigin();
 		$player = $origin->getPlayer();
@@ -42,11 +67,11 @@ class ServerBreakListener implements Listener
 						if (!$player->attackBlock($vector3 = $this->BlockPositionToVector3($blockAction->getBlockPosition()), $blockAction->getFace())){
 							$player->onFailedBlockAction($vector3, $blockAction->getFace());
 						}
-					}else if ($blockAction->getActionType() === PlayerAction::PREDICT_DESTROY_BLOCK){
+					}elseif ($blockAction->getActionType() === PlayerAction::PREDICT_DESTROY_BLOCK){
 						if (!$player->breakBlock($vector3 = $this->BlockPositionToVector3($blockAction->getBlockPosition()))){
 							$player->onFailedBlockAction($vector3, $blockAction->getFace());
 						}
-					}else if($blockAction->getActionType() === PlayerAction::CRACK_BREAK){
+					}elseif($blockAction->getActionType() === PlayerAction::CRACK_BREAK){
 						unset($blockActions[$i]);
 					}
 				}
@@ -57,29 +82,23 @@ class ServerBreakListener implements Listener
 		}
 	}
 
-	public function BlockPositionToVector3(BlockPosition $blockPosition): Vector3{
+	public function BlockPositionToVector3(BlockPosition $blockPosition) : Vector3{
 		return new Vector3($blockPosition->getX(), $blockPosition->getY(), $blockPosition->getZ());
 	}
 
-
-
 	/**
 	 * @priority LOWEST
-	 * @param PlayerCreationEvent $event
-	 * @return void
 	 */
-	public function onCreation(PlayerCreationEvent $event): void{
+	public function onCreation(PlayerCreationEvent $event) : void{
 		$event->setBaseClass($this->playerString);
 		$event->setPlayerClass($this->playerString);
 	}
 
 	/**
 	 * @priority MONITOR
-	 * @param PlayerCreationEvent $event
-	 * @return void
 	 * @throws Exception
 	 */
-	public function onCreationTesterFinal(PlayerCreationEvent $event): void{
+	public function onCreationTesterFinal(PlayerCreationEvent $event) : void{
 		if ($this->playerString != $event->getPlayerClass() && !(new \ReflectionClass($event->getPlayerClass()))->isSubclassOf($this->playerString)){
 			throw new Exception("No cant create playerclass {$event->getPlayerClass()} because is not children of {$this->playerString}");
 		}

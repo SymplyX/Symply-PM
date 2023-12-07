@@ -1,6 +1,33 @@
 <?php
 
+/*
+ *
+ *  _____                       _
+ * /  ___|                     | |
+ * \ `--. _   _ _ __ ___  _ __ | |_   _
+ *  `--. \ | | | '_ ` _ \| '_ \| | | | |
+ * /\__/ / |_| | | | | | | |_) | | |_| |
+ * \____/ \__, |_| |_| |_| .__/|_|\__, |
+ *         __/ |         | |       __/ |
+ *        |___/          |_|      |___/
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author Symply Team
+ * @link http://www.symplymc.com/
+ *
+ *
+ */
+
+declare(strict_types=1);
+
 namespace symply\behavior\entities;
+
+use function count;
+use function spl_object_id;
 
 class BehaviorManager
 {
@@ -27,14 +54,14 @@ class BehaviorManager
 			foreach($this->entriesBehaviors as $id => $behavior){
 
 				if(isset($this->workingBehaviors[$id])){
-					if(!$this->canUse($behavior) or !$behavior->canContinue()){
+					if(!$this->canUse($behavior) || !$behavior->canContinue()){
 						$behavior->onEnd();
 
 						unset($this->workingBehaviors[$id]);
 					}
 				}
 
-				if($this->canUse($behavior) and $behavior->canStart()){
+				if($this->canUse($behavior) && $behavior->canStart()){
 					$behavior->onStart();
 
 					$this->workingBehaviors[$id] = $behavior;
@@ -61,10 +88,10 @@ class BehaviorManager
 		foreach($this->entriesBehaviors as $id => $behaviorEntry){
 			if($behaviorEntry !== $entry){
 				if($entry->getPriority() >= $behaviorEntry->getPriority()){
-					if(!$this->theyCanWorkCompatible($entry, $behaviorEntry) and isset($this->workingBehaviors[$id])){
+					if(!$this->theyCanWorkCompatible($entry, $behaviorEntry) && isset($this->workingBehaviors[$id])){
 						return false;
 					}
-				}elseif(!$behaviorEntry->isMutable() and isset($this->workingBehaviors[$id])){
+				}elseif(!$behaviorEntry->isMutable() && isset($this->workingBehaviors[$id])){
 					return false;
 				}
 			}

@@ -27,12 +27,16 @@ declare(strict_types=1);
 namespace symply\behavior\block;
 
 use symply\behavior\block\builder\BlockPermutationBuilder;
+use symply\behavior\block\info\BlockCreativeInfo;
+use symply\behavior\common\enum\CategoryCreativeEnum;
+use symply\behavior\common\enum\GroupCreativeEnum;
 
 abstract class BlockPermutation extends Block implements IPermutationBlock
 {
 	public function getBlockBuilder() : BlockPermutationBuilder{
 		return BlockPermutationBuilder::create()
 			->setBlock($this)
-			->setUnitCube();
+			->setUnitCube()
+			->setCreativeInfo(new BlockCreativeInfo(CategoryCreativeEnum::CONSTRUCTION, GroupCreativeEnum::NONE));
 	}
 }

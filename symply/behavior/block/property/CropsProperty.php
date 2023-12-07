@@ -24,30 +24,23 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior\entities\component\generic;
+namespace symply\behavior\block\property;
 
-use pocketmine\entity\EntitySizeInfo;
+use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\ListTag;
+use function array_map;
+use function sort;
+use const SORT_NUMERIC;
 
-/**
- * Sets the width and height of the Entity's collision box.
- * @package symply\behavior\entities\component
- */
-class CollisionBoxGeneric
+final class CropsProperty extends BlockProperty
 {
-	private EntitySizeInfo $entitySizeInfo;
-
-	public function __construct(float $height, float $width, ?float $eyeHeight = null)
+	/**
+	 * @param int[] $crops
+	 */
+	public function __construct(array $crops = [])
 	{
-		$this->entitySizeInfo = new EntitySizeInfo($width, $height, $eyeHeight);
-	}
-
-	public function getName() : string
-	{
-		return "minecraft:collision_box";
-	}
-
-	public function getEntitySizeInfo() : EntitySizeInfo
-	{
-		return $this->entitySizeInfo;
+		sort($crops, SORT_NUMERIC);
+		parent::__construct("symply:crops", new ListTag(array_map(fn(int $number) => new IntTag($number), $crops), NBT::TAG_Int));
 	}
 }
