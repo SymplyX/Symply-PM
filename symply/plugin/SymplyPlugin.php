@@ -35,8 +35,13 @@ declare(strict_types=1);
 namespace symply\plugin;
 
 use Exception;
+use pocketmine\entity\EntityDataHelper;
+use pocketmine\entity\EntityFactory;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\plugin\PluginBase;
+use pocketmine\world\World;
 use symply\behavior\AsyncRegisterBehaviorsTask;
+use symply\entity\passive\Cow;
 use symply\plugin\listener\BehaviorListener;
 use symply\plugin\listener\ClientBreakListener;
 use symply\plugin\listener\ServerBreakListener;
@@ -63,6 +68,10 @@ class SymplyPlugin extends PluginBase
 		$asyncPool->addWorkerStartHook(static function(int $worker) use($asyncPool) : void{
 			$asyncPool->submitTaskToWorker(new AsyncRegisterBehaviorsTask(), $worker);
 		});
+
+		EntityFactory::getInstance()->register(Cow::class, function(World $world, CompoundTag $nbt) : Cow{
+			return new Cow(EntityDataHelper::parseLocation($nbt, $world), $nbt);
+		}, ["Cow"]);
 	}
 
 	/**
