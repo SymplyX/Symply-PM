@@ -50,14 +50,10 @@ use function floor;
 class ClientBreakListener implements Listener
 {
 
-	/**
-	 * @phpstan-var WeakMap<NetworkSession, BlockBreakRequest>
-	 */
+	/** @phpstan-var WeakMap<NetworkSession, BlockBreakRequest> */
 	private WeakMap $breaks;
 
-	/**
-	 * @phpstan-var WeakMap<Block, float>
-	 */
+	/** @phpstan-var WeakMap<Block, float> */
 	private WeakMap $blockSpeed;
 
 	const MAX_DISTANCE_BREAK = 16 ** 2;

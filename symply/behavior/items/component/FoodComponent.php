@@ -28,11 +28,9 @@ namespace symply\behavior\items\component;
 
 use pocketmine\nbt\tag\CompoundTag;
 use symply\behavior\common\component\IComponent;
-use symply\behavior\items\enum\SlotEnum;
 
 class FoodComponent implements IComponent
 {
-
 
 	public function __construct(private readonly bool $canAlwaysEat = false) {
 	}
