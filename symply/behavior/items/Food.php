@@ -30,6 +30,7 @@ use pocketmine\item\Food as PMFood;
 use symply\behavior\common\enum\CategoryCreativeEnum;
 use symply\behavior\common\enum\GroupCreativeEnum;
 use symply\behavior\items\builder\ItemBuilder;
+use symply\behavior\items\component\FoodComponent;
 use symply\behavior\items\enum\AnimationEnum;
 use symply\behavior\items\info\ItemCreativeInfo;
 use function assert;
@@ -50,6 +51,7 @@ abstract class Food extends PMFood implements ICustomItem
 		return ItemBuilder::create()->setItem($this)
 			->setDefaultMaxStack()
 			->setDefaultName()
+			->addComponents(new FoodComponent($this->requiresHunger()))
 			->setCreativeInfo(new ItemCreativeInfo(CategoryCreativeEnum::EQUIPMENT, GroupCreativeEnum::MISC_FOOD))
 			->setAnimation(AnimationEnum::EAT)
 			->setUseDuration(20);
