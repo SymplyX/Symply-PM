@@ -38,8 +38,8 @@ use pocketmine\network\mcpe\protocol\types\BlockPaletteEntry;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use ReflectionException;
-use symply\behavior\block\IBlockCustom;
-use symply\behavior\block\IPermutationBlock;
+use symply\behavior\blocks\IBlockCustom;
+use symply\behavior\blocks\IPermutationBlock;
 
 final class SymplyBlockFactory
 {

@@ -42,7 +42,7 @@ use pocketmine\network\mcpe\protocol\types\ItemComponentPacketEntry;
 use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
-use symply\behavior\block\IBlockCustom;
+use symply\behavior\blocks\IBlockCustom;
 use symply\behavior\items\ICustomItem;
 use function array_merge;
 use function array_values;
