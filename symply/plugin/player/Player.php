@@ -148,8 +148,9 @@ class Player extends PMPlayer
 	public function breakBlock(Vector3 $pos) : bool{
 		$this->removeCurrentWindow();
 		if($this->canInteract($pos->add(0.5, 0.5, 0.5), $this->isCreative() ? self::MAX_REACH_DISTANCE_CREATIVE : self::MAX_REACH_DISTANCE_SURVIVAL)){
-			if ($this->isSurvival()){
-				if ($this->blockBreakHandlerModded !== null && $this->blockBreakHandlerModded->getBreakProgress() < 1) return false;
+			if (!$this->isCreative() && !$this->getWorld()->getBlock($pos)->getBreakInfo()->breaksInstantly()){
+				if (!$this->getWorld()->getBlock($pos)->getBreakInfo()->isBreakable()) return true;
+				if ($this->blockBreakHandlerModded === null || (1 - $this->blockBreakHandlerModded->getBreakProgress()) < 0.02) return false;
 			}
 			$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
 			$this->stopBreakBlock($pos);

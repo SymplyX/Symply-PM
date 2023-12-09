@@ -27,7 +27,10 @@ declare(strict_types=1);
 namespace symply\behavior\items;
 
 use pocketmine\item\Item as PMItem;
+use symply\behavior\common\enum\CategoryCreativeEnum;
+use symply\behavior\common\enum\GroupCreativeEnum;
 use symply\behavior\items\builder\ItemBuilder;
+use symply\behavior\items\info\ItemCreativeInfo;
 use function assert;
 
 class Item extends PMItem implements ICustomItem
@@ -45,6 +48,7 @@ class Item extends PMItem implements ICustomItem
 	public function getItemBuilder() : ItemBuilder{
 		return ItemBuilder::create()->setItem($this)
 			->setDefaultMaxStack()
-			->setDefaultName();
+			->setDefaultName()
+			->setCreativeInfo(new ItemCreativeInfo(CategoryCreativeEnum::ITEMS, GroupCreativeEnum::NONE));
 	}
 }

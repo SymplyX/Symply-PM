@@ -36,7 +36,7 @@ final class HitBoxSubComponent implements ISubComponent
 {
 	public function __construct(
 		protected readonly bool	$enabled = true,
-		protected readonly Vector3 $origin = new Vector3(8, 00, 8),
+		protected readonly Vector3 $origin = new Vector3(-8, 0, -8),
 		protected readonly Vector3 $size = new Vector3(16, 16, 16)
 	)
 	{

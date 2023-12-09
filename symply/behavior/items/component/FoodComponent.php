@@ -24,12 +24,26 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior\items\enum;
+namespace symply\behavior\items\component;
 
-enum AnimationEnum : int
+use pocketmine\nbt\tag\CompoundTag;
+use symply\behavior\common\component\IComponent;
+use symply\behavior\items\enum\SlotEnum;
+
+class FoodComponent implements IComponent
 {
 
-	case EAT = 1;
-	case DRINK = 2;
 
+	public function __construct(private readonly bool $canAlwaysEat = false) {
+	}
+
+	public function getName() : string
+	{
+		return "minecraft:food";
+	}
+
+	public function toNbt() : CompoundTag
+	{
+	   return CompoundTag::create()->setTag($this->getName(),CompoundTag::create()->setByte("can_always_eat", $this->canAlwaysEat ? 1 : 0));
+	}
 }
