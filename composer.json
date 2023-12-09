@@ -91,6 +91,12 @@
       ],
       "update-translation-apis": [
          "@php build/generate-known-translation-apis.php"
-      ]
+      ],
+	   "cs-fixer": [
+		   "rm -fr .php-cs-fixer.cache",
+		   "php-cs-fixer fix --config=.php-cs-fixer.php",
+		   "rm -fr .php-cs-fixer.cache",
+		   "php-cs-fixer fix --config=.php-cs-fixer-symply.php"
+	   ]
    }
 }
