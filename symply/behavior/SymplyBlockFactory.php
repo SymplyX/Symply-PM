@@ -38,15 +38,15 @@ use pocketmine\network\mcpe\protocol\types\BlockPaletteEntry;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use ReflectionException;
-use symply\behavior\block\BlockCustom;
-use symply\behavior\block\PermutationBlock;
+use symply\behavior\block\IBlockCustom;
+use symply\behavior\block\IPermutationBlock;
 
 final class SymplyBlockFactory
 {
-	/** @var self|null */
-	private static $instance = null;
 
-	/** @var array<string, BlockCustom> */
+	private static ?SymplyBlockFactory $instance = null;
+
+	/** @var array<string, IBlockCustom> */
 	private array $blocks = [];
 
 	/** @var BlockPaletteEntry[] */
@@ -55,19 +55,16 @@ final class SymplyBlockFactory
 	/** @var ThreadSafeArray<ThreadSafeArray<Closure>> */
 	private ThreadSafeArray $asyncTransmitter;
 
-	/**
-	 * @throws ReflectionException
-	 */
 	public function __construct(private readonly bool $asyncMode = false)
 	{
 		$this->asyncTransmitter = new ThreadSafeArray();
 	}
 	/**
-	 * @param Closure(): BlockCustom $blockClosure
+	 * @param Closure(): Block&IBlockCustom $blockClosure
 	 */
 	public function register(Closure $blockClosure, ?Closure $serializer = null, ?Closure $deserializer = null) : void
 	{
-		/** @var BlockCustom $blockCustom */
+		/** @var Block&IBlockCustom $blockCustom */
 		$blockCustom = $blockClosure();
 		$identifier = $blockCustom->getIdInfo()->getNamespaceId();
 		if (isset($this->blocks[$identifier])) {
@@ -77,26 +74,27 @@ final class SymplyBlockFactory
 		RuntimeBlockStateRegistry::getInstance()->register($blockCustom);
 		SymplyItemFactory::getInstance()->registerBlockItem($identifier, $blockCustom);
 		$this->blocks[$identifier] = $blockCustom;
-		if ($blockCustom instanceof PermutationBlock) {
-			$serializer ??= static function (PermutationBlock $block) : BlockStateWriter {
-				$writer = BlockStateWriter::create($block->getIdInfo()->getNamespaceId());
+		if ($blockCustom instanceof IPermutationBlock) {
+			$serializer ??= static function (Block&IPermutationBlock $block) use ($identifier) : BlockStateWriter {
+				$writer = BlockStateWriter::create($identifier);
 				$block->serializeState($writer);
 				return $writer;
 			};
 			$deserializer ??= static function (BlockStateReader $reader) use ($identifier) : Block {
+				/**
+				 * @var Block&IPermutationBlock $block
+				 */
 				$block = SymplyBlockFactory::getInstance()->getBlock($identifier);
 				$block->deserializeState($reader);
 				return $block;
 			};
 		} else {
-			$serializer ??= static fn() => BlockStateWriter::create($blockCustom->getIdInfo()->getNamespaceId());
+			$serializer ??= static fn() => BlockStateWriter::create($identifier);
 			$deserializer ??= static fn(BlockStateReader $reader) => $blockCustom;
 		}
-		$oldId = $blockCustom->getIdInfo()->getOldId();
 		foreach ($blockBuilder->toBlockStateDictionaryEntry() as $blockStateDictionaryEntry){
 			SymplyBlockPalette::getInstance()->insertState($blockStateDictionaryEntry);
 			GlobalBlockStateHandlers::getUpgrader()->getBlockIdMetaUpgrader()->addIdMetaToStateMapping($identifier, $blockStateDictionaryEntry->getMeta(), $blockStateDictionaryEntry->generateStateData());
-			GlobalBlockStateHandlers::getUpgrader()->getBlockIdMetaUpgrader()->addIntIdToStringIdMapping($oldId, $identifier);
 		}
 		GlobalBlockStateHandlers::getSerializer()->map($blockCustom, $serializer);
 		GlobalBlockStateHandlers::getDeserializer()->map($identifier, $deserializer);
@@ -122,14 +120,17 @@ final class SymplyBlockFactory
 	}
 
 	/**
-	 * @return BlockCustom[]
+	 * @return Block&IBlockCustom[]
 	 */
 	public function getBlocks() : array
 	{
 		return $this->blocks;
 	}
 
-	public function getBlock(string $identifier) : ?BlockCustom
+	/**
+	 * @return null|Block&IBlockCustom
+	 */
+	public function getBlock(string $identifier) : IBlockCustom|null
 	{
 		return $this->blocks[$identifier] ?? null;
 	}
@@ -142,9 +143,6 @@ final class SymplyBlockFactory
 		return self::getInstance(true);
 	}
 
-	/**
-	 * @throws ReflectionException
-	 */
 	public static function getInstance(bool $asyncMode = false) : self
 	{
 		if (self::$instance === null) {

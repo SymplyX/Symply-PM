@@ -27,12 +27,12 @@ declare(strict_types=1);
 namespace symply\behavior\block\builder;
 
 use Generator;
+use pocketmine\block\Block;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\BlockStateDictionaryEntry;
-use symply\behavior\block\BlockCustom;
 use symply\behavior\block\component\CollisionBoxComponent;
 use symply\behavior\block\component\GeometryComponent;
 use symply\behavior\block\component\MaterialInstancesComponent;
@@ -41,7 +41,8 @@ use symply\behavior\block\component\sub\HitBoxSubComponent;
 use symply\behavior\block\component\sub\MaterialSubComponent;
 use symply\behavior\block\component\TransformationComponent;
 use symply\behavior\block\component\UnitCubeComponent;
-use symply\behavior\block\info\CreativeInfo;
+use symply\behavior\block\IBlockCustom;
+use symply\behavior\block\info\BlockCreativeInfo;
 use symply\behavior\common\component\IComponent;
 use function array_map;
 
@@ -50,7 +51,7 @@ class BlockBuilder
 
 	/** @var IComponent[] */
 	private array $components = [];
-	protected BlockCustom $blockCustom;
+	protected Block&IBlockCustom $blockCustom;
 
 	public function __construct()
 	{
@@ -60,7 +61,7 @@ class BlockBuilder
 		return new static();
 	}
 
-	public function setBlock(BlockCustom $blockCustom) : static{
+	public function setBlock(Block&IBlockCustom $blockCustom) : static{
 		$this->blockCustom = $blockCustom;
 		return $this;
 	}
@@ -70,18 +71,14 @@ class BlockBuilder
 		return $this->blockCustom->getIdInfo()->getNamespaceId();
 	}
 
-	public function getOldId() : int
-	{
-		return $this->blockCustom->getIdInfo()->getOldId();
-	}
-	private CreativeInfo $creativeInfo;
+	private BlockCreativeInfo $creativeInfo;
 
-	public function getCreativeInfo() : CreativeInfo
+	public function getCreativeInfo() : BlockCreativeInfo
 	{
 		return $this->creativeInfo;
 	}
 
-	public function setCreativeInfo(CreativeInfo $creativeInfo) : static
+	public function setCreativeInfo(BlockCreativeInfo $creativeInfo) : static
 	{
 		$this->creativeInfo = $creativeInfo;
 		return $this;
@@ -121,12 +118,12 @@ class BlockBuilder
 		return $this->addComponent(new TransformationComponent($rotation ?? Vector3::zero(), $scale ?? Vector3::zero(), $translation ?? Vector3::zero()));
 	}
 
-	public function setCollisionBox(Vector3 $origin, Vector3 $size, bool $enable = true): static
+	public function setCollisionBox(Vector3 $origin, Vector3 $size, bool $enable = true) : static
 	{
 		return $this->addComponent(new CollisionBoxComponent(new HitBoxSubComponent($enable, $origin, $size)));
 	}
 
-	public function setSelectionBox(Vector3 $origin, Vector3 $size, bool $enable = true): static
+	public function setSelectionBox(Vector3 $origin, Vector3 $size, bool $enable = true) : static
 	{
 		return $this->addComponent(new SelectionBoxComponent(new HitBoxSubComponent($enable, $origin, $size)));
 	}

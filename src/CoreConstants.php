@@ -34,6 +34,7 @@ if(defined('pocketmine\_CORE_CONSTANTS_INCLUDED')){
 define('pocketmine\_CORE_CONSTANTS_INCLUDED', true);
 
 define('pocketmine\PATH', dirname(__DIR__) . '/');
+define('symply\PATH', PATH . 'symply/');
 define('pocketmine\RESOURCE_PATH', dirname(__DIR__) . '/resources/');
 define('pocketmine\BEDROCK_DATA_PATH', dirname(__DIR__) . '/vendor/pocketmine/bedrock-data/');
 define('pocketmine\LOCALE_DATA_PATH', dirname(__DIR__) . '/vendor/pocketmine/locale-data/');

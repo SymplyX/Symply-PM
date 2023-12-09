@@ -39,5 +39,6 @@ final class YmlSymplyProperties{
 	}
 
 	public const PERSONA_SKIN = 'persona-skin';
+	public const SERVER_BREAK_SIDE = 'server-break-side';
 	public const WATERDOGPE_SUPPORT = 'waterdogpe-support';
 }

@@ -26,12 +26,13 @@ declare(strict_types=1);
 
 namespace symply\behavior\items\builder;
 
+use pocketmine\item\Item as PMItem;
 use pocketmine\nbt\tag\CompoundTag;
 use symply\behavior\common\component\IComponent;
 use symply\behavior\items\component\DisplayNameComponent;
 use symply\behavior\items\enum\AnimationEnum;
-use symply\behavior\items\info\CreativeInfo;
-use symply\behavior\items\ItemCustom;
+use symply\behavior\items\ICustomItem;
+use symply\behavior\items\info\ItemCreativeInfo;
 use symply\behavior\items\property\AllowOffHandProperty;
 use symply\behavior\items\property\FoilProperty;
 use symply\behavior\items\property\HandEquippedProperty;
@@ -44,7 +45,7 @@ use symply\behavior\items\property\UseDurationProperty;
 final class ItemBuilder
 {
 
-	private ItemCustom $item;
+	private PMItem&ICustomItem $item;
 
 	private function __construct()
 	{
@@ -61,19 +62,19 @@ final class ItemBuilder
 	/** @var ItemProperty[] */
 	private array $properties = [];
 
-	private CreativeInfo $creativeInfo;
+	private ItemCreativeInfo $creativeInfo;
 
-	public function setItem(ItemCustom $itemCustom) : self{
+	public function setItem(PMItem&ICustomItem $itemCustom) : self{
 		$this->item = $itemCustom;
 		return $this;
 	}
 
-	public function getCreativeInfo() : CreativeInfo
+	public function getCreativeInfo() : ItemCreativeInfo
 	{
 		return $this->creativeInfo;
 	}
 
-	public function setCreativeInfo(CreativeInfo $creativeInfo) : self
+	public function setCreativeInfo(ItemCreativeInfo $creativeInfo) : self
 	{
 		$this->creativeInfo = $creativeInfo;
 		return $this;
@@ -167,7 +168,7 @@ final class ItemBuilder
 		return CompoundTag::create()
 			->setTag("components", $this->getComponentsTag()
 				->setTag("item_properties", $this->getPropertiesTag()))
-			->setInt("id", $this->item->getIdentifier()->getOldId())
+			->setInt("id", $this->item->getIdentifier()->getTypeId())
 			->setString("name", $this->item->getIdentifier()->getNamespaceId());
 	}
 

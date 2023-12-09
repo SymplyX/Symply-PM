@@ -31,6 +31,7 @@ use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\sound\ItemUseOnBlockSound;
+use symply\behavior\items\Axe as SymplyAxe;
 
 class Wood extends Opaque{
 	use PillarRotationTrait;
@@ -63,7 +64,7 @@ class Wood extends Opaque{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if(!$this->stripped && $item instanceof Axe){
+		if(!$this->stripped && ($item instanceof Axe || $item instanceof SymplyAxe)){
 			$item->applyDamage(1);
 			$this->stripped = true;
 			$this->position->getWorld()->setBlock($this->position, $this);
