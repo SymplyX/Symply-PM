@@ -167,6 +167,13 @@ class LoginPacketHandler extends PacketHandler{
 			}catch(JwtException $e){
 				throw PacketHandlingException::wrap($e);
 			}
+
+			if($k === 0) {
+				if(!isset($claims["exp"])) throw new PacketHandlingException("LoginPacket: \"exp\" not found");
+				if(isset($claims["iat"])) throw new PacketHandlingException("LoginPacket: \"iat\" found");
+				if(isset($claims["iss"])) throw new PacketHandlingException("LoginPacket: \"iss\" found");
+			}
+
 			if(isset($claims["extraData"])){
 				if($extraData !== null){
 					throw new PacketHandlingException("Found 'extraData' more than once in chainData");

@@ -109,6 +109,7 @@ use pocketmine\utils\ObjectSet;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\Position;
 use pocketmine\YmlServerProperties;
+use symply\events\session\SessionPingUpdateEvent;
 use symply\waterdogpe\WDPEPlayerInfo;
 use function array_map;
 use function array_values;
@@ -318,6 +319,8 @@ class NetworkSession{
 	 */
 	public function updatePing(int $ping) : void{
 		$this->ping = $ping;
+		$ev = new SessionPingUpdateEvent($this, $ping);
+		$ev->call();
 	}
 
 	public function getHandler() : ?PacketHandler{

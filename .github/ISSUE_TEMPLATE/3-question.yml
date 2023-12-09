@@ -1,9 +1,7 @@
 name: 🗣️ Question
-about: Ask your question
-title: ""
-labels:
-    - 'Type: Question'
-assignees: ''
+description: Ask your question
+title: "[Question]: "
+labels: ["Type: Question"]
 
 body:
     - type: markdown
@@ -17,8 +15,8 @@ body:
       attributes:
           label: "Your Question"
           description: "Please provide as many details as possible."
-          validations:
-              required: true
+      validations:
+        required: true
 
     - type: checkboxes
       attributes:
