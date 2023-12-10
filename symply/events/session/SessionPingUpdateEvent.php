@@ -36,18 +36,12 @@ class SessionPingUpdateEvent extends Event
 		protected float $ping
 	) {}
 
-	/**
-	 * @return NetworkSession
-	 */
-	public function getNetworkSession(): NetworkSession
+	public function getNetworkSession() : NetworkSession
 	{
 		return $this->networkSession;
 	}
 
-	/**
-	 * @return float
-	 */
-	public function getPing(): float
+	public function getPing() : float
 	{
 		return $this->ping;
 	}
