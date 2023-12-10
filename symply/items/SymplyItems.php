@@ -24,31 +24,39 @@
 
 declare(strict_types=1);
 
-namespace symply\events\session;
+namespace symply\items;
 
-use pocketmine\event\Event;
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\item\Item;
+use pocketmine\utils\CloningRegistryTrait;
 
-class SessionPingUpdateEvent extends Event
+class SymplyItems
 {
-	public function __construct(
-		protected NetworkSession $networkSession,
-		protected float $ping
-	) {}
+	use CloningRegistryTrait;
 
-	/**
-	 * @return NetworkSession
-	 */
-	public function getNetworkSession(): NetworkSession
+	private function __construct()
 	{
-		return $this->networkSession;
+		//NOOP
+	}
+
+	protected static function register(string $name, Item $item) : void
+	{
+		self::_registryRegister($name, $item);
 	}
 
 	/**
-	 * @return float
+	 * @return Item[]
+	 * @phpstan-return array<string, Item>
 	 */
-	public function getPing(): float
+	public static function getAll() : array
 	{
-		return $this->ping;
+		//phpstan doesn't support generic traits yet :(
+		/** @var Item[] $result */
+		$result = self::_registryGetAll();
+		return $result;
+	}
+
+	protected static function setup() : void
+	{
+		//TODO: Add items here
 	}
 }

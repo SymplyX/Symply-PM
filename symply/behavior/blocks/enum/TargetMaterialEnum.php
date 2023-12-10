@@ -24,31 +24,16 @@
 
 declare(strict_types=1);
 
-namespace symply\events\session;
+namespace symply\behavior\blocks\enum;
 
-use pocketmine\event\Event;
-use pocketmine\network\mcpe\NetworkSession;
-
-class SessionPingUpdateEvent extends Event
+enum TargetMaterialEnum : string
 {
-	public function __construct(
-		protected NetworkSession $networkSession,
-		protected float $ping
-	) {}
-
-	/**
-	 * @return NetworkSession
-	 */
-	public function getNetworkSession(): NetworkSession
-	{
-		return $this->networkSession;
-	}
-
-	/**
-	 * @return float
-	 */
-	public function getPing(): float
-	{
-		return $this->ping;
-	}
+	case ALL = "*";
+	case SIDES = "sides";
+	case UP = "up";
+	case DOWN = "down";
+	case NORTH = "north";
+	case EAST = "east";
+	case SOUTH = "south";
+	case WEST = "west";
 }

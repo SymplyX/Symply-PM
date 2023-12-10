@@ -24,31 +24,17 @@
 
 declare(strict_types=1);
 
-namespace symply\events\session;
+namespace symply\behavior\blocks;
 
-use pocketmine\event\Event;
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\data\bedrock\block\convert\BlockStateReader;
+use pocketmine\data\bedrock\block\convert\BlockStateWriter;
+use symply\behavior\blocks\builder\BlockPermutationBuilder;
 
-class SessionPingUpdateEvent extends Event
+interface IPermutationBlock extends IBlockCustom
 {
-	public function __construct(
-		protected NetworkSession $networkSession,
-		protected float $ping
-	) {}
 
-	/**
-	 * @return NetworkSession
-	 */
-	public function getNetworkSession(): NetworkSession
-	{
-		return $this->networkSession;
-	}
+	public function deserializeState(BlockStateReader $reader) : void;
+	public function serializeState(BlockStateWriter $writer) : void;
 
-	/**
-	 * @return float
-	 */
-	public function getPing(): float
-	{
-		return $this->ping;
-	}
+	public function getBlockBuilder() : BlockPermutationBuilder;
 }

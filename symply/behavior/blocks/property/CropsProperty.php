@@ -24,31 +24,23 @@
 
 declare(strict_types=1);
 
-namespace symply\events\session;
+namespace symply\behavior\blocks\property;
 
-use pocketmine\event\Event;
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\ListTag;
+use function array_map;
+use function sort;
+use const SORT_NUMERIC;
 
-class SessionPingUpdateEvent extends Event
+final class CropsProperty extends BlockProperty
 {
-	public function __construct(
-		protected NetworkSession $networkSession,
-		protected float $ping
-	) {}
-
 	/**
-	 * @return NetworkSession
+	 * @param int[] $crops
 	 */
-	public function getNetworkSession(): NetworkSession
+	public function __construct(array $crops = [])
 	{
-		return $this->networkSession;
-	}
-
-	/**
-	 * @return float
-	 */
-	public function getPing(): float
-	{
-		return $this->ping;
+		sort($crops, SORT_NUMERIC);
+		parent::__construct("symply:crops", new ListTag(array_map(fn(int $number) => new IntTag($number), $crops), NBT::TAG_Int));
 	}
 }

@@ -215,7 +215,7 @@ class NetworkSession{
 		return $this->logger;
 	}
 
-	public function getConnectedTime(): int {
+	public function getConnectedTime() : int {
 		return $this->connectTime;
 	}
 

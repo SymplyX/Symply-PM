@@ -94,7 +94,7 @@ class SurvivalBlockBreakHandler
 		if($this->player->getWorld()->isInLoadedTerrain($this->blockPos)){
 			$this->player->getWorld()->broadcastPacketToViewers(
 				$this->blockPos,
-				LevelEventPacket::create(LevelEvent::BLOCK_BREAK_SPEED,  (int) (65535 * $newBreakSpeed), $this->blockPos)
+				LevelEventPacket::create(LevelEvent::BLOCK_BREAK_SPEED,  (int) (65535 * $this->breakSpeed), $this->blockPos)
 			);
 		}
 		return true;

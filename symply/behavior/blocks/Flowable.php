@@ -24,31 +24,40 @@
 
 declare(strict_types=1);
 
-namespace symply\behavior\items;
+namespace symply\behavior\blocks;
 
-use pocketmine\item\Item as PMItem;
+use pocketmine\block\BlockTypeInfo;
+use pocketmine\block\Flowable as PMFlowable;
+use symply\behavior\blocks\builder\BlockBuilder;
+use symply\behavior\blocks\info\BlockCreativeInfo;
 use symply\behavior\common\enum\CategoryCreativeEnum;
 use symply\behavior\common\enum\GroupCreativeEnum;
-use symply\behavior\items\builder\ItemBuilder;
-use symply\behavior\items\info\ItemCreativeInfo;
 use function assert;
 
-class Item extends PMItem implements ICustomItem
+class Flowable extends PMFlowable implements IBlockCustom
 {
-	public function __construct(ItemIdentifier $identifier, string $name = "Unknown", array $enchantmentTags = [])
+
+	public function __construct(
+		BlockIdentifier $idInfo,
+		string          $name,
+		BlockTypeInfo   $typeInfo
+	)
 	{
-		parent::__construct($identifier, $name, $enchantmentTags);
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
-	public function getIdentifier() : ItemIdentifier
+
+	public function getIdInfo() : BlockIdentifier
 	{
-		$identifier = parent::getIdentifier();
-		assert($identifier instanceof  ItemIdentifier);
-		return $identifier;
+		$idInfo = parent::getIdInfo();
+		assert($idInfo instanceof BlockIdentifier);
+		return $idInfo;
 	}
-	public function getItemBuilder() : ItemBuilder{
-		return ItemBuilder::create()->setItem($this)
-			->setDefaultMaxStack()
-			->setDefaultName()
-			->setCreativeInfo(new ItemCreativeInfo(CategoryCreativeEnum::ITEMS, GroupCreativeEnum::NONE));
+
+	public function getBlockBuilder() : BlockBuilder
+	{
+		return BlockBuilder::create()
+			->setBlock($this)
+			->setUnitCube()
+			->setCreativeInfo(new BlockCreativeInfo(CategoryCreativeEnum::CONSTRUCTION, GroupCreativeEnum::NONE));
 	}
 }

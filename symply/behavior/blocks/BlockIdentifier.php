@@ -24,31 +24,23 @@
 
 declare(strict_types=1);
 
-namespace symply\events\session;
+namespace symply\behavior\blocks;
 
-use pocketmine\event\Event;
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\block\BlockIdentifier as PMBlockIdentifier;
 
-class SessionPingUpdateEvent extends Event
+class BlockIdentifier extends PMBlockIdentifier
 {
-	public function __construct(
-		protected NetworkSession $networkSession,
-		protected float $ping
-	) {}
 
-	/**
-	 * @return NetworkSession
-	 */
-	public function getNetworkSession(): NetworkSession
+	public function __construct(
+		private readonly string $namespaceId,
+		int                     $blockTypeId,
+		?string                 $tileClass = null)
 	{
-		return $this->networkSession;
+		parent::__construct($blockTypeId, $tileClass);
 	}
 
-	/**
-	 * @return float
-	 */
-	public function getPing(): float
+	public function getNamespaceId() : string
 	{
-		return $this->ping;
+		return $this->namespaceId;
 	}
 }

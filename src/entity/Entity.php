@@ -337,12 +337,10 @@ abstract class Entity{
 		$this->networkPropertiesDirty = true;
 	}
 
-
-	public function setImmobile(bool $value): void {
+	public function setImmobile(bool $value) : void {
 		$this->noClientPredictions = $value;
 		$this->networkPropertiesDirty = true;
 	}
-
 
 	public function isInvisible() : bool{
 		return $this->invisible;

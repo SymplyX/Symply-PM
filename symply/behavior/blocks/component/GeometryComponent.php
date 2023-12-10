@@ -24,31 +24,31 @@
 
 declare(strict_types=1);
 
-namespace symply\events\session;
+namespace symply\behavior\blocks\component;
 
-use pocketmine\event\Event;
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\nbt\tag\CompoundTag;
+use symply\behavior\common\component\IComponent;
 
-class SessionPingUpdateEvent extends Event
+class GeometryComponent implements IComponent
 {
-	public function __construct(
-		protected NetworkSession $networkSession,
-		protected float $ping
-	) {}
-
-	/**
-	 * @return NetworkSession
-	 */
-	public function getNetworkSession(): NetworkSession
+	public function __construct(private readonly string $identifier)
 	{
-		return $this->networkSession;
 	}
 
-	/**
-	 * @return float
-	 */
-	public function getPing(): float
+	public function getName() : string
 	{
-		return $this->ping;
+		return "minecraft:geometry";
 	}
+
+	public function getIdentifier() : string
+	{
+		return $this->identifier;
+	}
+
+	public function toNbt() : CompoundTag
+	{
+		return CompoundTag::create()->setTag($this->getName(), CompoundTag::create()
+		->setString("identifier", $this->getIdentifier()));
+	}
+
 }

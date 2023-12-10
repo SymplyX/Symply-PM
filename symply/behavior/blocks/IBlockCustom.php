@@ -24,31 +24,12 @@
 
 declare(strict_types=1);
 
-namespace symply\events\session;
+namespace symply\behavior\blocks;
 
-use pocketmine\event\Event;
-use pocketmine\network\mcpe\NetworkSession;
+use symply\behavior\blocks\builder\BlockBuilder;
 
-class SessionPingUpdateEvent extends Event
-{
-	public function __construct(
-		protected NetworkSession $networkSession,
-		protected float $ping
-	) {}
+interface IBlockCustom {
 
-	/**
-	 * @return NetworkSession
-	 */
-	public function getNetworkSession(): NetworkSession
-	{
-		return $this->networkSession;
-	}
-
-	/**
-	 * @return float
-	 */
-	public function getPing(): float
-	{
-		return $this->ping;
-	}
+	public function getIdInfo() : BlockIdentifier;
+	public function getBlockBuilder() : BlockBuilder;
 }

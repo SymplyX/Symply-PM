@@ -24,31 +24,19 @@
 
 declare(strict_types=1);
 
-namespace symply\events\session;
+namespace symply\behavior\blocks;
 
-use pocketmine\event\Event;
-use pocketmine\network\mcpe\NetworkSession;
+use symply\behavior\blocks\builder\BlockPermutationBuilder;
+use symply\behavior\blocks\info\BlockCreativeInfo;
+use symply\behavior\common\enum\CategoryCreativeEnum;
+use symply\behavior\common\enum\GroupCreativeEnum;
 
-class SessionPingUpdateEvent extends Event
+abstract class BlockPermutation extends Block implements IPermutationBlock
 {
-	public function __construct(
-		protected NetworkSession $networkSession,
-		protected float $ping
-	) {}
-
-	/**
-	 * @return NetworkSession
-	 */
-	public function getNetworkSession(): NetworkSession
-	{
-		return $this->networkSession;
-	}
-
-	/**
-	 * @return float
-	 */
-	public function getPing(): float
-	{
-		return $this->ping;
+	public function getBlockBuilder() : BlockPermutationBuilder{
+		return BlockPermutationBuilder::create()
+			->setBlock($this)
+			->setUnitCube()
+			->setCreativeInfo(new BlockCreativeInfo(CategoryCreativeEnum::CONSTRUCTION, GroupCreativeEnum::NONE));
 	}
 }

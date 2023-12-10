@@ -24,31 +24,30 @@
 
 declare(strict_types=1);
 
-namespace symply\events\session;
+namespace symply\behavior\blocks\component;
 
-use pocketmine\event\Event;
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\nbt\tag\CompoundTag;
+use symply\behavior\blocks\component\sub\HitBoxSubComponent;
+use symply\behavior\common\component\IComponent;
 
-class SessionPingUpdateEvent extends Event
+class SelectionBoxComponent implements IComponent
 {
-	public function __construct(
-		protected NetworkSession $networkSession,
-		protected float $ping
-	) {}
 
-	/**
-	 * @return NetworkSession
-	 */
-	public function getNetworkSession(): NetworkSession
+	public function __construct(
+		protected ?HitBoxSubComponent $value = null,
+	)
 	{
-		return $this->networkSession;
+		$this->value ??= new HitBoxSubComponent();
 	}
 
-	/**
-	 * @return float
-	 */
-	public function getPing(): float
+	public function getName() : string
 	{
-		return $this->ping;
+		return "minecraft:selection_box";
+	}
+
+	public function toNbt() : CompoundTag
+	{
+		return CompoundTag::create()
+			->setTag($this->getName(), $this->value->toNbt());
 	}
 }

@@ -29,7 +29,7 @@ namespace symply\behavior\items\enum;
 enum AnimationEnum : int
 {
 
-	case ANIMATION_EAT = 1;
-	case ANIMATION_DRINK = 2;
+	case EAT = 1;
+	case DRINK = 2;
 
 }
