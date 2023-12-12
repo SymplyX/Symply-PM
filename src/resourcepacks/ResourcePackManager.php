@@ -105,7 +105,7 @@ class ResourcePackManager{
 				$this->uuidList[$index] = $newPack;
 				if ($newPack instanceof URLResourcePack){
 					$this->addPackUrl($newPack);
-					return;
+					continue;
 				}
 
 				$keyPath = Path::join($this->path, $pack . ".key");
