@@ -52,6 +52,8 @@ final class SymplyItemFactory
 {
 	use SingletonTrait;
 
+	public static int $BLOCK_ID_NEXT_MCBE = 10000;
+
 	/** @var array<string, Item> */
 	private array $items = [];
 
@@ -129,8 +131,8 @@ final class SymplyItemFactory
 	 * correlates to its block ID.
 	 */
 	public function registerBlockItem(string $identifier, Block&IBlockCustom $block) : void {
-		$itemId = $block->getIdInfo()->getBlockTypeId();
-		$this->registerCustomItemMapping($identifier, $itemId, new ItemTypeEntry($identifier, $itemId, true));
+		$itemId = 255 - $this->getBlockIdNextMCBE();
+		$this->registerCustomItemMapping($identifier, $itemId, new ItemTypeEntry($identifier, $itemId, false));
 		StringToItemParser::getInstance()->registerBlock($identifier, fn() => clone $block);
 
 		$blockItemIdMap = BlockItemIdMap::getInstance();
@@ -142,6 +144,10 @@ final class SymplyItemFactory
 		$itemToBlockId->setValue($blockItemIdMap, array_merge($value, [$identifier => $identifier]));
 	}
 
+
+	public function getBlockIdNextMCBE(): int{
+		return self::$BLOCK_ID_NEXT_MCBE++;
+	}
 	/**
 	 * @return ThreadSafeArray<ThreadSafeArray<Closure>>
 	 */

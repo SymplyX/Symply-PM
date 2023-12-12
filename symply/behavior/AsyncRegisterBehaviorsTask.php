@@ -33,11 +33,14 @@ use ReflectionException;
 class AsyncRegisterBehaviorsTask extends AsyncTask
 {
 
-	private ThreadSafeArray $asyncBlockTransmitter;
+	private ThreadSafeArray $asyncTransmitterBlockCustom;
 	private ThreadSafeArray $asyncItemTransmitter;
+	private ThreadSafeArray $asyncTransmitterBlockOverwrite;
+
 	public function __construct()
 	{
-		$this->asyncBlockTransmitter = SymplyBlockFactory::getInstance()->getAsyncTransmitter();
+		$this->asyncTransmitterBlockOverwrite = SymplyBlockFactory::getInstance()->getAsyncTransmitterBlockOverwrite();
+		$this->asyncTransmitterBlockCustom = SymplyBlockFactory::getInstance()->getAsyncTransmitterBlockCustom();
 		$this->asyncItemTransmitter = SymplyItemFactory::getInstance()->getAsyncTransmitter();
 	}
 
@@ -47,8 +50,12 @@ class AsyncRegisterBehaviorsTask extends AsyncTask
 	 */
 	public function onRun() : void
 	{
-		foreach ($this->asyncBlockTransmitter as $closure) {
-			SymplyBlockFactory::getInstanceModeAsync()->register($closure[0], $closure[1], $closure[2]);
+		$symplyBlockFactory = SymplyBlockFactory::getInstanceModeAsync();
+		foreach ($this->asyncTransmitterBlockOverwrite as $closure){
+			$symplyBlockFactory->overwriteBlockPMMP($closure[0], $closure[1], $closure[2]);
+		}
+		foreach ($this->asyncTransmitterBlockCustom as $closure) {
+			$symplyBlockFactory->register($closure[0], $closure[1], $closure[2]);
 		}
 		foreach ($this->asyncItemTransmitter as $closure){
 			SymplyItemFactory::getInstanceModeAsync()->register($closure[0], $closure[1], $closure[2]);

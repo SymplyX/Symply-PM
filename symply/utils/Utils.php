@@ -62,7 +62,7 @@ class Utils
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 		curl_setopt($ch, CURLOPT_HEADER, TRUE);
 		curl_setopt($ch, CURLOPT_NOBODY, TRUE);
-		curl_exec($ch);
+		$data = curl_exec($ch);
 		$fileSize = curl_getinfo($ch, CURLINFO_CONTENT_LENGTH_DOWNLOAD);
 		$httpResponseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		curl_close($ch);
