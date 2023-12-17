@@ -163,12 +163,12 @@ final class ItemBuilder
 		return $this->addProperties(new FoilProperty($value));
 	}
 
-	public function toPacket() : CompoundTag
+	public function toPacket(int $idMCBE) : CompoundTag
 	{
 		return CompoundTag::create()
 			->setTag("components", $this->getComponentsTag()
 				->setTag("item_properties", $this->getPropertiesTag()))
-			->setInt("id", $this->item->getIdentifier()->getTypeId())
+			->setInt("id", $idMCBE)
 			->setString("name", $this->item->getIdentifier()->getNamespaceId());
 	}
 

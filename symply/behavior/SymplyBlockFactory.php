@@ -65,8 +65,10 @@ final class SymplyBlockFactory
 
 	public function __construct(private readonly bool $asyncMode = false)
 	{
-		$this->asyncTransmitterBlockCustom = new ThreadSafeArray();
-		$this->asyncTransmitterBlockOverwrite = new ThreadSafeArray();
+		if (!$this->asyncMode) {
+			$this->asyncTransmitterBlockCustom = new ThreadSafeArray();
+			$this->asyncTransmitterBlockOverwrite = new ThreadSafeArray();
+		}
 	}
 	/**
 	 * @param Closure(): Block&IBlockCustom $blockClosure
@@ -122,13 +124,12 @@ final class SymplyBlockFactory
 	 * @return void
 	 * @throws ReflectionException
 	 */
-	public function overwriteBlockPMMP(Closure $blockClosure,  ?Closure $serializer = null, ?Closure $deserializer = null): void
+	public function overwriteBlockPMMP(Closure $blockClosure,  null|Closure|false $serializer = null, null|Closure|false $deserializer = null): void
 	{
 		/**
 		 * @var Block $block
 		 */
 		$block = $blockClosure();
-		var_dump($block?->getName());
 		$runtimeBlockStateRegistry = RuntimeBlockStateRegistry::getInstance();
 		try {
 			$runtimeBlockStateRegistry->register($block);
@@ -145,7 +146,7 @@ final class SymplyBlockFactory
 		}
 
 		try {
-			$vanilaBlockNoConstruct = (new \ReflectionClass(VanillaBlocks::class))->newInstanceWithoutConstructor();
+			$vanillaBlocksNoConstruct = (new \ReflectionClass(VanillaBlocks::class))->newInstanceWithoutConstructor();
 			$name = null;
 			foreach (VanillaBlocks::getAll() as $index => $vanillaBlock) {
 				if ($block->getTypeId() === $vanillaBlock->getTypeId()) {
@@ -159,7 +160,7 @@ final class SymplyBlockFactory
 				self::verifyName($name);
 				$upperName = mb_strtoupper($name);
 				self::$members[$upperName] = $block;
-			})->call($vanilaBlockNoConstruct);
+			})->call($vanillaBlocksNoConstruct);
 		} catch (\Throwable) {
 
 		}
@@ -177,21 +178,25 @@ final class SymplyBlockFactory
 		};
 		$instanceDeserializer = GlobalBlockStateHandlers::getDeserializer();
 		$instanceSerializer = GlobalBlockStateHandlers::getSerializer();
-		try {
-			$instanceDeserializer->map($namespaceId, $deserializer);
-		} catch (InvalidArgumentException) {
-			$deserializerProperty = new ReflectionProperty($instanceDeserializer, "deserializeFuncs");
-			$value = $deserializerProperty->getValue($instanceDeserializer);
-			$value[$namespaceId] = $deserializer;
-			$deserializerProperty->setValue($instanceDeserializer, $value);
+		if ($deserializer !== false) {
+			try {
+				$instanceDeserializer->map($namespaceId, $deserializer);
+			} catch (InvalidArgumentException) {
+				$deserializerProperty = new ReflectionProperty($instanceDeserializer, "deserializeFuncs");
+				$value = $deserializerProperty->getValue($instanceDeserializer);
+				$value[$namespaceId] = $deserializer;
+				$deserializerProperty->setValue($instanceDeserializer, $value);
+			}
 		}
-		try {
-			$instanceSerializer->map($block, $serializer);
-		} catch (InvalidArgumentException) {
-			$serializerProperty = new ReflectionProperty($instanceSerializer, "serializers");
-			$value = $serializerProperty->getValue($instanceSerializer);
-			$value[$block->getTypeId()] = $serializer;
-			$serializerProperty->setValue($instanceSerializer, $value);
+		if ($serializer !== false) {
+			try {
+				$instanceSerializer->map($block, $serializer);
+			} catch (InvalidArgumentException) {
+				$serializerProperty = new ReflectionProperty($instanceSerializer, "serializers");
+				$value = $serializerProperty->getValue($instanceSerializer);
+				$value[$block->getTypeId()] = $serializer;
+				$serializerProperty->setValue($instanceSerializer, $value);
+			}
 		}
 		if (!$this->asyncMode)
 			$this->asyncTransmitterBlockOverwrite[] = ThreadSafeArray::fromArray([$blockClosure, $serializer, $deserializer]);
