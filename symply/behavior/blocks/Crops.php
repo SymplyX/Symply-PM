@@ -31,6 +31,7 @@ use pocketmine\block\BlockTypeIds;
 use pocketmine\block\Crops as PMCrops;
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\CropGrowthHelper;
 use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
@@ -87,7 +88,7 @@ class Crops extends PMCrops implements IPermutationBlock
 	}
 
 	public function onRandomTick() : void{
-		if($this->age < static::MAX_AGE && mt_rand(0, 2) === 1){
+		if($this->age < static::MAX_AGE && CropGrowthHelper::canGrow($this)){
 			$block = clone $this;
 			++$block->age;
 			BlockEventHelper::grow($this, $block, null);
