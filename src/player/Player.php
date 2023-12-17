@@ -298,6 +298,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	protected ?SurvivalBlockBreakHandler $blockBreakHandler = null;
 
+	private array $clicks = array();
+
 	public function __construct(Server $server, NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated, Location $spawnLocation, ?CompoundTag $namedtag){
 		$username = TextFormat::clean($playerInfo->getUsername());
 		$this->logger = new \PrefixedLogger($server->getLogger(), "Player: $username");
@@ -1832,6 +1834,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * @return bool if the entity was dealt damage
 	 */
 	public function attackEntity(Entity $entity) : bool{
+		$this->addClick();
 		if(!$entity->isAlive()){
 			return false;
 		}
@@ -1910,6 +1913,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if(!$ev->isCancelled()){
 			$this->broadcastSound(new EntityAttackNoDamageSound());
 			$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
+			$this->addClick();
 		}
 	}
 
@@ -2723,5 +2727,20 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->logger->debug("Detected forced unload of chunk " . $chunkX . " " . $chunkZ);
 			$this->unloadChunk($chunkX, $chunkZ);
 		}
+	}
+
+	/**
+	 * @return float
+	 */
+	public function getClicksPerSecond(): float
+	{
+		return round(count(array_filter($this->clicks, static function (float $t): bool {
+				return (microtime(true) - $t) <= 1.0;
+			})) / 1.0, 1);
+	}
+
+	protected function addClick(): void
+	{
+		array_unshift($this->clicks, microtime(true));
 	}
 }
