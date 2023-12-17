@@ -302,6 +302,8 @@ class Server{
 	 */
 	private array $broadcastSubscribers = [];
 
+	private bool $waterdogeSupport = false;
+
 	public function getName() : string{
 		return VersionInfo::NAME;
 	}
@@ -347,7 +349,7 @@ class Server{
 	 * are not logged into Xbox Live will be disconnected.
 	 */
 	public function getOnlineMode() : bool{
-		return $this->onlineMode;
+		return !$this->waterdogeSupport && $this->onlineMode;
 	}
 
 	/**
@@ -1876,5 +1878,10 @@ class Server{
 		}else{
 			$this->nextTick += self::TARGET_SECONDS_PER_TICK;
 		}
+	}
+
+	public function isWaterdogepeSupport(): bool
+	{
+		return $this->waterdogeSupport;
 	}
 }
