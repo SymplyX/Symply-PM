@@ -44,18 +44,18 @@ use pocketmine\utils\RegistryTrait;
 final class VanillaCameraPresets{
 	use RegistryTrait;
 
-	protected static function setup(): void{
+	protected static function setup() : void{
 		self::register("free", new CameraPreset("minecraft:free", "", 0, 0, 0, 0, 0, CameraPreset::AUDIO_LISTENER_TYPE_CAMERA, false));
 		self::register("first_person", new CameraPreset("minecraft:first_person", "", 0, 0, 0, 0, 0, CameraPreset::AUDIO_LISTENER_TYPE_PLAYER, false));
 		self::register("third_person", new CameraPreset("minecraft:third_person", "", 0, 0, 0, 0, 0, CameraPreset::AUDIO_LISTENER_TYPE_PLAYER, false));
 		self::register("third_person_front", new CameraPreset("minecraft:third_person_front", "", 0, 0, 0, 0, 0, CameraPreset::AUDIO_LISTENER_TYPE_PLAYER, false));
 	}
 
-	protected static function register(string $name, CameraPreset $member): void{
+	protected static function register(string $name, CameraPreset $member) : void{
 		self::_registryRegister($name, $member);
 	}
 
-	public static function getAll(): array{
+	public static function getAll() : array{
 		return [self::FREE(), self::FIRST_PERSON(), self::THIRD_PERSON(), self::THIRD_PERSON_FRONT()];
 	}
 }
