@@ -38,7 +38,6 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDeathEvent;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\inventory\CallbackInventoryListener;
-use pocketmine\inventory\Inventory;
 use pocketmine\item\Armor;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\Enchantment;
@@ -63,6 +62,7 @@ use pocketmine\world\sound\EntityLandSound;
 use pocketmine\world\sound\EntityLongFallSound;
 use pocketmine\world\sound\EntityShortFallSound;
 use pocketmine\world\sound\ItemBreakSound;
+use symply\behavior\items\Armor as SymplyArmor;
 use function array_shift;
 use function atan2;
 use function ceil;
@@ -441,15 +441,15 @@ abstract class Living extends Entity{
 
 		$totalEpf = 0;
 		foreach($this->armorInventory->getContents() as $item){
-			if($item instanceof Armor){
+			if($item instanceof Armor || $item instanceof SymplyArmor){
 				$totalEpf += $item->getEnchantmentProtectionFactor($source);
 			}
 		}
 		$source->setModifier(-$source->getFinalDamage() * min(ceil(min($totalEpf, 25) * (mt_rand(50, 100) / 100)), 20) * 0.04, EntityDamageEvent::MODIFIER_ARMOR_ENCHANTMENTS);
 
 		$source->setModifier(-min($this->getAbsorption(), $source->getFinalDamage()), EntityDamageEvent::MODIFIER_ABSORPTION);
-
-		if($cause === EntityDamageEvent::CAUSE_FALLING_BLOCK && $this->armorInventory->getHelmet() instanceof Armor){
+		$helmet = $this->armorInventory->getHelmet();
+		if($cause === EntityDamageEvent::CAUSE_FALLING_BLOCK && ($helmet instanceof Armor || $helmet instanceof SymplyArmor)){
 			$source->setModifier(-($source->getFinalDamage() / 4), EntityDamageEvent::MODIFIER_ARMOR_HELMET);
 		}
 	}
@@ -468,7 +468,7 @@ abstract class Living extends Entity{
 		if($source instanceof EntityDamageByEntityEvent && ($attacker = $source->getDamager()) !== null){
 			$damage = 0;
 			foreach($this->armorInventory->getContents() as $k => $item){
-				if($item instanceof Armor && ($thornsLevel = $item->getEnchantmentLevel(VanillaEnchantments::THORNS())) > 0){
+				if(($item instanceof Armor || $item instanceof SymplyArmor) && ($thornsLevel = $item->getEnchantmentLevel(VanillaEnchantments::THORNS())) > 0){
 					if(mt_rand(0, 99) < $thornsLevel * 15){
 						$this->damageItem($item, 3);
 						$damage += ($thornsLevel > 10 ? $thornsLevel - 10 : 1 + mt_rand(0, 3));
@@ -486,7 +486,7 @@ abstract class Living extends Entity{
 
 			if($source->getModifier(EntityDamageEvent::MODIFIER_ARMOR_HELMET) < 0){
 				$helmet = $this->armorInventory->getHelmet();
-				if($helmet instanceof Armor){
+				if(($helmet instanceof Armor || $helmet instanceof SymplyArmor)){
 					$finalDamage = $source->getFinalDamage();
 					$this->damageItem($helmet, (int) round($finalDamage * 4 + lcg_value() * $finalDamage * 2));
 					$this->armorInventory->setHelmet($helmet);
@@ -504,7 +504,7 @@ abstract class Living extends Entity{
 
 		$armor = $this->armorInventory->getContents();
 		foreach($armor as $slotId => $item){
-			if($item instanceof Armor){
+			if($item instanceof Armor || $item instanceof SymplyArmor){
 				$oldItem = clone $item;
 				$this->damageItem($item, $durabilityRemoved);
 				if(!$item->equalsExact($oldItem)){

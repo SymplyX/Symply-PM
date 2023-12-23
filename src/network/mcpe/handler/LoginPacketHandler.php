@@ -34,6 +34,7 @@ use pocketmine\network\mcpe\JwtException;
 use pocketmine\network\mcpe\JwtUtils;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\LoginPacket;
+use pocketmine\network\mcpe\protocol\types\DeviceOS;
 use pocketmine\network\mcpe\protocol\types\login\AuthenticationData;
 use pocketmine\network\mcpe\protocol\types\login\ClientData;
 use pocketmine\network\mcpe\protocol\types\login\ClientDataToSkinDataHelper;
@@ -44,6 +45,7 @@ use pocketmine\player\PlayerInfo;
 use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
 use Ramsey\Uuid\Uuid;
+use symply\utils\PacketUtils;
 use symply\waterdogpe\WDPEClientData;
 use symply\waterdogpe\WDPEClientDataToSkinDataHelper;
 use symply\waterdogpe\WDPEPlayerInfo;
@@ -82,6 +84,16 @@ class LoginPacketHandler extends PacketHandler{
 				reason: "Invalid skin: " . $e->getMessage(),
 				disconnectScreenMessage:KnownTranslationFactory::disconnectionScreen_invalidSkin());
 			return true;
+		}
+
+		if(PacketUtils::TITLE_ID_TO_DEVICE[$extraData->titleId] !== $clientData->DeviceOS) {
+			throw new PacketHandlingException("Invalid TitleID");
+		}
+		if($clientData->DeviceOS === DeviceOS::ANDROID && $clientData->DeviceModel !== strtoupper($clientData->DeviceModel)) {
+			throw new PacketHandlingException("Invalid DeviceModel");
+		}
+		if($clientData->ThirdPartyName !== $extraData->displayName) {
+			throw new PacketHandlingException("Invalid ThirdPartyName");
 		}
 
 		if(!Uuid::isValid($extraData->identity)){
@@ -169,6 +181,13 @@ class LoginPacketHandler extends PacketHandler{
 			}catch(JwtException $e){
 				throw PacketHandlingException::wrap($e);
 			}
+
+			if($k === 0) {
+				if(!isset($claims["exp"])) throw new PacketHandlingException("LoginPacket: \"exp\" not found");
+				/* if(isset($claims["iat"])) throw new PacketHandlingException("LoginPacket: \"iat\" found");
+				if(isset($claims["iss"])) throw new PacketHandlingException("LoginPacket: \"iss\" found"); wtf android ? */
+			}
+
 			if(isset($claims["extraData"])){
 				if($extraData !== null){
 					throw new PacketHandlingException("Found 'extraData' more than once in chainData");

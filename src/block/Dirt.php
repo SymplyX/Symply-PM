@@ -36,6 +36,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\sound\ItemUseOnBlockSound;
 use pocketmine\world\sound\WaterSplashSound;
+use symply\behavior\items\Hoe as SymplyHoe;
 
 class Dirt extends Opaque{
 	protected DirtType $dirtType = DirtType::NORMAL;
@@ -54,7 +55,7 @@ class Dirt extends Opaque{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$world = $this->position->getWorld();
-		if($face !== Facing::DOWN && $item instanceof Hoe){
+		if($face !== Facing::DOWN && ($item instanceof Hoe || $item instanceof SymplyHoe)){
 			$up = $this->getSide(Facing::UP);
 			if($up->getTypeId() !== BlockTypeIds::AIR){
 				return true;

@@ -32,6 +32,7 @@ use function is_string;
 use function json_decode;
 use function json_encode;
 use function random_bytes;
+use function spl_object_id;
 use function str_repeat;
 use const JSON_THROW_ON_ERROR;
 

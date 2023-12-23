@@ -817,7 +817,6 @@ class Server{
 				$content = Filesystem::fileGetContents(Path::join(\pocketmine\RESOURCE_PATH, "symply.yml"));
 				@file_put_contents($symplyYmlPath, $content);
 			}
-
 			$this->configGroup = new ServerConfigGroup(
 				new Config($pocketmineYmlPath, Config::YAML, []),
 				new Config($symplyYmlPath, Config::YAML, []),
@@ -1024,12 +1023,14 @@ class Server{
 			register_shutdown_function($this->crashDump(...));
 
 			$loadErrorCount = 0;
+			$this->pluginManager->loadPlugins(Path::join(\symply\PATH, "plugin"));
 			$this->pluginManager->loadPlugins($this->pluginPath, $loadErrorCount);
 			if($loadErrorCount > 0){
 				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someLoadErrors()));
 				$this->forceShutdownExit();
 				return;
 			}
+
 			if(!$this->enablePlugins(PluginEnableOrder::STARTUP)){
 				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someEnableErrors()));
 				$this->forceShutdownExit();
@@ -1071,7 +1072,6 @@ class Server{
 			if($this->configGroup->getPropertyBool(Yml::CONSOLE_ENABLE_INPUT, true)){
 				$this->console = new ConsoleReaderChildProcessDaemon($this->logger);
 			}
-
 			$this->tickProcessor();
 			$this->forceShutdown();
 		}catch(\Throwable $e){

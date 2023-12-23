@@ -160,6 +160,7 @@ use function str_starts_with;
 use function strlen;
 use function strtolower;
 use function substr;
+use function time;
 use function trim;
 use const M_PI;
 use const M_SQRT3;
@@ -280,7 +281,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected bool $allowFlight = false;
 	protected bool $blockCollision = true;
 	protected bool $flying = false;
-
 
 	/** @phpstan-var positive-int|null  */
 	protected ?int $lineHeight = null;
@@ -514,8 +514,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->getNetworkSession()->syncAdventureSettings();
 		}
 	}
-
-
 
 	public function hasAutoJump() : bool{
 		return $this->autoJump;
@@ -2451,8 +2449,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		);
 	}
 
-
-	public function getConnectedTime(): int {
+	public function getConnectedTime() : int {
 		return time() - $this->getNetworkSession()->getConnectedTime();
 	}
 
