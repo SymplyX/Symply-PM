@@ -33,12 +33,12 @@ final class ClearCameraInstruction extends CameraInstruction
 {
 	private ?bool $clear = null;
 
-	public function setClear(bool $clear): void
+	public function setClear(bool $clear) : void
 	{
 		$this->clear = $clear;
 	}
 
-	public function send(Player $player): void
+	public function send(Player $player) : void
 	{
 		$player->getNetworkSession()->sendDataPacket(CameraInstructionPacket::create(null, $this->clear, null));
 	}
