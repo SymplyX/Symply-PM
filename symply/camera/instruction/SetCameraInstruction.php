@@ -29,11 +29,12 @@ namespace symply\camera\instruction;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\CameraInstructionPacket;
 use pocketmine\network\mcpe\protocol\types\camera\CameraPreset;
+use pocketmine\network\mcpe\protocol\types\camera\CameraSetInstruction;
 use pocketmine\network\mcpe\protocol\types\camera\CameraSetInstructionEase;
 use pocketmine\network\mcpe\protocol\types\camera\CameraSetInstructionRotation;
-use pocketmine\network\mcpe\protocol\types\camera\CameraSetInstruction;
 use pocketmine\player\Player;
 use symply\camera\VanillaCameraPresets;
+use function array_search;
 
 final class SetCameraInstruction extends CameraInstruction
 {
@@ -43,33 +44,33 @@ final class SetCameraInstruction extends CameraInstruction
 	private ?CameraSetInstructionRotation $rotation = null;
 	private ?Vector3 $facingPosition = null;
 
-	public function setPreset(CameraPreset $cameraPreset): void
+	public function setPreset(CameraPreset $cameraPreset) : void
 	{
 		$this->cameraPreset = $cameraPreset;
 	}
 
-	public function setEase(int $type, float $duration): void
+	public function setEase(int $type, float $duration) : void
 	{
 		$this->ease = new CameraSetInstructionEase($type, $duration);
 	}
 
-	public function setCameraPostion(Vector3 $cameraPosition): void
+	public function setCameraPostion(Vector3 $cameraPosition) : void
 	{
 		$this->cameraPosition = $cameraPosition;
 	}
 
-	public function setRotation(float $pitch, float $yaw): void
+	public function setRotation(float $pitch, float $yaw) : void
 	{
 		$this->rotation = new CameraSetInstructionRotation($pitch, $yaw);
 	}
 
-	public function setFacingPosition(Vector3 $facingPosition): void
+	public function setFacingPosition(Vector3 $facingPosition) : void
 	{
 		$this->facingPosition = $facingPosition;
 	}
 
-	public function send(Player $player): void
+	public function send(Player $player) : void
 	{
-		$player->getNetworkSession()->sendDataPacket(CameraInstructionPacket::create(new CameraSetInstruction(array_search($this->cameraPreset, VanillaCameraPresets::getAll()), $this->ease, $this->cameraPosition, $this->rotation, $this->facingPosition, null), null, null));
+		$player->getNetworkSession()->sendDataPacket(CameraInstructionPacket::create(new CameraSetInstruction(array_search($this->cameraPreset, VanillaCameraPresets::getAll(), true), $this->ease, $this->cameraPosition, $this->rotation, $this->facingPosition, null), null, null));
 	}
 }
