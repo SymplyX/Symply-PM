@@ -27,13 +27,16 @@ declare(strict_types=1);
 namespace symply\behavior;
 
 use Closure;
+use InvalidArgumentException;
 use pmmp\thread\ThreadSafeArray;
 use pocketmine\block\Block;
 use pocketmine\data\bedrock\item\BlockItemIdMap;
 use pocketmine\data\bedrock\item\SavedItemData;
 use pocketmine\inventory\CreativeInventory;
 use pocketmine\item\Item;
+use pocketmine\item\ItemBlock;
 use pocketmine\item\StringToItemParser;
+use pocketmine\item\VanillaItems;
 use pocketmine\network\mcpe\cache\CreativeInventoryCache;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\ItemComponentPacket;
@@ -42,6 +45,7 @@ use pocketmine\network\mcpe\protocol\types\ItemComponentPacketEntry;
 use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
+use ReflectionProperty;
 use symply\behavior\blocks\IBlockCustom;
 use symply\behavior\items\ICustomItem;
 use function array_merge;
@@ -52,23 +56,33 @@ final class SymplyItemFactory
 {
 	use SingletonTrait;
 
+	public static int $BLOCK_ID_NEXT_MCBE = 10000;
+
+	public static int $ITEM_ID_NEXT_MCBE = 9950;
+
 	/** @var array<string, Item> */
-	private array $items = [];
+	private array $itemsOverwrite = [];
+
+	/** @var array<string, Item> */
+	private array $itemCustoms = [];
+
+	/** @var ThreadSafeArray<ThreadSafeArray<Closure>> */
+	private ThreadSafeArray $asyncTransmitterItemOverwrite;
+
+	/** @var ThreadSafeArray<ThreadSafeArray<Closure>> */
+	private ThreadSafeArray $asyncTransmitterItemCustom;
 
 	/** @var ItemComponentPacketEntry[] */
 	private array $itemsComponentPacketEntries = [];
-
-	/** @var ItemTypeEntry[] */
-	private array $itemsTypeEntries = [];
-
-	/** @var ThreadSafeArray<ThreadSafeArray<Closure>> */
-	private ThreadSafeArray $asyncTransmitter;
 
 	private ?ItemComponentPacket $cache = null;
 
 	public function __construct(private readonly bool $asyncMode = false)
 	{
-		$this->asyncTransmitter = new ThreadSafeArray();
+		if (!$this->asyncMode) {
+			$this->asyncTransmitterItemCustom = new ThreadSafeArray();
+			$this->asyncTransmitterItemOverwrite = new ThreadSafeArray();
+		}
 		CreativeInventoryCache::reset();
 	}
 
@@ -82,19 +96,19 @@ final class SymplyItemFactory
 		 */
 		$itemCustom = $itemClosure();
 		$identifier = $itemCustom->getIdentifier()->getNamespaceId();
-		if (isset($this->items[$identifier])){
-			throw new \InvalidArgumentException("Item ID {$itemCustom->getIdentifier()->getNamespaceId()} is already used by another item");
+		if (isset($this->itemCustoms[$identifier])){
+			throw new InvalidArgumentException("Item ID {$itemCustom->getIdentifier()->getNamespaceId()} is already used by another item");
 		}
-		$itemId = $itemCustom->getIdentifier()->getTypeId();
-		$this->items[$identifier] = $itemCustom;
+		$itemId = self::$ITEM_ID_NEXT_MCBE++;
+		$this->itemCustoms[$identifier] = $itemCustom;
 		$this->registerCustomItemMapping($identifier, $itemId, new ItemTypeEntry($identifier, $itemId , true));
 		GlobalItemDataHandlers::getDeserializer()->map($identifier, $deserializer ??= static fn() => clone $itemCustom);
 		GlobalItemDataHandlers::getSerializer()->map($itemCustom, $serializer ??= static fn() => new SavedItemData($identifier));
 		StringToItemParser::getInstance()->register($identifier, static fn() => clone $itemCustom);
 		CreativeInventory::getInstance()->add($itemCustom);
 		if (!$this->asyncMode) {
-			$this->itemsComponentPacketEntries[] = new ItemComponentPacketEntry($identifier, new CacheableNbt($itemCustom->getItemBuilder()->toPacket()));
-			$this->asyncTransmitter[] = ThreadSafeArray::fromArray([$itemClosure, $serializer, $deserializer]);
+			$this->itemsComponentPacketEntries[] = new ItemComponentPacketEntry($identifier, new CacheableNbt($itemCustom->getItemBuilder()->toPacket($itemId)));
+			$this->asyncTransmitterItemCustom[] = ThreadSafeArray::fromArray([$itemClosure, $serializer, $deserializer]);
 		}
 	}
 
@@ -116,12 +130,12 @@ final class SymplyItemFactory
 		$intToString = $reflection->getProperty("intToStringIdMap");
 		/** @var int[] $value */
 		$value = $intToString->getValue($dictionary);
-		$intToString->setValue($dictionary, array_merge($value,[$itemId => $identifier]));
+		$intToString->setValue($dictionary, $value + [$itemId => $identifier]);
 
 		$stringToInt = $reflection->getProperty("stringToIntMap");
 		/** @var int[] $value */
 		$value = $stringToInt->getValue($dictionary);
-		$stringToInt->setValue($dictionary, array_merge($value, [$identifier => $itemId]) );
+		$stringToInt->setValue($dictionary, $value +  [$identifier => $itemId]);
 	}
 
 	/**
@@ -129,8 +143,8 @@ final class SymplyItemFactory
 	 * correlates to its block ID.
 	 */
 	public function registerBlockItem(string $identifier, Block&IBlockCustom $block) : void {
-		$itemId = $block->getIdInfo()->getBlockTypeId();
-		$this->registerCustomItemMapping($identifier, $itemId, new ItemTypeEntry($identifier, $itemId, true));
+		$itemId = 255 - $this->getBlockIdNextMCBE();
+		$this->registerCustomItemMapping($identifier, $itemId, new ItemTypeEntry($identifier, $itemId, false));
 		StringToItemParser::getInstance()->registerBlock($identifier, fn() => clone $block);
 
 		$blockItemIdMap = BlockItemIdMap::getInstance();
@@ -139,20 +153,119 @@ final class SymplyItemFactory
 		$itemToBlockId = $reflection->getProperty("itemToBlockId");
 		/** @var string[] $value */
 		$value = $itemToBlockId->getValue($blockItemIdMap);
-		$itemToBlockId->setValue($blockItemIdMap, array_merge($value, [$identifier => $identifier]));
+		$itemToBlockId->setValue($blockItemIdMap, $value +  [$identifier => $identifier]);
 	}
 
 	/**
-	 * @return ThreadSafeArray<ThreadSafeArray<Closure>>
+	 * @param Closure(): Item $itemClosure
+	 * @param Closure|false|null $serializer
+	 * @param Closure|false|null $deserializer
+	 * @return void
+	 * @throws \ReflectionException
 	 */
-	public function getAsyncTransmitter() : ThreadSafeArray
+	public function overwriteItemPMMP(Closure $itemClosure, null|Closure|false $serializer = null, null|Closure|false $deserializer = null): void
 	{
-		return $this->asyncTransmitter;
+		/**
+		 * @var Item $item
+		 */
+		$item = $itemClosure();
+		try {
+			$vanillaItemsNoConstructor = (new \ReflectionClass(VanillaItems::class))->newInstanceWithoutConstructor();
+			$name = null;
+			foreach (VanillaItems::getAll() as $index => $vanillaItem) {
+				if ($item->getTypeId() === $vanillaItem->getTypeId()) {
+					$name = $index;
+					break;
+				}
+			}
+			if (!$name)
+				return;
+			(function () use ($item, $name) {
+				self::verifyName($name);
+				$upperName = mb_strtoupper($name);
+				self::$members[$upperName] = $item;
+			})->call($vanillaItemsNoConstructor);
+		} catch (\Throwable) {
+
+		}
+		$namespaceId = GlobalItemDataHandlers::getSerializer()->serializeType($item)->getName();
+		CreativeInventory::getInstance()->remove($item);
+		$this->itemsOverwrite[$namespaceId] = $item;
+		CreativeInventory::getInstance()->add($item);
+
+
+		$serializer ??= static fn() => new SavedItemData($namespaceId);
+		$deserializer ??= static function () use ($namespaceId) {
+			return (clone SymplyItemFactory::getInstance()->getItemOverwrite($namespaceId));
+		};
+		$instanceDeserializer = GlobalItemDataHandlers::getDeserializer();
+		$instanceSerializer = GlobalItemDataHandlers::getSerializer();
+		if ($deserializer !== false) {
+			try {
+				$instanceDeserializer->map($namespaceId, $deserializer);
+			} catch (InvalidArgumentException) {
+				$deserializerProperty = new ReflectionProperty($instanceDeserializer, "deserializers");
+				$value = $deserializerProperty->getValue($instanceDeserializer);
+				$value[$namespaceId] = $deserializer;
+				$deserializerProperty->setValue($instanceDeserializer, $value);
+			}
+		}
+		if ($serializer !== false) {
+			try {
+				if ($item instanceof ItemBlock){
+					$instanceSerializer->mapBlock($item->getBlock(), $serializer);
+				}else{
+					$instanceSerializer->map($item, $serializer);
+				}
+			} catch (InvalidArgumentException) {
+				if ($item instanceof ItemBlock) {
+					$serializerProperty = new ReflectionProperty($instanceSerializer, "blockItemSerializers");
+					$value = $serializerProperty->getValue($instanceSerializer);
+					$value[$item->getBlock()->getTypeId()] = $serializer;
+					$serializerProperty->setValue($instanceSerializer, $value);
+				}else{
+					$serializerProperty = new ReflectionProperty($instanceSerializer, "itemSerializers");
+					$value = $serializerProperty->getValue($instanceSerializer);
+					$value[$item->getTypeId()] = $serializer;
+					$serializerProperty->setValue($instanceSerializer, $value);
+				}
+			}
+		}
+		if (!$this->asyncMode)
+			$this->asyncTransmitterItemOverwrite[] = ThreadSafeArray::fromArray([$itemClosure, $serializer, $deserializer]);
 	}
 
-	public function getItemsTypeEntries() : array
+
+
+	public function getBlockIdNextMCBE(): int{
+		return self::$BLOCK_ID_NEXT_MCBE++;
+	}
+	/**
+	 * @return ThreadSafeArray<ThreadSafeArray<Closure>>
+	 */
+	public function getAsyncTransmitterItemCustom() : ThreadSafeArray
 	{
-		return $this->itemsTypeEntries;
+		return $this->asyncTransmitterItemCustom;
+	}
+
+	/**
+	 * @return ThreadSafeArray
+	 */
+	public function getAsyncTransmitterItemOverwrite(): ThreadSafeArray
+	{
+		return $this->asyncTransmitterItemOverwrite;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getItemsOverwrite(): array
+	{
+		return $this->itemsOverwrite;
+	}
+
+	public function getItemOverwrite(string $id): ?Item{
+		return $this->itemsOverwrite[$id] ?? null;
 	}
 
 	public function getItemsComponentPacketEntries() : array
@@ -167,13 +280,13 @@ final class SymplyItemFactory
 	/**
 	 * @return Item[]
 	 */
-	public function getItems() : array
+	public function getItemCustoms() : array
 	{
-		return $this->items;
+		return $this->itemCustoms;
 	}
 
 	public function getItem(string $identifier) : ?Item{
-		return $this->items[$identifier] ?? null;
+		return $this->itemCustoms[$identifier] ?? null;
 	}
 
 	public static function getInstanceModeAsync() : self{
