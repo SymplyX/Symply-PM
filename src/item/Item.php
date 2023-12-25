@@ -118,6 +118,11 @@ class Item implements \JsonSerializable{
 		$this->nbt = new CompoundTag();
 	}
 
+	public function getIdentifier() : ItemIdentifier
+	{
+		return $this->identifier;
+	}
+
 	public function hasCustomBlockData() : bool{
 		return $this->blockEntityTag !== null;
 	}

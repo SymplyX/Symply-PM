@@ -150,9 +150,12 @@ class InGamePacketHandler extends PacketHandler{
 	){}
 
 	public function handleText(TextPacket $packet) : bool{
+		if($packet->needsTranslation) {
+			throw new PacketHandlingException("Request needsTranslation");
+		}
 		if($packet->type === TextPacket::TYPE_CHAT){
 			return $this->player->chat($packet->message);
-		}
+		} else throw new PacketHandlingException("Invalid TextPacket type");
 
 		return false;
 	}

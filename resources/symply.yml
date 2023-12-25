@@ -6,3 +6,5 @@
 persona-skin: true
 # Allow the support WaterDogPE in your Symply server
 waterdogpe-support: false
+# Allow system break server side (Experimental System)
+server-break-side: false
