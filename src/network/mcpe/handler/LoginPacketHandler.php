@@ -69,6 +69,7 @@ class LoginPacketHandler extends PacketHandler{
 
 		if(!Player::isValidUserName($extraData->displayName)){
 			$this->session->disconnectWithError(KnownTranslationFactory::disconnectionScreen_invalidName());
+
 			return true;
 		}
 
@@ -77,8 +78,9 @@ class LoginPacketHandler extends PacketHandler{
 		try{
 			$skin = $this->parseSkinInClientData($clientData);
 		}catch(InvalidArgumentException | InvalidSkinException $e){
-			$this->session->getLogger()->debug("Invalid skin: " . $e->getMessage());
-			$this->session->disconnectWithError(KnownTranslationFactory::disconnectionScreen_invalidSkin());
+			$this->session->disconnectWithError(
+				reason: "Invalid skin: " . $e->getMessage(),
+				disconnectScreenMessage:KnownTranslationFactory::disconnectionScreen_invalidSkin());
 			return true;
 		}
 
