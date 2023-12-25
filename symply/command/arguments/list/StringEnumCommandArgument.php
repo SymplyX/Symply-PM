@@ -58,7 +58,7 @@ abstract class StringEnumCommandArgument extends CommandArgument
 		);
 	}
 
-	public function getValue(string $string): mixed{
+	public function getValue(string $string) : mixed{
 		return self::VALUES[strtolower($string)];
 	}
 

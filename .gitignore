@@ -56,3 +56,4 @@ Documentation/*
 /.php_cs.cache
 /.php-cs-fixer.cache
 /server/
+composer.lock
