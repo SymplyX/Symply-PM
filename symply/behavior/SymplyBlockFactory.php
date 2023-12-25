@@ -43,6 +43,8 @@ use ReflectionMethod;
 use ReflectionProperty;
 use symply\behavior\blocks\IBlockCustom;
 use symply\behavior\blocks\IPermutationBlock;
+use function assert;
+use function mb_strtoupper;
 
 final class SymplyBlockFactory
 {
@@ -118,13 +120,11 @@ final class SymplyBlockFactory
 	}
 
 	/**
-	 * @param Closure():Block $block
 	 * @param Closure|null $serializer
 	 * @param Closure|null $deserializer
-	 * @return void
 	 * @throws ReflectionException
 	 */
-	public function overwriteBlockPMMP(Closure $blockClosure,  null|Closure|false $serializer = null, null|Closure|false $deserializer = null): void
+	public function overwriteBlockPMMP(Closure $blockClosure,  null|Closure|false $serializer = null, null|Closure|false $deserializer = null) : void
 	{
 		/**
 		 * @var Block $block
@@ -168,7 +168,6 @@ final class SymplyBlockFactory
 		CreativeInventory::getInstance()->remove($block->asItem());
 		$this->blocksOverwrite[$namespaceId] = $block;
 		CreativeInventory::getInstance()->add($block->asItem());
-
 
 		$serializer ??= static fn() => BlockStateWriter::create($namespaceId);
 		$deserializer ??= static function () use ($namespaceId) {
@@ -215,14 +214,10 @@ final class SymplyBlockFactory
 		return $this->asyncTransmitterBlockCustom;
 	}
 
-	/**
-	 * @return ThreadSafeArray
-	 */
-	public function getAsyncTransmitterBlockOverwrite(): ThreadSafeArray
+	public function getAsyncTransmitterBlockOverwrite() : ThreadSafeArray
 	{
 		return $this->asyncTransmitterBlockOverwrite;
 	}
-
 
 	/**
 	 * @return Block&IBlockCustom[]
@@ -240,15 +235,12 @@ final class SymplyBlockFactory
 		return $this->blockCustoms[$identifier] ?? null;
 	}
 
-	/**
-	 * @return array
-	 */
-	public function getBlocksOverwrite(): array
+	public function getBlocksOverwrite() : array
 	{
 		return $this->blocksOverwrite;
 	}
 
-	public function getBlockOverwrite(string $id): Block{
+	public function getBlockOverwrite(string $id) : Block{
 		return $this->blocksOverwrite[$id];
 	}
 
