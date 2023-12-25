@@ -31,6 +31,7 @@ use InvalidArgumentException;
 use pmmp\thread\ThreadSafeArray;
 use pocketmine\block\Block;
 use pocketmine\block\RuntimeBlockStateRegistry;
+use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
 use pocketmine\inventory\CreativeInventory;
@@ -38,6 +39,8 @@ use pocketmine\network\mcpe\protocol\types\BlockPaletteEntry;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use ReflectionException;
+use ReflectionMethod;
+use ReflectionProperty;
 use symply\behavior\blocks\IBlockCustom;
 use symply\behavior\blocks\IPermutationBlock;
 
@@ -47,17 +50,25 @@ final class SymplyBlockFactory
 	private static ?SymplyBlockFactory $instance = null;
 
 	/** @var array<string, IBlockCustom> */
-	private array $blocks = [];
+	private array $blockCustoms = [];
+
+	private array $blocksOverwrite = [];
 
 	/** @var BlockPaletteEntry[] */
 	private array $blockPaletteEntries = [];
 
 	/** @var ThreadSafeArray<ThreadSafeArray<Closure>> */
-	private ThreadSafeArray $asyncTransmitter;
+	private ThreadSafeArray $asyncTransmitterBlockCustom;
+
+	/** @var ThreadSafeArray<ThreadSafeArray<Closure>> */
+	private ThreadSafeArray $asyncTransmitterBlockOverwrite;
 
 	public function __construct(private readonly bool $asyncMode = false)
 	{
-		$this->asyncTransmitter = new ThreadSafeArray();
+		if (!$this->asyncMode) {
+			$this->asyncTransmitterBlockCustom = new ThreadSafeArray();
+			$this->asyncTransmitterBlockOverwrite = new ThreadSafeArray();
+		}
 	}
 	/**
 	 * @param Closure(): Block&IBlockCustom $blockClosure
@@ -67,13 +78,13 @@ final class SymplyBlockFactory
 		/** @var Block&IBlockCustom $blockCustom */
 		$blockCustom = $blockClosure();
 		$identifier = $blockCustom->getIdInfo()->getNamespaceId();
-		if (isset($this->blocks[$identifier])) {
+		if (isset($this->blockCustoms[$identifier])) {
 			throw new InvalidArgumentException("Block ID {$blockCustom->getIdInfo()->getNamespaceId()} is already used by another block");
 		}
 		$blockBuilder = $blockCustom->getBlockBuilder();
 		RuntimeBlockStateRegistry::getInstance()->register($blockCustom);
 		SymplyItemFactory::getInstance()->registerBlockItem($identifier, $blockCustom);
-		$this->blocks[$identifier] = $blockCustom;
+		$this->blockCustoms[$identifier] = $blockCustom;
 		if ($blockCustom instanceof IPermutationBlock) {
 			$serializer ??= static function (Block&IPermutationBlock $block) use ($identifier) : BlockStateWriter {
 				$writer = BlockStateWriter::create($identifier);
@@ -84,7 +95,7 @@ final class SymplyBlockFactory
 				/**
 				 * @var Block&IPermutationBlock $block
 				 */
-				$block = SymplyBlockFactory::getInstance()->getBlock($identifier);
+				$block = clone SymplyBlockFactory::getInstance()->getBlockCustom($identifier);
 				$block->deserializeState($reader);
 				return $block;
 			};
@@ -101,9 +112,94 @@ final class SymplyBlockFactory
 		$item = $blockCustom->asItem();
 		CreativeInventory::getInstance()->add($item);
 		if (!$this->asyncMode) {
-			$this->asyncTransmitter[] = ThreadSafeArray::fromArray([$blockClosure, $serializer, $deserializer]);
+			$this->asyncTransmitterBlockCustom[] = ThreadSafeArray::fromArray([$blockClosure, $serializer, $deserializer]);
 			$this->blockPaletteEntries[] = new BlockPaletteEntry($identifier, new CacheableNbt($blockBuilder->toPacket()));
 		}
+	}
+
+	/**
+	 * @param Closure():Block $block
+	 * @param Closure|null $serializer
+	 * @param Closure|null $deserializer
+	 * @return void
+	 * @throws ReflectionException
+	 */
+	public function overwriteBlockPMMP(Closure $blockClosure,  null|Closure|false $serializer = null, null|Closure|false $deserializer = null): void
+	{
+		/**
+		 * @var Block $block
+		 */
+		$block = $blockClosure();
+		$runtimeBlockStateRegistry = RuntimeBlockStateRegistry::getInstance();
+		try {
+			$runtimeBlockStateRegistry->register($block);
+		} catch (InvalidArgumentException) {
+			$typeIndexProperty = new ReflectionProperty($runtimeBlockStateRegistry, "typeIndex");
+			$value = $typeIndexProperty->getValue($runtimeBlockStateRegistry);
+			$value[$block->getTypeId()] = $block;
+			$typeIndexProperty->setValue($runtimeBlockStateRegistry, $value);
+
+			$fillStaticArraysMethod = new ReflectionMethod($runtimeBlockStateRegistry, "fillStaticArrays");
+			foreach ($block->generateStatePermutations() as $v) {
+				$fillStaticArraysMethod->invoke($runtimeBlockStateRegistry, $v->getStateId(), $v);
+			}
+		}
+
+		try {
+			$vanillaBlocksNoConstruct = (new \ReflectionClass(VanillaBlocks::class))->newInstanceWithoutConstructor();
+			$name = null;
+			foreach (VanillaBlocks::getAll() as $index => $vanillaBlock) {
+				if ($block->getTypeId() === $vanillaBlock->getTypeId()) {
+					$name = $index;
+					break;
+				}
+			}
+			if (!$name)
+				return;
+			(function () use ($block, $name) {
+				self::verifyName($name);
+				$upperName = mb_strtoupper($name);
+				self::$members[$upperName] = $block;
+			})->call($vanillaBlocksNoConstruct);
+		} catch (\Throwable) {
+
+		}
+		$namespaceId = GlobalBlockStateHandlers::getSerializer()->serializeBlock($block)->getName();
+		CreativeInventory::getInstance()->remove($block->asItem());
+		$this->blocksOverwrite[$namespaceId] = $block;
+		CreativeInventory::getInstance()->add($block->asItem());
+
+
+		$serializer ??= static fn() => BlockStateWriter::create($namespaceId);
+		$deserializer ??= static function () use ($namespaceId) {
+			$block = SymplyBlockFactory::getInstance()->getBlockOverwrite($namespaceId);
+			assert($block instanceof Block);
+			return (clone $block);
+		};
+		$instanceDeserializer = GlobalBlockStateHandlers::getDeserializer();
+		$instanceSerializer = GlobalBlockStateHandlers::getSerializer();
+		if ($deserializer !== false) {
+			try {
+				$instanceDeserializer->map($namespaceId, $deserializer);
+			} catch (InvalidArgumentException) {
+				$deserializerProperty = new ReflectionProperty($instanceDeserializer, "deserializeFuncs");
+				$value = $deserializerProperty->getValue($instanceDeserializer);
+				$value[$namespaceId] = $deserializer;
+				$deserializerProperty->setValue($instanceDeserializer, $value);
+			}
+		}
+		if ($serializer !== false) {
+			try {
+				$instanceSerializer->map($block, $serializer);
+			} catch (InvalidArgumentException) {
+				$serializerProperty = new ReflectionProperty($instanceSerializer, "serializers");
+				$value = $serializerProperty->getValue($instanceSerializer);
+				$value[$block->getTypeId()] = $serializer;
+				$serializerProperty->setValue($instanceSerializer, $value);
+			}
+		}
+		if (!$this->asyncMode)
+			$this->asyncTransmitterBlockOverwrite[] = ThreadSafeArray::fromArray([$blockClosure, $serializer, $deserializer]);
 	}
 
 	public function getBlockPaletteEntries() : array
@@ -114,25 +210,46 @@ final class SymplyBlockFactory
 	/**
 	 * @return ThreadSafeArray<ThreadSafeArray<Closure>>
 	 */
-	public function getAsyncTransmitter() : ThreadSafeArray
+	public function getAsyncTransmitterBlockCustom() : ThreadSafeArray
 	{
-		return $this->asyncTransmitter;
+		return $this->asyncTransmitterBlockCustom;
 	}
+
+	/**
+	 * @return ThreadSafeArray
+	 */
+	public function getAsyncTransmitterBlockOverwrite(): ThreadSafeArray
+	{
+		return $this->asyncTransmitterBlockOverwrite;
+	}
+
 
 	/**
 	 * @return Block&IBlockCustom[]
 	 */
-	public function getBlocks() : array
+	public function getBlockCustoms() : array
 	{
-		return $this->blocks;
+		return $this->blockCustoms;
 	}
 
 	/**
 	 * @return null|Block&IBlockCustom
 	 */
-	public function getBlock(string $identifier) : IBlockCustom|null
+	public function getBlockCustom(string $identifier) : IBlockCustom|null
 	{
-		return $this->blocks[$identifier] ?? null;
+		return $this->blockCustoms[$identifier] ?? null;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getBlocksOverwrite(): array
+	{
+		return $this->blocksOverwrite;
+	}
+
+	public function getBlockOverwrite(string $id): Block{
+		return $this->blocksOverwrite[$id];
 	}
 
 	/**
