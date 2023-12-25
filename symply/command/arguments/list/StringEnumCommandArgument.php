@@ -51,20 +51,14 @@ abstract class StringEnumCommandArgument extends CommandArgument
 		return -1;
 	}
 
-	/**
-	 * @return mixed
-	 */
-	public function canExecute(string $testString, CommandSender $sender) : bool{
+	public function isValid(string $testString, CommandSender $sender) : bool{
 		return (bool) preg_match(
 			"/^(" . implode("|", array_map("\\strtolower", $this->getEnumValues())) . ")$/iu",
 			$testString
 		);
 	}
 
-	/**
-	 * @return mixed
-	 */
-	public function getValue(string $string){
+	public function getValue(string $string): mixed{
 		return self::VALUES[strtolower($string)];
 	}
 

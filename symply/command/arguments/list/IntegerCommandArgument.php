@@ -42,7 +42,7 @@ class IntegerCommandArgument extends CommandArgument
 		return "int";
 	}
 
-	public function canExecute(string $testString, CommandSender $sender) : bool{
+	public function isValid(string $testString, CommandSender $sender) : bool{
 		return preg_match("/^-?(?:\d+)$/", $testString);
 	}
 

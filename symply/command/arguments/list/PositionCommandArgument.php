@@ -31,6 +31,7 @@ use pocketmine\entity\Entity;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use symply\command\arguments\CommandArgument;
+use symply\plugin\player\Player;
 use function count;
 use function explode;
 use function preg_match;
@@ -47,11 +48,11 @@ class PositionCommandArgument extends CommandArgument
 		return "x y z";
 	}
 
-	public function canExecute(string $testString, CommandSender $sender) : bool{
+	public function isValid(string $testString, CommandSender $sender) : bool{
 		$position = explode(" ", $testString);
 		if (count($position) === 3) {
 			foreach($position as $vector) {
-				if ($this->isValid($vector, $sender instanceof Vector3)) {
+				if (!$this->isValidPosition($vector, $sender instanceof Vector3)) {
 					return false;
 				}
 			}
@@ -66,7 +67,7 @@ class PositionCommandArgument extends CommandArgument
 
 		foreach ($position as $key => $vector) {
 			$offset = 0;
-			if  (preg_match("/^(?:~-|~\+)|~/", $vector) && $sender instanceof Entity) {
+			if(preg_match("/^(?:~-|~\+)|~/", $vector) && $sender instanceof Player) {
 				$offset = substr($vector, 1);
 				$pos = $sender->getPosition();
 
@@ -83,7 +84,7 @@ class PositionCommandArgument extends CommandArgument
 		return new Vector3(...$values);
 	}
 
-	public function isValid(string $coordinate, bool $locatable) : bool {
+	public function isValidPosition(string $coordinate, bool $locatable) : bool {
 		return (bool) preg_match("/^(?:" . ($locatable ? "(?:~-|~\+)?" : "") . "-?(?:\d+|\d*\.\d+))" . ($locatable ? "|~" : "") . "$/", $coordinate);
 	}
 }

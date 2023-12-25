@@ -41,7 +41,7 @@ class RawStringCommandArgument extends CommandArgument
 		return "string";
 	}
 
-	public function canExecute(string $testString, CommandSender $sender) : bool{
+	public function isValid(string $testString, CommandSender $sender) : bool{
 		return true;
 	}
 

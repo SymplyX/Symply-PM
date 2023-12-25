@@ -28,6 +28,8 @@ namespace symply\command\arguments\list;
 
 use pocketmine\command\CommandSender;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
+use pocketmine\player\Player;
+use pocketmine\Server;
 use symply\command\arguments\CommandArgument;
 use function preg_match;
 use function strtolower;
@@ -43,11 +45,18 @@ class TargetCommandArgument extends CommandArgument
 		return "target";
 	}
 
-	public function canExecute(string $testString, CommandSender $sender) : bool {
+	public function isValid(string $testString, CommandSender $sender) : bool {
 		return (bool) preg_match("/^(?!rcon|console)[a-zA-Z0-9_ ]{1,16}$/i", $testString);
 	}
 
-	public function execute(string $argument, CommandSender $sender) : string {
-		return strtolower($argument);
+	public function execute(string $argument, CommandSender $sender) : string|Player {
+		$target = strtolower($argument);
+
+		$player = Server::getInstance()->getPlayerExact($target);
+		if ($player instanceof Player) {
+			return $player;
+		} else {
+			return $target;
+		}
 	}
 }

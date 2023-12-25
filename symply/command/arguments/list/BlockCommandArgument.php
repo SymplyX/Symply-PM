@@ -46,17 +46,12 @@ class BlockCommandArgument extends CommandArgument
 		return "block";
 	}
 
-	public function canExecute(string $testString, CommandSender $sender) : bool{
+	public function isValid(string $testString, CommandSender $sender) : bool{
 		return true;
 	}
 
 	public function execute(string $argument, CommandSender $sender) : Item|bool|Enchantment|Effect{
 		$argument = str_starts_with($argument, "minecraft:") ? $argument : (str_contains($argument, ":") ? $argument : "minecraft:" . $argument);
-		$blockIdentifier = StringToItemParser::getInstance()->parse($argument);
-
-		if ($blockIdentifier != null) {
-			return $blockIdentifier;
-		}
-		return false;
+		return StringToItemParser::getInstance()->parse($argument) ?? false;
 	}
 }

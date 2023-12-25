@@ -42,7 +42,7 @@ class FloatCommandArgument extends CommandArgument
 		return "float";
 	}
 
-	public function canExecute(string $testString, CommandSender $sender) : bool{
+	public function isValid(string $testString, CommandSender $sender) : bool{
 		return (bool) preg_match("/^-?(?:\d+|\d*\.\d+)$/", $testString);
 	}
 

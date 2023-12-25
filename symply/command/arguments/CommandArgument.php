@@ -34,11 +34,7 @@ abstract class CommandArgument
 {
 
 	protected CommandParameter $parameter;
-
-	/** @param string $name */
 	private string $name;
-
-	/** @param bool $optional */
 	private string $optional;
 
 	public function __construct(string $name, bool $optional = false)
@@ -52,7 +48,7 @@ abstract class CommandArgument
 		$this->parameter->isOptional = $this->isOptional();
 	}
 
-	abstract public function canExecute(string $testString, CommandSender $sender) : bool;
+	abstract public function isValid(string $testString, CommandSender $sender) : bool;
 
 	abstract public function execute(string $argument, CommandSender $sender) : mixed;
 

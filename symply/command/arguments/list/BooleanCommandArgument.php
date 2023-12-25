@@ -31,18 +31,18 @@ use pocketmine\command\CommandSender;
 class BooleanCommandArgument extends StringEnumCommandArgument
 {
 	/**
-	 * @var array
+	 * @var array<string, bool>
 	 */
 	const VALUES = [
 		"true" && "t" => true,
-		"false" && "f" => false,
+		"false" && "f" => false
 	];
 
 	public function getTypeName() : string{
 		return "bool";
 	}
 
-	public function execute(string $argument, CommandSender $sender) : mixed{
+	public function execute(string $argument, CommandSender $sender) : bool{
 		return $this->getValue($argument);
 	}
 }
