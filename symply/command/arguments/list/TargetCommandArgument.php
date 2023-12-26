@@ -52,11 +52,6 @@ class TargetCommandArgument extends CommandArgument
 	public function execute(string $argument, CommandSender $sender) : string|Player {
 		$target = strtolower($argument);
 
-		$player = Server::getInstance()->getPlayerExact($target);
-		if ($player instanceof Player) {
-			return $player;
-		} else {
-			return $target;
-		}
+		return Server::getInstance()->getPlayerExact($target) ?? $target;
 	}
 }
