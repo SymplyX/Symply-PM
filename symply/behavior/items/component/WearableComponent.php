@@ -33,11 +33,8 @@ use symply\behavior\items\enum\SlotEnum;
 class WearableComponent implements IComponent
 {
 
-	private SlotEnum $slot;
 
-	public function __construct(SlotEnum $slot) {
-		$this->slot = $slot;
-	}
+	public function __construct(private readonly SlotEnum $slot, private readonly int $protection = 1) {}
 
 	public function getName() : string
 	{
@@ -47,6 +44,7 @@ class WearableComponent implements IComponent
 	public function toNbt() : CompoundTag
 	{
 	   return CompoundTag::create()->setTag($this->getName(), CompoundTag::create()
+		   ->setInt("protection", $this->protection)
 		   ->setString("slot", $this->slot->value));
 	}
 }

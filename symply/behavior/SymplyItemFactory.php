@@ -222,13 +222,12 @@ final class SymplyItemFactory
 					$serializerProperty = new ReflectionProperty($instanceSerializer, "blockItemSerializers");
 					$value = $serializerProperty->getValue($instanceSerializer);
 					$value[$item->getBlock()->getTypeId()] = $serializer;
-					$serializerProperty->setValue($instanceSerializer, $value);
 				}else{
 					$serializerProperty = new ReflectionProperty($instanceSerializer, "itemSerializers");
 					$value = $serializerProperty->getValue($instanceSerializer);
 					$value[$item->getTypeId()] = $serializer;
-					$serializerProperty->setValue($instanceSerializer, $value);
 				}
+				$serializerProperty->setValue($instanceSerializer, $value);
 			}
 		}
 		if (!$this->asyncMode)

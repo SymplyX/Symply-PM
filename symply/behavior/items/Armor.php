@@ -190,8 +190,7 @@ abstract class Armor extends Durable
 	}
 	public function getItemBuilder() : ItemBuilder{
 		return parent::getItemBuilder()
-			->addComponents(new ArmorComponent($this->armorInfo->getDefensePoints()))
-			->addComponents(new WearableComponent(SlotEnum::fromArmorTypeInfo($this->armorInfo)))
+			->addComponents(new WearableComponent(SlotEnum::fromArmorTypeInfo($this->armorInfo), $this->armorInfo->getDefensePoints()))
 			->setCreativeInfo(new ItemCreativeInfo(CategoryCreativeEnum::EQUIPMENT, GroupCreativeEnum::fromArmorTypeInfo($this->armorInfo)));
 	}
 }

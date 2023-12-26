@@ -53,18 +53,18 @@ class AsyncRegisterBehaviorsTask extends AsyncTask
 	public function onRun() : void
 	{
 		$symplyBlockFactory = SymplyBlockFactory::getInstanceModeAsync();
-		$symplyItemFactory = SymplyItemFactory::getInstanceModeAsync();
-		foreach ($this->asyncTransmitterBlockOverwrite as $closure){
-			$symplyBlockFactory->overwriteBlockPMMP($closure[0], $closure[1], $closure[2]);
-		}
 		foreach ($this->asyncTransmitterBlockCustom as $closure) {
 			$symplyBlockFactory->register($closure[0], $closure[1], $closure[2]);
 		}
-		foreach ($this->asyncTransmitterItemOverwrite as $closure){
-			$symplyItemFactory->overwriteItemPMMP($closure[0], $closure[1], $closure[2]);
+		foreach ($this->asyncTransmitterBlockOverwrite as $closure){
+			$symplyBlockFactory->overwriteBlockPMMP($closure[0], $closure[1], $closure[2]);
 		}
+		$symplyItemFactory = SymplyItemFactory::getInstanceModeAsync();
 		foreach ($this->asyncTransmitterItemCustom as $closure){
 			$symplyItemFactory->register($closure[0], $closure[1], $closure[2]);
+		}
+		foreach ($this->asyncTransmitterItemOverwrite as $closure){
+			$symplyItemFactory->overwriteItemPMMP($closure[0], $closure[1], $closure[2]);
 		}
 	}
 }
