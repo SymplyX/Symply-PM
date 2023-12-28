@@ -57,7 +57,6 @@ class Scoreboard implements IScoreboard
 		$pk->criteriaName = self::CRITERIA_NAME;
 		$pk->sortOrder = self::SORT_ASCENDING;
 		$player->getNetworkSession()->sendDataPacket($pk);
-		
 		self::$scoreboards[$player->getName()] = $objectiveName;
 	}
 
