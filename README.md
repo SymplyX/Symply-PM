@@ -18,7 +18,7 @@
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Flag_of_the_United_Kingdom_%281-2%29.svg/255px-Flag_of_the_United_Kingdom_%281-2%29.svg.png" alt="English" width="70px" height="50px">
   </a>
   &nbsp;&nbsp;&nbsp;
-  <a href="https://github.com/SymplyX/Symply/tree/stable/.github/fr">
+  <a href="https://github.com/SymplyX/Symply/tree/stable/.github/readme/fr">
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Flag_of_France_%281794%E2%80%931815%2C_1830%E2%80%931974%29.svg/langfr-225px-Flag_of_France_%281794%E2%80%931815%2C_1830%E2%80%931974%29.svg.png" alt="French" width="70px" height="50px">
   </a>
 </p>

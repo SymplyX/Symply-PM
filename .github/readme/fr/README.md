@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/SymplyX/Symply?tab=readme-ov-file">
+  <a href="https://github.com/SymplyX/Symply/blob/stable/README.md">
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Flag_of_the_United_Kingdom_%281-2%29.svg/255px-Flag_of_the_United_Kingdom_%281-2%29.svg.png" alt="Anglais" width="70px" height="50px">
   </a>
   &nbsp;&nbsp;&nbsp;
