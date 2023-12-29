@@ -40,7 +40,6 @@ use pocketmine\utils\Binary;
 use symply\behavior\common\enum\CategoryCreativeEnum;
 use symply\behavior\common\enum\GroupCreativeEnum;
 use symply\behavior\items\builder\ItemBuilder;
-use symply\behavior\items\component\ArmorComponent;
 use symply\behavior\items\component\WearableComponent;
 use symply\behavior\items\enum\SlotEnum;
 use symply\behavior\items\info\ItemCreativeInfo;

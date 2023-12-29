@@ -57,6 +57,7 @@ use symply\events\session\SessionErrorEvent;
 use Throwable;
 use function addcslashes;
 use function base64_encode;
+use function get_class;
 use function implode;
 use function mt_rand;
 use function rtrim;
@@ -209,9 +210,6 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	}
 
 	/**
-	 * @param int $sessionId
-	 * @param string $packet
-	 * @return void
 	 * @throws Throwable
 	 */
 	public function onPacketReceive(int $sessionId, string $packet) : void{

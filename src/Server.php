@@ -1880,7 +1880,7 @@ class Server{
 		}
 	}
 
-	public function isWaterdogepeSupport(): bool
+	public function isWaterdogepeSupport() : bool
 	{
 		return $this->waterdogeSupport;
 	}

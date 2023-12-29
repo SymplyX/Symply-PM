@@ -33,7 +33,6 @@ use symply\behavior\items\enum\SlotEnum;
 class WearableComponent implements IComponent
 {
 
-
 	public function __construct(private readonly SlotEnum $slot, private readonly int $protection = 1) {}
 
 	public function getName() : string

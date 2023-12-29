@@ -50,6 +50,7 @@ use symply\waterdogpe\WDPEClientData;
 use symply\waterdogpe\WDPEClientDataToSkinDataHelper;
 use symply\waterdogpe\WDPEPlayerInfo;
 use function is_array;
+use function strtoupper;
 
 /**
  * Handles the initial login phase of the session. This handler is used as the initial state.
