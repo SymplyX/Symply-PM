@@ -107,6 +107,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
+use pocketmine\network\mcpe\protocol\CameraPresetsPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
@@ -138,6 +139,7 @@ use pocketmine\world\sound\Sound;
 use pocketmine\world\World;
 use pocketmine\YmlServerProperties;
 use Ramsey\Uuid\UuidInterface;
+use symply\camera\VanillaCameraPresets;
 use function abs;
 use function array_filter;
 use function array_shift;
@@ -903,6 +905,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->logger->debug("Quit while dead, forcing respawn");
 			$this->actuallyRespawn();
 		}
+
+		$this->getNetworkSession()->sendDataPacket(CameraPresetsPacket::create(VanillaCameraPresets::getAll()));
 	}
 
 	/**

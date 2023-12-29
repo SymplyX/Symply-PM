@@ -24,21 +24,11 @@
 
 declare(strict_types=1);
 
-namespace symply\plugin\listener;
+namespace symply\camera\instruction;
 
-use pocketmine\event\Listener;
-use pocketmine\event\server\DataPacketDecodeEvent;
-use symply\utils\PacketUtils;
-use function in_array;
+use pocketmine\player\Player;
 
-class PacketListener implements Listener
+abstract class CameraInstruction
 {
-
-	public function onDataPacketDecode(DataPacketDecodeEvent $event) : void
-	{
-		$packetId = $event->getPacketId();
-		if(in_array($packetId, PacketUtils::$disabledPackets, true)) {
-			$event->cancel();
-		}
-	}
+	abstract public function send(Player $player) : void;
 }

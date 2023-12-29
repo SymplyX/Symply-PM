@@ -48,8 +48,8 @@ use pocketmine\world\format\io\GlobalItemDataHandlers;
 use ReflectionProperty;
 use symply\behavior\blocks\IBlockCustom;
 use symply\behavior\items\ICustomItem;
-use function array_merge;
 use function array_values;
+use function mb_strtoupper;
 use function uasort;
 
 final class SymplyItemFactory
@@ -135,7 +135,7 @@ final class SymplyItemFactory
 		$stringToInt = $reflection->getProperty("stringToIntMap");
 		/** @var int[] $value */
 		$value = $stringToInt->getValue($dictionary);
-		$stringToInt->setValue($dictionary, $value +  [$identifier => $itemId]);
+		$stringToInt->setValue($dictionary, $value + [$identifier => $itemId]);
 	}
 
 	/**
@@ -153,17 +153,14 @@ final class SymplyItemFactory
 		$itemToBlockId = $reflection->getProperty("itemToBlockId");
 		/** @var string[] $value */
 		$value = $itemToBlockId->getValue($blockItemIdMap);
-		$itemToBlockId->setValue($blockItemIdMap, $value +  [$identifier => $identifier]);
+		$itemToBlockId->setValue($blockItemIdMap, $value + [$identifier => $identifier]);
 	}
 
 	/**
 	 * @param Closure(): Item $itemClosure
-	 * @param Closure|false|null $serializer
-	 * @param Closure|false|null $deserializer
-	 * @return void
 	 * @throws \ReflectionException
 	 */
-	public function overwriteItemPMMP(Closure $itemClosure, null|Closure|false $serializer = null, null|Closure|false $deserializer = null): void
+	public function overwriteItemPMMP(Closure $itemClosure, null|Closure|false $serializer = null, null|Closure|false $deserializer = null) : void
 	{
 		/**
 		 * @var Item $item
@@ -192,7 +189,6 @@ final class SymplyItemFactory
 		CreativeInventory::getInstance()->remove($item);
 		$this->itemsOverwrite[$namespaceId] = $item;
 		CreativeInventory::getInstance()->add($item);
-
 
 		$serializer ??= static fn() => new SavedItemData($namespaceId);
 		$deserializer ??= static function () use ($namespaceId) {
@@ -234,9 +230,7 @@ final class SymplyItemFactory
 			$this->asyncTransmitterItemOverwrite[] = ThreadSafeArray::fromArray([$itemClosure, $serializer, $deserializer]);
 	}
 
-
-
-	public function getBlockIdNextMCBE(): int{
+	public function getBlockIdNextMCBE() : int{
 		return self::$BLOCK_ID_NEXT_MCBE++;
 	}
 	/**
@@ -247,23 +241,17 @@ final class SymplyItemFactory
 		return $this->asyncTransmitterItemCustom;
 	}
 
-	/**
-	 * @return ThreadSafeArray
-	 */
-	public function getAsyncTransmitterItemOverwrite(): ThreadSafeArray
+	public function getAsyncTransmitterItemOverwrite() : ThreadSafeArray
 	{
 		return $this->asyncTransmitterItemOverwrite;
 	}
 
-	/**
-	 * @return array
-	 */
-	public function getItemsOverwrite(): array
+	public function getItemsOverwrite() : array
 	{
 		return $this->itemsOverwrite;
 	}
 
-	public function getItemOverwrite(string $id): ?Item{
+	public function getItemOverwrite(string $id) : ?Item{
 		return $this->itemsOverwrite[$id] ?? null;
 	}
 

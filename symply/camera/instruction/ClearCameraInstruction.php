@@ -24,21 +24,22 @@
 
 declare(strict_types=1);
 
-namespace symply\plugin\listener;
+namespace symply\camera\instruction;
 
-use pocketmine\event\Listener;
-use pocketmine\event\server\DataPacketDecodeEvent;
-use symply\utils\PacketUtils;
-use function in_array;
+use pocketmine\network\mcpe\protocol\CameraInstructionPacket;
+use pocketmine\player\Player;
 
-class PacketListener implements Listener
+final class ClearCameraInstruction extends CameraInstruction
 {
+	private ?bool $clear = null;
 
-	public function onDataPacketDecode(DataPacketDecodeEvent $event) : void
+	public function setClear(bool $clear) : void
 	{
-		$packetId = $event->getPacketId();
-		if(in_array($packetId, PacketUtils::$disabledPackets, true)) {
-			$event->cancel();
-		}
+		$this->clear = $clear;
+	}
+
+	public function send(Player $player) : void
+	{
+		$player->getNetworkSession()->sendDataPacket(CameraInstructionPacket::create(null, $this->clear, null));
 	}
 }
