@@ -38,9 +38,11 @@ use pocketmine\network\Network;
 use pocketmine\network\NetworkInterfaceStartException;
 use pocketmine\network\PacketHandlingException;
 use pocketmine\player\GameMode;
+use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\thread\ThreadCrashException;
 use pocketmine\timings\Timings;
+use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use pocketmine\YmlServerProperties;
 use raklib\generic\DisconnectReason;
@@ -51,8 +53,11 @@ use raklib\server\ipc\RakLibToUserThreadMessageReceiver;
 use raklib\server\ipc\UserToRakLibThreadMessageSender;
 use raklib\server\ServerEventListener;
 use raklib\utils\InternetAddress;
+use symply\events\session\SessionErrorEvent;
+use Throwable;
 use function addcslashes;
 use function base64_encode;
+use function get_class;
 use function implode;
 use function mt_rand;
 use function rtrim;
@@ -204,6 +209,9 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 		$this->sessions[$sessionId] = $session;
 	}
 
+	/**
+	 * @throws Throwable
+	 */
 	public function onPacketReceive(int $sessionId, string $packet) : void{
 		if(isset($this->sessions[$sessionId])){
 			if($packet === "" || $packet[0] !== self::MCPE_RAKNET_PACKET_ID){
@@ -228,10 +236,23 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 				$logger->debug(implode("\n", Utils::printableExceptionInfo($e)));
 
 				$this->interface->blockAddress($address, 5);
-			}catch(\Throwable $e){
-				//record the name of the player who caused the crash, to make it easier to find the reproducing steps
-				$this->server->getLogger()->emergency("Crash occurred while handling a packet from session: $name");
-				throw $e;
+			}catch(Throwable $e){
+				$player = $session->getPlayer();
+				if(!$player instanceof Player) {
+					$this->server->getLogger()->emergency("Crash occurred while handling a packet from session: $name");
+					throw $e;
+				}
+
+				$ev = new SessionErrorEvent($player, $e, TextFormat::RED . "Internal Server Error");
+				$ev->call();
+				if(!$ev->isCancelled()) {
+					$logger = $this->server->getLogger();
+					$logger->debug("Packet " . (isset($pk) ? get_class($pk) : "unknown") . ": " . base64_encode($buf));
+					$logger->logException($e);
+					return;
+				}
+
+				$player->kick($ev->getErrorMessage());
 			}
 		}
 	}

@@ -32,6 +32,7 @@ use pocketmine\player\Player;
 use pocketmine\world\sound\CopperWaxApplySound;
 use pocketmine\world\sound\CopperWaxRemoveSound;
 use pocketmine\world\sound\ScrapeSound;
+use symply\behavior\items\Axe as SymplyAxe;
 
 trait CopperTrait{
 	private CopperOxidation $oxidation = CopperOxidation::NONE;
@@ -68,7 +69,7 @@ trait CopperTrait{
 			return true;
 		}
 
-		if($item instanceof Axe){
+		if($item instanceof Axe || $$item instanceof SymplyAxe){
 			if($this->waxed){
 				$this->waxed = false;
 				$this->position->getWorld()->setBlock($this->position, $this);

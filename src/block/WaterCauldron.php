@@ -44,6 +44,7 @@ use pocketmine\world\sound\CauldronDyeItemSound;
 use pocketmine\world\sound\CauldronEmptyWaterSound;
 use pocketmine\world\sound\CauldronFillWaterSound;
 use pocketmine\world\sound\Sound;
+use symply\behavior\items\Armor as SymplyArmor;
 use function array_pop;
 use function assert;
 use function count;
@@ -128,7 +129,7 @@ final class WaterCauldron extends FillableCauldron{
 			}else{
 				$this->mix($item, VanillaItems::GLASS_BOTTLE(), $returnedItems);
 			}
-		}elseif($item instanceof Armor){
+		}elseif($item instanceof Armor || $item instanceof SymplyArmor){
 			if($this->customWaterColor !== null){
 				if(match($item->getTypeId()){ //TODO: a DyeableArmor class would probably be a better idea, since not all types of armor are dyeable
 					ItemTypeIds::LEATHER_CAP,

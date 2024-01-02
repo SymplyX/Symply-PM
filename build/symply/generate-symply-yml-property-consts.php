@@ -27,9 +27,9 @@ declare(strict_types=1);
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 
-require dirname(__DIR__) . '/vendor/autoload.php';
+require dirname(__DIR__,2) . '/vendor/autoload.php';
 
-$defaultConfig = yaml_parse(Filesystem::fileGetContents(dirname(__DIR__) . '/resources/symply.yml'));
+$defaultConfig = yaml_parse(Filesystem::fileGetContents(dirname(__DIR__,2) . '/resources/symply.yml'));
 
 if(!is_array($defaultConfig)){
 	fwrite(STDERR, "Invalid default symply.yml\n");
@@ -60,7 +60,7 @@ function collectProperties(string $prefix, array $properties, array &$constants)
 collectProperties("", $defaultConfig, $constants);
 ksort($constants, SORT_STRING);
 
-$file = fopen(dirname(__DIR__) . '/symply/YmlSymplyProperties.php', 'wb');
+$file = fopen(dirname(__DIR__,2) . '/symply/YmlSymplyProperties.php', 'wb');
 if($file === false){
 	fwrite(STDERR, "Failed to open output file\n");
 	exit(1);

@@ -107,6 +107,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
+use pocketmine\network\mcpe\protocol\CameraPresetsPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
@@ -138,6 +139,7 @@ use pocketmine\world\sound\Sound;
 use pocketmine\world\World;
 use pocketmine\YmlServerProperties;
 use Ramsey\Uuid\UuidInterface;
+use symply\camera\VanillaCameraPresets;
 use function abs;
 use function array_filter;
 use function array_shift;
@@ -158,6 +160,7 @@ use function str_starts_with;
 use function strlen;
 use function strtolower;
 use function substr;
+use function time;
 use function trim;
 use const M_PI;
 use const M_SQRT3;
@@ -278,7 +281,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected bool $allowFlight = false;
 	protected bool $blockCollision = true;
 	protected bool $flying = false;
-
 
 	/** @phpstan-var positive-int|null  */
 	protected ?int $lineHeight = null;
@@ -512,8 +514,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->getNetworkSession()->syncAdventureSettings();
 		}
 	}
-
-
 
 	public function hasAutoJump() : bool{
 		return $this->autoJump;
@@ -905,6 +905,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->logger->debug("Quit while dead, forcing respawn");
 			$this->actuallyRespawn();
 		}
+
+		$this->getNetworkSession()->sendDataPacket(CameraPresetsPacket::create(VanillaCameraPresets::getAll()));
 	}
 
 	/**
@@ -2447,8 +2449,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		);
 	}
 
-
-	public function getConnectedTime(): int {
+	public function getConnectedTime() : int {
 		return time() - $this->getNetworkSession()->getConnectedTime();
 	}
 
