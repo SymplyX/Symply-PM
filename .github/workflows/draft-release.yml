@@ -70,7 +70,7 @@ jobs:
         run: |
           php build/generate-build-info-json.php \
             ${{ github.sha }} \
-            ${{ steps.get-symply-version.outputs.SYMPLY_VERSION }} \
+            "${{ steps.get-symply-version.outputs.SYMPLY_VERSION }}" \
             ${{ github.repository }} \
             ${{ steps.build-number.outputs.BUILD_NUMBER }} \
             ${{ github.run_id }} \
