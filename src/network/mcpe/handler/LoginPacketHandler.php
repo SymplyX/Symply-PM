@@ -90,12 +90,13 @@ class LoginPacketHandler extends PacketHandler{
 		if(PacketUtils::TITLE_ID_TO_DEVICE[$extraData->titleId] !== $clientData->DeviceOS) {
 			throw new PacketHandlingException("Invalid TitleID");
 		}
-		if($clientData->DeviceOS === DeviceOS::ANDROID && $clientData->DeviceModel !== strtoupper($clientData->DeviceModel)) {
+/*		Zwuiix, I'll let you redo your system
+ * 		if($clientData->DeviceOS === DeviceOS::ANDROID && $clientData->DeviceModel !== strtoupper($clientData->DeviceModel)) {
 			throw new PacketHandlingException("Invalid DeviceModel");
 		}
 		if($clientData->ThirdPartyName !== $extraData->displayName) {
 			throw new PacketHandlingException("Invalid ThirdPartyName");
-		}
+		}*/
 
 		if(!Uuid::isValid($extraData->identity)){
 			throw new PacketHandlingException("Invalid login UUID");
