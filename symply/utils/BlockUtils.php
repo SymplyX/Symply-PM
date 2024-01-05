@@ -77,8 +77,8 @@ class BlockUtils
 							return $speedBreak * 0.2;
 						}*/
 			/*
-			     if ( !v21 || !*v21 || ItemStackBase::isNull(v20) || !*((_BYTE *)v20 + 34) )
-      			return speedbreak * 0.2; ???????????
+				 if ( !v21 || !*v21 || ItemStackBase::isNull(v20) || !*((_BYTE *)v20 + 34) )
+				  return speedbreak * 0.2; ???????????
 			*/
 			if ($item->isNull()){
 				return $speedBreak * 0.2;
