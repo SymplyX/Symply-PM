@@ -61,6 +61,7 @@ abstract class Tool extends Durable
 	{
 		return parent::getItemBuilder()
 			->addProperties(new DamageProperty($this->getAttackPoints()))
+			->setHandEquipped(true)
 			->setCreativeInfo(new ItemCreativeInfo(CategoryCreativeEnum::EQUIPMENT, match ($this->getBlockToolType()){
 				BlockToolType::AXE => GroupCreativeEnum::AXE,
 				BlockToolType::HOE => GroupCreativeEnum::HOE,
