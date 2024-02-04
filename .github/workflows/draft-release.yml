@@ -48,7 +48,7 @@ jobs:
         run: php vendor/pocketmine/bedrock-data/.minify_json.php
 
       - name: Build Symply.phar
-        run: php -dphar.readonly=0 build/server-phar.php --git ${{ github.sha }} --build ${{ steps.build-number.outputs.BUILD_NUMBER }}
+        run: php -dphar.readonly=0 build/server-phar.php --git ${{ github.sha }} --build ${{ steps.build-number.outputs.BUILD_NUMBER }} --out Symply.phar
 
       - name: Get Symply release version
         id: get-symply-version
