@@ -742,7 +742,7 @@ class NetworkSession{
 			return;
 		}
 		if($error === null){
-			if($authenticated && !($this->info instanceof XboxLivePlayerInfo)){
+			if($authenticated && !($this->info instanceof XboxLivePlayerInfo || $this->info instanceof WDPEPlayerInfo )){
 				$error = "Expected XUID but none found";
 			}elseif($clientPubKey === null){
 				$error = "Missing client public key"; //failsafe
@@ -765,7 +765,7 @@ class NetworkSession{
 				$this->disconnect("Not authenticated", KnownTranslationFactory::disconnectionScreen_notAuthenticated());
 				return;
 			}
-			if($this->info instanceof XboxLivePlayerInfo){
+			if($this->info instanceof XboxLivePlayerInfo || $this->info instanceof WDPEPlayerInfo){
 				$this->logger->warning("Discarding unexpected XUID for non-authenticated player");
 				$this->info = $this->info->withoutXboxData();
 			}

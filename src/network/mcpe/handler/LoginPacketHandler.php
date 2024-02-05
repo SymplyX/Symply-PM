@@ -87,9 +87,6 @@ class LoginPacketHandler extends PacketHandler{
 			return true;
 		}
 
-		if(empty($extraData->titleId) || PacketUtils::TITLE_ID_TO_DEVICE[$extraData->titleId] !== $clientData->DeviceOS) {
-			throw new PacketHandlingException("Invalid TitleID");
-		}
 /*		Zwuiix, I'll let you redo your system
  * 		if($clientData->DeviceOS === DeviceOS::ANDROID && $clientData->DeviceModel !== strtoupper($clientData->DeviceModel)) {
 			throw new PacketHandlingException("Invalid DeviceModel");
@@ -131,6 +128,11 @@ class LoginPacketHandler extends PacketHandler{
 				$clientData->LanguageCode,
 				$arrClientData
 			);
+		}
+
+
+		if(($playerInfo instanceof XboxLivePlayerInfo ||  $playerInfo instanceof WDPEPlayerInfo) && (empty($extraData->titleId) || PacketUtils::TITLE_ID_TO_DEVICE[$extraData->titleId] !== $clientData->DeviceOS)) {
+			throw new PacketHandlingException("Invalid TitleID");
 		}
 		($this->playerInfoConsumer)($playerInfo);
 
