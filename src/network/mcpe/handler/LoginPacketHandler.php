@@ -130,8 +130,7 @@ class LoginPacketHandler extends PacketHandler{
 			);
 		}
 
-
-		if(($playerInfo instanceof XboxLivePlayerInfo ||  $playerInfo instanceof WDPEPlayerInfo) && (empty($extraData->titleId) || PacketUtils::TITLE_ID_TO_DEVICE[$extraData->titleId] !== $clientData->DeviceOS)) {
+		if(($playerInfo instanceof XboxLivePlayerInfo || $playerInfo instanceof WDPEPlayerInfo) && (empty($extraData->titleId) || PacketUtils::TITLE_ID_TO_DEVICE[$extraData->titleId] !== $clientData->DeviceOS)) {
 			throw new PacketHandlingException("Invalid TitleID");
 		}
 		($this->playerInfoConsumer)($playerInfo);

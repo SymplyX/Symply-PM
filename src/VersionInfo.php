@@ -34,7 +34,7 @@ final class VersionInfo{
 	public const BASE_VERSION = "5.11.0";
 	public const IS_DEVELOPMENT_BUILD = false;
 	public const BUILD_CHANNEL = "beta";
-	public const SYMPLY_VERSION = "0.0.5 Beta 2";
+	public const SYMPLY_VERSION = "0.0.5 Beta 3";
 
 	/**
 	 * PocketMine-MP-specific version ID for world data. Used to determine what fixes need to be applied to old world

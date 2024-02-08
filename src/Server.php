@@ -304,7 +304,7 @@ class Server{
 	 */
 	private array $broadcastSubscribers = [];
 
-	private bool $waterdogeSupport = false;
+	private bool $waterdogSupport = false;
 
 	public function getName() : string{
 		return VersionInfo::NAME;
