@@ -120,9 +120,6 @@ final class SymplyBlockFactory
 	}
 
 	/**
-	 * @param Closure $blockClosure
-	 * @param Closure|false|null $serializer
-	 * @param Closure|false|null $deserializer
 	 * @throws ReflectionException
 	 */
 	public function overwriteBlockPMMP(Closure $blockClosure,  null|Closure|false $serializer = null, null|Closure|false $deserializer = null) : void

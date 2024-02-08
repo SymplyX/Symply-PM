@@ -32,6 +32,6 @@ class IconProperty extends ItemProperty
 {
 	public function __construct(string $texture)
 	{
-		parent::__construct("minecraft:icon", CompoundTag::create()->setString("texture", $texture));
+		parent::__construct("minecraft:icon", CompoundTag::create()->setTag("textures", CompoundTag::create()->setString("default", $texture)));
 	}
 }

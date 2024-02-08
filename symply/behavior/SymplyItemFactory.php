@@ -141,8 +141,6 @@ final class SymplyItemFactory
 	/**
 	 * Registers the required mappings for the block to become an item that can be placed etc. It is assigned an ID that
 	 * correlates to its block ID.
-	 * @param string $identifier
-	 * @param Block&IBlockCustom $block
 	 * @return int for get Id block vanilla
 	 * @throws \ReflectionException
 	 */
