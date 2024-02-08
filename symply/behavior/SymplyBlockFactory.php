@@ -85,7 +85,7 @@ final class SymplyBlockFactory
 		}
 		$blockBuilder = $blockCustom->getBlockBuilder();
 		RuntimeBlockStateRegistry::getInstance()->register($blockCustom);
-		SymplyItemFactory::getInstance()->registerBlockItem($identifier, $blockCustom);
+		$blockIdVanilla = SymplyItemFactory::getInstance()->registerBlockItem($identifier, $blockCustom);
 		$this->blockCustoms[$identifier] = $blockCustom;
 		if ($blockCustom instanceof IPermutationBlock) {
 			$serializer ??= static function (Block&IPermutationBlock $block) use ($identifier) : BlockStateWriter {
@@ -115,13 +115,14 @@ final class SymplyBlockFactory
 		CreativeInventory::getInstance()->add($item);
 		if (!$this->asyncMode) {
 			$this->asyncTransmitterBlockCustom[] = ThreadSafeArray::fromArray([$blockClosure, $serializer, $deserializer]);
-			$this->blockPaletteEntries[] = new BlockPaletteEntry($identifier, new CacheableNbt($blockBuilder->toPacket()));
+			$this->blockPaletteEntries[] = new BlockPaletteEntry($identifier, new CacheableNbt($blockBuilder->toPacket($blockIdVanilla)));
 		}
 	}
 
 	/**
-	 * @param Closure|null $serializer
-	 * @param Closure|null $deserializer
+	 * @param Closure $blockClosure
+	 * @param Closure|false|null $serializer
+	 * @param Closure|false|null $deserializer
 	 * @throws ReflectionException
 	 */
 	public function overwriteBlockPMMP(Closure $blockClosure,  null|Closure|false $serializer = null, null|Closure|false $deserializer = null) : void

@@ -134,9 +134,9 @@ class BlockBuilder
 		return $this;
 	}
 
-	public function toPacket() : CompoundTag
+	public function toPacket(int $blockId) : CompoundTag
 	{
-		return $this->getPropertiesTag()->setTag('components', $this->getComponentsTag())->setInt("molangVersion", 6);
+		return $this->getPropertiesTag()->setTag('components', $this->getComponentsTag())->setInt("molangVersion", 6)->setTag("vanilla_block_data", CompoundTag::create()->setInt("block_id", $blockId));
 	}
 
 	public function getPropertiesTag() : CompoundTag

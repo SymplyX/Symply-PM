@@ -141,9 +141,14 @@ final class SymplyItemFactory
 	/**
 	 * Registers the required mappings for the block to become an item that can be placed etc. It is assigned an ID that
 	 * correlates to its block ID.
+	 * @param string $identifier
+	 * @param Block&IBlockCustom $block
+	 * @return int for get Id block vanilla
+	 * @throws \ReflectionException
 	 */
-	public function registerBlockItem(string $identifier, Block&IBlockCustom $block) : void {
-		$itemId = 255 - $this->getBlockIdNextMCBE();
+	public function registerBlockItem(string $identifier, Block&IBlockCustom $block) : int {
+		$idbBlock = $this->getBlockIdNextMCBE();
+		$itemId = 255 - $idbBlock;
 		$this->registerCustomItemMapping($identifier, $itemId, new ItemTypeEntry($identifier, $itemId, false));
 		StringToItemParser::getInstance()->registerBlock($identifier, fn() => clone $block);
 
@@ -154,6 +159,7 @@ final class SymplyItemFactory
 		/** @var string[] $value */
 		$value = $itemToBlockId->getValue($blockItemIdMap);
 		$itemToBlockId->setValue($blockItemIdMap, $value + [$identifier => $identifier]);
+		return ($idbBlock);
 	}
 
 	/**
