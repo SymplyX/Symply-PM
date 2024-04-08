@@ -50,7 +50,7 @@
       "pocketmine/snooze": "^0.5.0",
       "ramsey/uuid": "~4.7.0",
       "sof3/await-generator": "^3.6",
-	  "symfony/filesystem": "~6.4.0"
+	  "symfony/filesystem": "~7.0.6"
    },
    "require-dev": {
 	   "friendsofphp/php-cs-fixer": "^3.40",
